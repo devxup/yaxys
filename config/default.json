@@ -1,0 +1,17 @@
+{
+  "title": "Yaxys",
+  "host": "127.0.0.1",
+  "port": 4000,
+  "db": {
+    "host": "127.0.0.1",
+    "port": 5432,
+    "database": "yaxys",
+    "user": "",
+    "password": ""
+  },
+  "logger": {
+    "level": "info",
+    "colorize": true
+  },
+  "timezone": "Europe/Brussels"
+}
