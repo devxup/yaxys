@@ -13,7 +13,7 @@ module.exports = {
         format: "email"
       }
     },
-    required: "email"
+    required: ["email"]
   },
   
   api: {

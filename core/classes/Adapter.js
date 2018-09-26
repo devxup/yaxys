@@ -56,23 +56,11 @@ module.exports = class Adapter {
     });
   }
 
-  _validate(schemaKey, values) {
-    const result = this.validators(schemaKey)(values);
-    if (result !== true) {
-      throw Object.assign(
-        new Error("Validation result error. See details in log.outData."),
-        {
-          details: this.validators(schemaKey).errors
-        }
-      );
-    }
-  }
-
   registerSchema(schemaKey, schema) {
     this.schemas[schemaKey] = schema;
   }
 
-  async create(schemaKey, data, trx) {
+  async insert(schemaKey, data, trx) {
     const dataToInsert = data.id
       ? data
       : _.omit(data, "id");
