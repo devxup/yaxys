@@ -1,22 +1,21 @@
-/*_getSQLForProperty () {}
+const _getSQLForSchema = function (identity, jsonSchema) {
+  return yaxys.db.getSQLForCreateTable(identity, jsonSchema);
+};
 
-_getSQLForSchema () {
-
-}*/
+const _createTableForSchema = async function (identity, jsonSchema) {
+  await yaxys.db.createTable(identity, jsonSchema);
+};
 
 module.exports = {
-
     getSQLForAllModels () {
-
-    },
-
-    async createTableForSchema (identity, jsonSchema) {
-        await yaxys.db.createTable(identity, jsonSchema);
+        for (let model in yaxys.models) {
+            yaxys.logger.info(_getSQLForSchema (model, yaxys.models[model].schema));
+        }
     },
 
     async createTableForAllModels () {
         for (let model in yaxys.models) {
-            await createTableForSchema (model, yaxys.models[model]);
+            await _createTableForSchema (model, yaxys.models[model].schema);
         }
     }
 }
