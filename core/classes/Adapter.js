@@ -19,7 +19,7 @@ module.exports = class Adapter {
   }
 
   async init() {
-    return this.find("operator", {}, { limit: 1 });
+    await this.knex.raw("select now();");
   }
 
   async transaction() {
