@@ -19,7 +19,7 @@ module.exports = class Adapter {
   }
 
   async init() {
-    return this.find("operator", {}, { limit: 1 });
+    await this.knex.raw("select now();");
   }
 
   async transaction() {
@@ -30,6 +30,14 @@ module.exports = class Adapter {
         })
         .catch(reject);
     });
+  }
+
+  async transactionCommit(trx) {
+    await trx.commit();
+  }
+
+  async transactionRollback(trx) {
+    await trx.rollback();
   }
 
   _sanitize(schemaKey, data) {
@@ -132,6 +140,10 @@ module.exports = class Adapter {
         table[value.type](key);
       });*/
     });
+  }
+
+  async shutdown() {
+    await this.knex.destroy();
   }
 
 };
