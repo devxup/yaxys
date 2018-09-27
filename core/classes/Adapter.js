@@ -109,4 +109,29 @@ module.exports = class Adapter {
 
     return trx ? query.transacting(trx) : query;
   }
+
+  createTable (schemaKey, schema) {
+    return this.knex.schema.createTable (schemaKey, (table) => {
+      let knexTypeMapping = ["integer", "bigInteger", "text", "string", "float", "decimal", "boolean", "date",
+          "dateTime", "time", "binary", "enu", "json", "jsonb", "uuid"];
+      table.increments("id").primary();
+      for (let property in schema.properties) {
+        if (property === "id") continue;
+        if (!(knexTypeMapping.includes(schema.properties[property].type))) {
+          throw new Error(`Incorrect data type ${schema.properties[property].type} of field ${property}`);
+        }
+        (schema.required.includes(property)) ?
+            table[schema.properties[property].type](property).notNullable() :
+            table[schema.properties[property].type](property);
+      }
+      /*_.forEach(schema.properties, (value, key) => {
+        if (key === "id") return;
+        if (!(this.knexTypeMapping().includes(value.type))) {
+          throw new Error(`Incorrect data type ${value.type} of field ${key}`);
+        }
+        table[value.type](key);
+      });*/
+    });
+  }
+
 };
