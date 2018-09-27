@@ -6,6 +6,7 @@
   "author": "alevkon <alevkon@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "bluebird": "^3.5.2",
     "config": "^2.0.1",
     "knex": "^0.15.2",
     "koa": "^2.5.3",
@@ -26,5 +27,17 @@
     "init_db": "NODE_ENV=development node cli.js init_db",
     "get_sql": "NODE_ENV=development node cli.js get_sql",
     "create_operator": "NODE_ENV=development node cli.js create_operator"
+  },
+  "devDependencies": {
+    "jest": "^23.6.0"
+  },
+  "jest": {
+    "verbose": true,
+    "globals": {
+      "NODE_ENV": "test"
+    },
+    "moduleFileExtensions": [
+      "js"
+    ]
   }
 }

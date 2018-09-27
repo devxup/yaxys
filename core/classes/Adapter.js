@@ -32,6 +32,14 @@ module.exports = class Adapter {
     });
   }
 
+  async transactionCommit(trx) {
+    await trx.commit();
+  }
+
+  async transactionRollback(trx) {
+    await trx.rollback();
+  }
+
   _sanitize(schemaKey, data) {
     const schema = this.schemas[schemaKey];
     if (!schema) { throw new Error(`schema ${schemaKey} not found`); }
@@ -108,5 +116,9 @@ module.exports = class Adapter {
     });
 
     return trx ? query.transacting(trx) : query;
+  }
+
+  async shutdown() {
+    await this.knex.destroy();
   }
 };
