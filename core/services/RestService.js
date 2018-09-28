@@ -3,7 +3,7 @@ module.exports = {
     return async (ctx) => {
       if (!ctx.params.id) { ctx.throw(400, "id is required"); }
       const instance =  await yaxys.db.findOne(schemaKey, { id: ctx.params.id });
-      if (!instance) { ctx.throw(404, `${schemaKey} #${ctx.paramms.id} not found`); }
+      if (!instance) { ctx.throw(404, `${schemaKey} #${ctx.params.id} not found`); }
       ctx.body = instance;
     }
   },
@@ -14,10 +14,17 @@ module.exports = {
       const filter = {};
       _.each(ctx.query, (v, k) => {
         switch (k) {
+          case "sort":
+            if (/^[a-z0-9\_]+$/i.test(v)) {
+              options[k] = { [v]: 1 };
+            } else if (/^\-[a-z0-9\_]+$/i.test(v)) {
+              options[k] = { [v.slice(1)]: -1 };
+            } else if (v.trim()) {
+              options[k] = JSON.parse(v);
+            }
+            break;
           case "skip":
           case "limit":
-          case "sort":
-          case "select":
             options[k] = v;
             break;
           default:
@@ -40,7 +47,7 @@ module.exports = {
 
   create(schemaKey) {
     return async (ctx) => {
-      ctx.body = await yaxys.db.create(schemaKey, ctx.request.body);
+      ctx.body = await yaxys.db.insert(schemaKey, ctx.request.body);
     };
   }
 };

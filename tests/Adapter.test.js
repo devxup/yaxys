@@ -57,12 +57,6 @@ describe("Adapter", () => {
         result: {id: 2, a2: null, a1: 4, a3: null}
       },
       {
-        title: "findOne with corrupted select",
-        method: "findOne",
-        args: [tableName, {a2: "v1"}, {limit: 2, sort: {id: 1}}],
-        result: {id: 1, a1: 3, a2: "v1", a3: {k: 1}}
-      },
-      {
         title: "findOne with back sort",
         method: "findOne",
         args: [tableName, {}, {limit: 2, sort: {id: -1}}],
