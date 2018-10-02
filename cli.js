@@ -8,10 +8,11 @@ yaxys.init()
     const argv = minimist(process.argv.slice(2));
     const commandsHash = {
       async init_db() {
-        ModelService.createTableForAllModels();
+        await ModelService.createTableForAllModels();
+        yaxys.logger.info("done");
       },
       get_sql() {
-          ModelService.getSQLForAllModels();
+        ModelService.getSQLForAllModels();
       },
       create_operator() {
         yaxys.logger.error("Not implemented yet");

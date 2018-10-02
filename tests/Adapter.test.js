@@ -6,7 +6,7 @@ describe("Adapter", () => {
   let gAdapter;
 
   const tableName = "fake_item";
-  const dropQuery = `DROP TABLE IF EXISTS ${tableName}`;
+  const dropQuery = (tableName) => `DROP TABLE IF EXISTS ${tableName}`;
   const createQuery = `CREATE TABLE ${tableName} (
     "id" serial not null,
     "a1" integer,
@@ -18,7 +18,7 @@ describe("Adapter", () => {
   beforeAll(async () => {
     gAdapter = new Adapter(config.get("db"));
     await gAdapter.init();
-    await gAdapter.knex.raw(dropQuery);
+    await gAdapter.knex.raw(dropQuery(tableName));
     await gAdapter.knex.raw(createQuery);
 
     gAdapter.registerSchema("fake_item", {
@@ -215,6 +215,254 @@ describe("Adapter", () => {
       });
     }));
   });
+
+  describe ("getSQL", () => {
+    const testCases = [
+      {
+        title: "get sql for create table with all possible data types",
+        args: [
+          "testtable",
+          {
+            properties: {
+              p1: {
+                type: "string"
+              },
+              p2: {
+                type: "boolean"
+              },
+              p3: {
+                type: "bigInteger"
+              },
+              p4: {
+                type: "text"
+              },
+              p5: {
+                type: "float"
+              },
+              p6: {
+                type: "decimal"
+              },
+              p7: {
+                type: "date"
+              },
+              p8: {
+                type: "dateTime"
+              },
+              p9: {
+                type: "time"
+              },
+              p10: {
+                type: "binary"
+              },
+              p11: {
+                type: "json"
+              },
+              p12: {
+                type: "jsonb"
+              },
+              p13: {
+                type: "uuid"
+              },
+              p14: {
+                type: "integer"
+              }
+            },
+          required: ["p1", "p2"]
+          }
+        ],
+        result: 'create table "testtable" ("id" serial primary key, "p1" varchar(255) not null, "p2" boolean not null, "p3" bigint, "p4" text, "p5" real, "p6" decimal(8, 2), "p7" date, "p8" timestamptz, "p9" time, "p10" bytea, "p11" json, "p12" jsonb, "p13" uuid, "p14" integer)'
+      },
+      {
+        title: "get sql for create table with incorrect data type",
+        args: [
+          "testtable1",
+          {
+            properties: {
+              p1: {
+                type: "integer"
+              },
+              p2: {
+                type: "wrongtype"
+              },
+              required: ["p1"]
+            }
+          }
+        ],
+        error: "Incorrect data type wrongtype of field p2 in testtable1"
+      },
+      {
+        title: "get sql for create table with id field and without required array",
+        args: [
+          "testtable2",
+          {
+            properties: {
+              id: {
+                type: "integer"
+              },
+              p1: {
+                type: "integer"
+              },
+              p2: {
+                type: "string"
+              }
+            }
+          }
+        ],
+        result: 'create table "testtable2" ("id" serial primary key, "p1" integer, "p2" varchar(255))'
+      }
+    ];
+    testCases.forEach(testCase => it(testCase.title, () => {
+      if (testCase.error) {
+        expect(() => {gAdapter.getSQLForCreateTable(...testCase.args);}).toThrow(testCase.error);
+      } else {
+        expect(gAdapter.getSQLForCreateTable(...testCase.args)).toStrictEqual(testCase.result);
+      }
+    }));
+  });
+
+  describe ("createTable", () => {
+    const testCases = [
+      {
+        title: "create table with all possible data types",
+        args: [
+          "testtable",
+          {
+            properties: {
+              p1: {
+                type: "string"
+              },
+              p2: {
+                type: "boolean"
+              },
+              p3: {
+                type: "bigInteger"
+              },
+              p4: {
+                type: "text"
+              },
+              p5: {
+                type: "float"
+              },
+              p6: {
+                type: "decimal"
+              },
+              p7: {
+                type: "date"
+              },
+              p8: {
+                type: "dateTime"
+              },
+              p9: {
+                type: "time"
+              },
+              p10: {
+                type: "binary"
+              },
+              p11: {
+                type: "json"
+              },
+              p12: {
+                type: "jsonb"
+              },
+              p13: {
+                type: "uuid"
+              },
+              p14: {
+                type: "integer"
+              }
+            },
+            required: ["p1", "p2"]
+          }
+        ],
+        result: 'create table "testtable" ("id" serial primary key, "p1" varchar(255) not null, "p2" boolean not null, "p3" bigint, "p4" text, "p5" real, "p6" decimal(8, 2), "p7" date, "p8" timestamptz, "p9" time, "p10" bytea, "p11" json, "p12" jsonb, "p13" uuid, "p14" integer)'
+      },
+      {
+        title: "create table with incorrect data type",
+        args: [
+          "testtable1",
+          {
+            properties: {
+              p1: {
+                type: "integer"
+              },
+              p2: {
+                type: "wrongtype"
+              },
+              required: ["p1"]
+            }
+          }
+        ],
+        error: "Incorrect data type wrongtype of field p2 in testtable1"
+      },
+      {
+        title: "create table with id field and without required array",
+        args: [
+          "testtable2",
+          {
+            properties: {
+              id: {
+                type: "integer"
+              },
+              p1: {
+                type: "integer"
+              },
+              p2: {
+                type: "string"
+              }
+            }
+          }
+        ],
+        result: 'create table "testtable2" ("id" serial primary key, "p1" integer, "p2" varchar(255))'
+      }
+    ];
+
+    beforeAll ( async () => {
+      await testCases.forEach(async (testCase) => {
+        await gAdapter.knex.raw(dropQuery(testCase.args[0]))
+      })
+    });
+
+    testCases.forEach(testCase => it(testCase.title, async () => {
+      if (testCase.error) {
+        await expect (gAdapter.createTable(...testCase.args)).rejects.toThrow(testCase.error);
+      } else {
+        await gAdapter.createTable(...testCase.args);
+        await gAdapter.knex(testCase.args[0]).columnInfo().then((info) => {
+          for (let property in testCase.args[1].properties) {
+            switch (testCase.args[1].properties[property].type) {
+              case "string":
+                expect(info[property].type).toStrictEqual("character varying");
+                break;
+              case "bigInteger":
+                expect(info[property].type).toStrictEqual("bigint");
+                break;
+              case "float":
+                expect(info[property].type).toStrictEqual("real");
+                break;
+              case "decimal":
+                expect(info[property].type).toStrictEqual("numeric");
+                break;
+              case "dateTime":
+                expect(info[property].type).toStrictEqual("timestamp with time zone");
+                break;
+              case "time":
+                expect(info[property].type).toStrictEqual("time without time zone");
+                break;
+              case "binary":
+                expect(info[property].type).toStrictEqual("bytea");
+                break;
+              default:
+                expect(testCase.args[1].properties[property].type === info[property].type).toBeTruthy();
+            }
+            if ((testCase.args[1].required) && (testCase.args[1].required.includes(property))) {
+              expect (info[property].nullable).toBeFalsy();
+            }
+          }
+        });
+      }
+    }));
+  });
+
 
   afterAll(async () => {
     await gAdapter.shutdown();

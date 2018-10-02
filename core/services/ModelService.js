@@ -14,8 +14,8 @@ module.exports = {
     },
 
     async createTableForAllModels () {
-        for (let model in yaxys.models) {
-            await _createTableForSchema (model, yaxys.models[model].schema);
+      for (let model in yaxys.models) {
+           await _createTableForSchema (model, yaxys.models[model].schema);
         }
     }
 }

@@ -119,9 +119,9 @@ module.exports = class Adapter {
   }
 
   getKnexTypeMapping () { return ["integer", "bigInteger", "text", "string", "float", "decimal", "boolean", "date",
-    "dateTime", "time", "binary", "enu", "json", "jsonb", "uuid"]; }
+    "dateTime", "time", "binary", "json", "jsonb", "uuid"]; }
 
-  async createTable (schemaKey, schema) {
+  _newTable (schemaKey, schema) {
     return this.knex.schema.createTable(schemaKey, (table) => {
       table.increments("id").primary();
       _.forEach(schema.properties, (value, key) => {
@@ -129,26 +129,19 @@ module.exports = class Adapter {
         if (!(this.getKnexTypeMapping().includes(value.type))) {
           throw new Error(`Incorrect data type ${value.type} of field ${key} in ${schemaKey}`);
         }
-        (schema.required.includes(key) ?
-          table[value.type](key).notNullable() :
-          table[value.type](key));
+        ( (Array.isArray(schema.required) && schema.required.includes(key))
+          ? table[value.type](key).notNullable()
+          : table[value.type](key));
       });
-    }).then(); //FIXME!!!
+    });
+  }
+
+  async createTable (schemaKey, schema) {
+    await this._newTable(schemaKey, schema).then();
   }
 
   getSQLForCreateTable (schemaKey, schema) {
-    return this.knex.schema.createTable(schemaKey, (table) => {
-      table.increments("id").primary();
-      _.forEach(schema.properties, (value, key) => {
-        if (key === "id") return;
-        if (!(this.getKnexTypeMapping().includes(value.type))) {
-          throw new Error(`Incorrect data type ${value.type} of field ${key} in ${schemaKey}`);
-        }
-        (schema.required.includes(key) ?
-          table[value.type](key).notNullable() :
-          table[value.type](key));
-      });
-    }).toString();
+    return this._newTable(schemaKey, schema).toString();
   }
 
   async shutdown() {
