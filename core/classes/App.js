@@ -14,7 +14,6 @@ module.exports = class App extends Koa {
     this._requireFolder("classes");
 
     this.db = new Adapter(config.get("db"));
-    this.router = new Router();
     this.logger = new winston.Logger({
       transports: [
         new winston.transports.Console({
@@ -29,11 +28,15 @@ module.exports = class App extends Koa {
     // lower-casing models
     this.models = _.mapKeys(models, (value, key) => key.toLowerCase());
 
+    this.apiRouter = new Router({ prefix: "/api/" });
+
     // going through the models
     // registering their schemas in database, and their API methods in router
     _.each(this.models, (model, key) => {
       _.each(model.api || {}, (handlers, route) => {
-        this.db.registerSchema(key, model.schema);
+        if (model.schema) {
+          this.db.registerSchema(key, model.schema);
+        }
 
         let method = "get";
         if (/^(get|post|put|delete)\s/i.test(route)) {
@@ -47,13 +50,20 @@ module.exports = class App extends Koa {
           : [handlers];
 
         handlersList.forEach(handler => {
-          this.router[method](route, handler);
+          this.apiRouter[method](route, handler);
         });
       });
     });
 
+    this.apiRouter.use("*", (ctx) => {
+      ctx.body = "not found";
+    });
+
+    this.pageRouter = new PageRouter();
+
     this.use(bodyParser());
-    this.use(this.router.routes());
+    this.use(this.apiRouter.routes());
+    this.use(this.pageRouter.routes());
   }
 
   _requireFolder(folder) {
