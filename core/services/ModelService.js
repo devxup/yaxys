@@ -7,15 +7,17 @@ const _createTableForSchema = async function (identity, jsonSchema) {
 };
 
 module.exports = {
-    getSQLForAllModels () {
-        for (let model in yaxys.models) {
-            yaxys.logger.info(_getSQLForSchema (model, yaxys.models[model].schema));
-        }
-    },
-
-    async createTableForAllModels () {
-      for (let model in yaxys.models) {
-           await _createTableForSchema (model, yaxys.models[model].schema);
-        }
+  getSQLForAllModels () {
+    let result = "";
+    for (let model in yaxys.models) {
+      result += _getSQLForSchema (model, yaxys.models[model].schema);
     }
+    return result;
+  },
+
+  async createTablesForAllModels () {
+    for (let model in yaxys.models) {
+      await _createTableForSchema (model, yaxys.models[model].schema);
+    }
+  }
 }

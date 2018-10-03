@@ -6,7 +6,7 @@ describe("Adapter", () => {
   let gAdapter;
 
   const tableName = "fake_item";
-  const dropQuery = (tableName) => `DROP TABLE IF EXISTS ${tableName}`;
+  const getDropQueryForTable = (tableName) => `DROP TABLE IF EXISTS ${tableName}`;
   const createQuery = `CREATE TABLE ${tableName} (
     "id" serial not null,
     "a1" integer,
@@ -18,7 +18,7 @@ describe("Adapter", () => {
   beforeAll(async () => {
     gAdapter = new Adapter(config.get("db"));
     await gAdapter.init();
-    await gAdapter.knex.raw(dropQuery(tableName));
+    await gAdapter.knex.raw(getDropQueryForTable(tableName));
     await gAdapter.knex.raw(createQuery);
 
     gAdapter.registerSchema("fake_item", {
@@ -267,7 +267,7 @@ describe("Adapter", () => {
                 type: "integer"
               }
             },
-          required: ["p1", "p2"]
+            required: ["p1", "p2"]
           }
         ],
         result: 'create table "testtable" ("id" serial primary key, "p1" varchar(255) not null, "p2" boolean not null, "p3" bigint, "p4" text, "p5" real, "p6" decimal(8, 2), "p7" date, "p8" timestamptz, "p9" time, "p10" bytea, "p11" json, "p12" jsonb, "p13" uuid, "p14" integer)'
@@ -418,7 +418,7 @@ describe("Adapter", () => {
 
     beforeAll ( async () => {
       await testCases.forEach(async (testCase) => {
-        await gAdapter.knex.raw(dropQuery(testCase.args[0]))
+        await gAdapter.knex.raw(getDropQueryForTable(testCase.args[0]))
       })
     });
 

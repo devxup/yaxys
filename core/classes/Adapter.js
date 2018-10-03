@@ -6,6 +6,9 @@ const DEFAULT_OPTIONS = {
   select: "*"
 };
 
+const POSTGRES_TYPES = ["integer", "bigInteger", "text", "string", "float", "decimal", "boolean", "date",
+  "dateTime", "time", "binary", "json", "jsonb", "uuid"];
+
 const SET_TRANSACTION_LEVEL = "SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;";
 
 module.exports = class Adapter {
@@ -118,20 +121,18 @@ module.exports = class Adapter {
     return trx ? query.transacting(trx) : query;
   }
 
-  getKnexTypeMapping () { return ["integer", "bigInteger", "text", "string", "float", "decimal", "boolean", "date",
-    "dateTime", "time", "binary", "json", "jsonb", "uuid"]; }
-
   _newTable (schemaKey, schema) {
     return this.knex.schema.createTable(schemaKey, (table) => {
       table.increments("id").primary();
       _.forEach(schema.properties, (value, key) => {
         if (key === "id") return;
-        if (!(this.getKnexTypeMapping().includes(value.type))) {
+        if (!(POSTGRES_TYPES.includes(value.type))) {
           throw new Error(`Incorrect data type ${value.type} of field ${key} in ${schemaKey}`);
         }
-        ( (Array.isArray(schema.required) && schema.required.includes(key))
-          ? table[value.type](key).notNullable()
-          : table[value.type](key));
+        const attribute = table[value.type](key);
+        if ((Array.isArray(schema.required)) && schema.required.includes(key)) {
+          attribute.notNullable();
+        }
       });
     });
   }
