@@ -30,6 +30,7 @@
     "koa-webpack-dev-middleware": "^2.0.2",
     "koa-webpack-hot-middleware": "^1.0.3",
     "lodash": "^4.17.11",
+    "materialize-css": "^1.0.0",
     "minimist": "^1.2.0",
     "node-sass": "^4.9.3",
     "pg": "^7.4.3",

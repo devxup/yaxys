@@ -1,14 +1,8 @@
-import React, { Component } from "react";
-
+import React, { Component, Fragment } from "react";
 import { withStyles } from '@material-ui/core/styles';
-
 import { Link } from 'react-router-dom';
-import Button from '@material-ui/core/Button';
-
-const drawerWidth = 240;
 
 import classNames from 'classnames';
-
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -24,49 +18,70 @@ import NotificationsIcon from '@material-ui/icons/Notifications'
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import ListSubheader from '@material-ui/core/ListSubheader';
 import DashboardIcon from '@material-ui/icons/Dashboard';
-import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+import SdCardIcon from '@material-ui/icons/SdCard';
 import PeopleIcon from '@material-ui/icons/People';
-import BarChartIcon from '@material-ui/icons/BarChart';
-import LayersIcon from '@material-ui/icons/Layers';
-import AssignmentIcon from '@material-ui/icons/Assignment';
+import PeopleOutlineIcon from '@material-ui/icons/PeopleOutline';
+import MeetingRoomIcon from '@material-ui/icons/MeetingRoom';
+import PictureInPictureIcon from '@material-ui/icons/PictureInPicture';
+import SettingsIcon from '@material-ui/icons/Settings';
 
-const mainListItems = (
-  <div>
-    <ListItem button>
-      <ListItemIcon>
-        <DashboardIcon />
-      </ListItemIcon>
-      <ListItemText primary="Dashboard" />
-    </ListItem>
-    <ListItem button>
-      <ListItemIcon>
-        <ShoppingCartIcon />
-      </ListItemIcon>
-      <ListItemText primary="Orders" />
-    </ListItem>
-    <ListItem button>
-      <ListItemIcon>
-        <PeopleIcon />
-      </ListItemIcon>
-      <ListItemText primary="Customers" />
-    </ListItem>
-    <ListItem button>
-      <ListItemIcon>
-        <BarChartIcon />
-      </ListItemIcon>
-      <ListItemText primary="Reports" />
-    </ListItem>
-    <ListItem button>
-      <ListItemIcon>
-        <LayersIcon />
-      </ListItemIcon>
-      <ListItemText primary="Integrations" />
-    </ListItem>
-  </div>
-);
+const drawerWidth = 240;
+const lists = {
+  primary: [
+    {
+      icon: DashboardIcon,
+      title: "Dashboard",
+      url: "/"
+    },
+    {
+      icon: SdCardIcon,
+      title: "Access points",
+      url: "/access-points"
+    },
+    {
+      icon: MeetingRoomIcon,
+      title: "Doors",
+      url: "/doors"
+    },
+    {
+      icon: PictureInPictureIcon,
+      title: "Zones",
+      url: "/zones"
+    },
+    {
+      icon: PeopleOutlineIcon,
+      title: "Users",
+      url: "/users"
+    },
+  ],
+  secondary : [
+    {
+      icon: PeopleIcon,
+      title: "Operators",
+      url: "/operators"
+    },
+    {
+      icon: SettingsIcon,
+      title: "Settings",
+      url: "/settings"
+    },
+  ]
+};
 
+const getList = key => <List>
+  {
+    lists[key].map(
+      item =>
+      <Link to={ item.url }>
+        <ListItem button>
+          <ListItemIcon>{ React.createElement(item.icon) }</ListItemIcon>
+          <ListItemText primary={ item.title } />
+        </ListItem>
+      </Link>
+    )
+  }
+</List>;
 
 const styles = theme => ({
   root: {
@@ -158,7 +173,7 @@ export default class Bar extends Component {
   render() {
     const { classes } = this.props;
 
-    return <React.Fragment>
+    return <div className={classes.root}>
       <AppBar
         position="absolute"
         className={classNames(classes.appBar, this.state.open && classes.appBarShift)}
@@ -182,7 +197,7 @@ export default class Bar extends Component {
             noWrap
             className={classes.title}
           >
-            Dashboard
+            Yaxys dashboard
           </Typography>
           <IconButton color="inherit">
             <Badge badgeContent={4} color="secondary">
@@ -204,14 +219,15 @@ export default class Bar extends Component {
           </IconButton>
         </div>
         <Divider />
-        <List>{ mainListItems }</List>
+        { getList("primary") }
         <Divider />
-        <List>{ mainListItems }</List>
+        { getList("secondary") }
       </Drawer>
       <main className={classes.content}>
-        HELLO WORLD
+        <div className={classes.appBarSpacer} />
+        { this.props.children }
       </main>
-    </React.Fragment>;
+    </div>;
   }
 }
 

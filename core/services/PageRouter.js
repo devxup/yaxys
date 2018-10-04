@@ -11,7 +11,6 @@ module.exports = class PageRouter extends Router {
 
   async _setStaticRouting() {
     if (config.util.getEnv("NODE_ENV") === "development" && !Number(process.env.SERVER_ONLY)) {
-console.log(111);
       const webpack = require("webpack");
       const webpackDevMiddleware = require("koa-webpack-dev-middleware");
       const webpackConfig = require("../../webpack.dev.js");
