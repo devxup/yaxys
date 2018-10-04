@@ -10,14 +10,18 @@ module.exports = {
   getSQLForAllModels () {
     let result = "";
     for (let model in yaxys.models) {
-      result += _getSQLForSchema (model, yaxys.models[model].schema);
+      if (yaxys.models[model].schema) {
+        result += _getSQLForSchema (model, yaxys.models[model].schema);
+      }
     }
     return result;
   },
 
   async createTablesForAllModels () {
     for (let model in yaxys.models) {
-      await _createTableForSchema (model, yaxys.models[model].schema);
+      if (yaxys.models[model].schema) {
+        await _createTableForSchema(model, yaxys.models[model].schema);
+      }
     }
   }
 }
