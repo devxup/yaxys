@@ -6,6 +6,9 @@ const DEFAULT_OPTIONS = {
   select: "*"
 };
 
+const POSTGRES_TYPES = ["integer", "bigInteger", "text", "string", "float", "decimal", "boolean", "date",
+  "dateTime", "time", "binary", "json", "jsonb", "uuid"];
+
 const SET_TRANSACTION_LEVEL = "SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;";
 
 module.exports = class Adapter {
@@ -118,7 +121,32 @@ module.exports = class Adapter {
     return trx ? query.transacting(trx) : query;
   }
 
+  _newTable (schemaKey, schema) {
+    return this.knex.schema.createTable(schemaKey, (table) => {
+      table.increments("id").primary();
+      _.forEach(schema.properties, (value, key) => {
+        if (key === "id") return;
+        if (!(POSTGRES_TYPES.includes(value.type))) {
+          throw new Error(`Incorrect data type ${value.type} of field ${key} in ${schemaKey}`);
+        }
+        const attribute = table[value.type](key);
+        if (Array.isArray(schema.required) && schema.required.includes(key)) {
+          attribute.notNullable();
+        }
+      });
+    });
+  }
+
+  async createTable (schemaKey, schema) {
+    await this._newTable(schemaKey, schema).then();
+  }
+
+  getSQLForCreateTable (schemaKey, schema) {
+    return this._newTable(schemaKey, schema).toString();
+  }
+
   async shutdown() {
     await this.knex.destroy();
   }
+
 };

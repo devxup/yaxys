@@ -9,8 +9,7 @@ module.exports = {
         format: "email"
       },
       passwordHash: {
-        type: "string",
-        format: "email"
+        type: "string"
       }
     },
     required: ["email"]
