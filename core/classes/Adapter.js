@@ -130,7 +130,7 @@ module.exports = class Adapter {
           throw new Error(`Incorrect data type ${value.type} of field ${key} in ${schemaKey}`);
         }
         const attribute = table[value.type](key);
-        if ((Array.isArray(schema.required)) && schema.required.includes(key)) {
+        if (Array.isArray(schema.required) && schema.required.includes(key)) {
           attribute.notNullable();
         }
       });
