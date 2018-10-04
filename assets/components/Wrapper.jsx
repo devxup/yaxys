@@ -72,8 +72,8 @@ const lists = {
 const getList = key => <List>
   {
     lists[key].map(
-      item =>
-      <Link to={ item.url }>
+      (item, index) =>
+      <Link to={ item.url } key={ index }>
         <ListItem button>
           <ListItemIcon>{ React.createElement(item.icon) }</ListItemIcon>
           <ListItemText primary={ item.title } />
@@ -159,7 +159,7 @@ const styles = theme => ({
 @withStyles(styles)
 export default class Bar extends Component {
   state = {
-    open: true,
+    open: false,
   };
 
   handleDrawerOpen = () => {

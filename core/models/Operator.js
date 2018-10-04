@@ -17,16 +17,16 @@ module.exports = {
   },
   
   api: {
-    "/api/operator/:id": [
+    "operator/:id": [
       RestService.findOne("operator")
     ],
-    "/api/operator": [
+    "operator": [
       RestService.find("operator")
     ],
-    "put /api/operator/:id": [
+    "put operator/:id": [
       RestService.update("operator")
     ],
-    "post /api/operator": [
+    "post operator": [
       RestService.create("operator")
     ]
   }
