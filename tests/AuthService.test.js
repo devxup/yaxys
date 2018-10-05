@@ -3,10 +3,11 @@ const bcrypt = require("bcrypt");
 
 describe ("AuthService", () => {
   it ("Password encrypt and check", () =>{
-    let passwords = ["rrr", "fdgfdg", 1234];
+    let passwords = ["rrr", "fdgfdg", 1234, {a: "b"}];
     for (let password of passwords) {
-      let hash = AuthService.encryptPassword(password);
-      expect (AuthService.checkPassword(password, hash)).toBeTruthy();
+      (typeof(password) === "string")
+      ? expect (AuthService.checkPassword(password, AuthService.encryptPassword(password))).toBeTruthy()
+      : expect ( () => {AuthService.encryptPassword(password)}).toThrow();
     }
   })
 })

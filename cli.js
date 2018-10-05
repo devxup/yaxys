@@ -19,11 +19,11 @@ yaxys.init()
           yaxys.logger.error("Email is required!");
           return;
         }
-        await yaxys.db.insert("operator", { email: argv.email, passwordHash: AuthService.encryptPassword(argv.pwd) });
+        await yaxys.db.insert("operator", { email: argv.email, passwordHash: AuthService.encryptPassword(String(argv.pwd)) });
         yaxys.logger.info("done");
       },
       encrypt_password() {
-        console.log(AuthService.encryptPassword(argv._[1]));
+        console.log(AuthService.encryptPassword(String(argv._[1])));
       }
     };
 
