@@ -12,10 +12,18 @@ yaxys.init()
         yaxys.logger.info("done");
       },
       get_sql() {
-        yaxys.logger.info(ModelService.getSQLForAllModels());
+        console.log(ModelService.getSQLForAllModels());
       },
-      create_operator() {
-        yaxys.logger.error("Not implemented yet");
+      async create_operator() {
+        if (!argv.email) {
+          yaxys.logger.error("Email is required!");
+          return;
+        }
+        await yaxys.db.insert("operator", { email: argv.email, passwordHash: AuthService.encryptPassword(argv.pwd) });
+        yaxys.logger.info("done");
+      },
+      encrypt_password() {
+        console.log(AuthService.encryptPassword(argv._[1]));
       }
     };
 

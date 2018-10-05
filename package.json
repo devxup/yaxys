@@ -6,6 +6,7 @@
   "author": "alevkon <alevkon@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "bcrypt": "^3.0.1",
     "bluebird": "^3.5.2",
     "config": "^2.0.1",
     "knex": "^0.15.2",
@@ -26,7 +27,8 @@
     "test:inspect": "NODE_ENV=test node --inspect-brk node_modules/.bin/jest --runInBand",
     "init_db": "NODE_ENV=development node cli.js init_db",
     "get_sql": "NODE_ENV=development node cli.js get_sql",
-    "create_operator": "NODE_ENV=development node cli.js create_operator"
+    "create_operator": "NODE_ENV=development node cli.js create_operator",
+    "encrypt_password": "NODE_ENV=development node cli.js encrypt_password"
   },
   "devDependencies": {
     "jest": "^23.6.0"
