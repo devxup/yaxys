@@ -19,6 +19,10 @@ yaxys.init()
           yaxys.logger.error("Email is required!");
           return;
         }
+        if (!argv.pwd) {
+          yaxys.logger.error("Password is required!");
+          return;
+        }
         await yaxys.db.insert("operator", { email: argv.email, passwordHash: AuthService.encryptPassword(String(argv.pwd)) });
         yaxys.logger.info("done");
       },
