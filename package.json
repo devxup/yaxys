@@ -15,6 +15,7 @@
     "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
+    "bcrypt": "^3.0.1",
     "bluebird": "^3.5.2",
     "classnames": "^2.2.6",
     "clean-webpack-plugin": "^0.1.19",
@@ -65,7 +66,8 @@
     "test:inspect": "NODE_ENV=test node --inspect-brk node_modules/.bin/jest --runInBand",
     "init_db": "NODE_ENV=development node cli.js init_db",
     "get_sql": "NODE_ENV=development node cli.js get_sql",
-    "create_operator": "NODE_ENV=development node cli.js create_operator"
+    "create_operator": "NODE_ENV=development node cli.js create_operator",
+    "encrypt_password": "NODE_ENV=development node cli.js encrypt_password"
   },
   "jest": {
     "verbose": true,

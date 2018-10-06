@@ -13,5 +13,6 @@
     "level": "info",
     "colorize": true
   },
-  "timezone": "Europe/Brussels"
+  "timezone": "Europe/Brussels",
+  "bcryptSaltRounds": 10
 }
