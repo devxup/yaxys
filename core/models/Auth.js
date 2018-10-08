@@ -3,11 +3,11 @@ module.exports = {
     "post auth": [
       async (ctx) => {
         try {
-          let operator = await AuthService.getOperatorByCredentials(ctx.request.body.email, ctx.request.body.password);
+          const operator = await AuthService.getOperatorByCredentials(ctx.request.body.email, ctx.request.body.password);
           ctx.cookies.set("jwt", AuthService.generateToken(operator));
-          ctx.response.status=200;
+          ctx.response.body="";
         } catch (err) {
-          ctx.throw(403, "Wrong email or password");
+          ctx.throw(401, err.message);
         }
       }
     ],
