@@ -14,5 +14,9 @@
     "colorize": true
   },
   "timezone": "Europe/Brussels",
-  "bcryptSaltRounds": 10
+  "bcryptSaltRounds": 10,
+  "jwt": {
+    "secret": "some_unique_string",
+    "lifetime": 86400
+  }
 }
