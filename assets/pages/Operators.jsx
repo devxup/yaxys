@@ -1,15 +1,9 @@
 import React, { Component, Fragment } from "react";
-import { Link } from "react-router-dom";
 import Wrapper from "../components/Wrapper.jsx";
 import Loader from "../components/Loader.jsx";
 import { connect } from "react-redux";
 
 import Paper from '@material-ui/core/Paper';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
 
 import AddIcon from '@material-ui/icons/Add';
 import Button from '@material-ui/core/Button';
@@ -22,7 +16,6 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
 import YaxysClue, { queries } from "../services/YaxysClue";
-// import MuiTable from "mui-table";
 
 import ModelTable from '../components/ModelTable.jsx';
 
