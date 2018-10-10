@@ -5,6 +5,7 @@ module.exports = {
         type: "integer"
       },
       email: {
+        title: "E-mail",
         type: "string",
         format: "email"
       },

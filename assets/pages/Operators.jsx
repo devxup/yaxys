@@ -22,6 +22,10 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
 import YaxysClue, { queries } from "../services/YaxysClue";
+// import MuiTable from "mui-table";
+
+import ModelTable from '../components/ModelTable.jsx';
+
 const operatorsClue = props => ({ identity: "operator", query: queries.FIND });
 const operatorsSelector = YaxysClue.selectors.byClue(operatorsClue);
 
@@ -51,36 +55,23 @@ export default class Operators extends Component {
   };
 
   render() {
+    const { constants, operators } = this.props;
     return <Wrapper>
+      <Button variant="fab" color="secondary" onClick={ this.onAdd } style={{ float:"right" }} title="Create operator">
+        <AddIcon />
+      </Button>
       <h1 style={{ marginTop: 0 }}>Operators</h1>
-      <Loader item={ this.props.operators }>
+      <Loader item={ operators }>
         <Paper>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>#</TableCell>
-                <TableCell>Name</TableCell>
-                <TableCell>E-Mail</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {
-                this.props.operators &&
-                this.props.operators.data &&
-                this.props.operators.data.map((operator, index) => <TableRow key={ index }>
-                  <TableCell numeric><Link to={ `/operators/${operator.id}` }>{ operator.id }</Link></TableCell>
-                  <TableCell><Link to={ `/operators/${operator.id}` }>{ operator.name || operator.email.replace(/^[^\@]*@/, "") }</Link></TableCell>
-                  <TableCell><Link to={ `/operators/${operator.id}` }>{ operator.email }</Link></TableCell>
-                </TableRow>)
-              }
-            </TableBody>
-          </Table>
+          <ModelTable
+            schema={ constants.schemas.operator }
+            data={ operators && operators.data }
+            url={ operator => `/operators/${operator.id}` }
+            columns={ ["id", "email"] }
+          />
         </Paper>
       </Loader>
       <br />
-      <Button variant="fab" color="secondary" onClick={ this.onAdd }>
-        <AddIcon />
-      </Button>
       <Dialog
         open={this.state.addOpen}
         onClose={this.onAddClose}
