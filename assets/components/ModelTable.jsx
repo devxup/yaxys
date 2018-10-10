@@ -80,7 +80,7 @@ export default class ModelTable extends Component {
 };
 
 ModelTable.propTypes = {
-  schema: PropTypes.object,
+  schema: PropTypes.object.isRequired,
   data: PropTypes.arrayOf(PropTypes.object).isRequired,
   url: PropTypes.oneOfType([ PropTypes.string, PropTypes.func ]),
   columns: PropTypes.arrayOf(PropTypes.oneOfType([ PropTypes.string, PropTypes.object ]))

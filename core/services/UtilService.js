@@ -9,7 +9,6 @@ module.exports = {
       if (model.schema) {
         memo[key] = model.schema;
       }
-console.log(111, key, memo);
       return memo;
     }, {});
   }

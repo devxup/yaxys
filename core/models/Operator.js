@@ -10,10 +10,12 @@ module.exports = {
         format: "email"
       },
       passwordHash: {
-        type: "string"
+        title: "Password",
+        type: "string",
+        password: true
       }
     },
-    required: ["email"]
+    required: ["email", "passwordHash"]
   },
   
   api: {
