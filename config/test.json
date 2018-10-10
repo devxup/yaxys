@@ -6,5 +6,9 @@
     "database": "yaxys_test",
     "user": "",
     "password": ""
+  },
+  "jwt": {
+    "secret": "test_unique_string",
+    "lifetime": 1
   }
 }
