@@ -37,11 +37,6 @@ describe ("AuthService", () => {
 
     beforeAll( () => {
       yaxysBuffer = global.yaxys;
-      global.yaxys = {
-        db: {
-          findOne: () => testCase.dbResponse
-        }
-      };
     });
 
     const testCases = [
@@ -83,6 +78,11 @@ describe ("AuthService", () => {
     ];
 
     testCases.forEach(testCase => it(testCase.title, async () => {
+      global.yaxys = {
+        db: {
+          findOne: () => testCase.dbResponse
+        }
+      };
       if (testCase.error) {
         expect(AuthService.getOperatorByCredentials(...testCase.args)).rejects.toThrow(testCase.error);
       } else {
@@ -93,6 +93,5 @@ describe ("AuthService", () => {
     afterAll( () => {
       global.yaxys = yaxysBuffer;
     });
-
   });
 });
