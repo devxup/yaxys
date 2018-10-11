@@ -29,6 +29,7 @@ module.exports = {
       RestService.update("operator")
     ],
     "post operator": [
+      
       RestService.create("operator")
     ]
   }

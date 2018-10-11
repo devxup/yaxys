@@ -1,15 +1,7 @@
 import React, { Component, Fragment } from "react";
-import { Link } from "react-router-dom";
 import Wrapper from "../components/Wrapper.jsx";
 import Loader from "../components/Loader.jsx";
 import { connect } from "react-redux";
-
-import Paper from '@material-ui/core/Paper';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
 
 import YaxysClue, { queries } from "../services/YaxysClue";
 const operatorClue = props => ({ identity: "operator", query: queries.FIND_BY_ID, id: props.match.params.id });

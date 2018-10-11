@@ -1,17 +1,17 @@
 import React, { Component, Fragment } from "react";
-import Wrapper from "../components/Wrapper.jsx";
-import Loader from "../components/Loader.jsx";
 import { connect } from "react-redux";
 
-import Paper from '@material-ui/core/Paper';
-
-import AddIcon from '@material-ui/icons/Add';
-import Button from '@material-ui/core/Button';
+import Paper from "@material-ui/core/Paper";
+import AddIcon from "@material-ui/icons/Add";
+import Button from "@material-ui/core/Button";
 
 import YaxysClue, { queries } from "../services/YaxysClue";
 
-import ModelTable from '../components/ModelTable.jsx';
-import ModelDialog from '../components/ModelDialog.jsx';
+import Loader from "../components/Loader.jsx";
+import Wrapper from "../components/Wrapper.jsx";
+import Created from "../components/Created.jsx";
+import ModelTable from "../components/ModelTable.jsx";
+import ModelDialog from "../components/ModelDialog.jsx";
 
 const operatorsClue = props => ({ identity: "operator", query: queries.FIND });
 const operatorsSelector = YaxysClue.selectors.byClue(operatorsClue);
@@ -51,7 +51,12 @@ export default class Operators extends Component {
 
   onAddReady = (values) => {
     this.setState({ addOpen: false });
-    alert(JSON.stringify(values));
+
+    this.props.createOperator({
+      identity: "operator",
+      query: queries.CREATE,
+      data: values
+    }, { marker: CREATED_OPERATORS_MARKER });
   };
 
   render() {
@@ -61,6 +66,19 @@ export default class Operators extends Component {
         <AddIcon />
       </Button>
       <h1 style={{ marginTop: 0 }}>Operators</h1>
+      { JSON.stringify(this.props.createdOperators) }
+      <Created
+        items2={
+          [
+            {"originalRequestId":2,"lastRequestId":2,"pending":false,"updating":false,"error":false,"success":true,"data":{"id":10,"email":"bb@aa","passwordHash":"1"},"createdByUpdate":false,"updates":{},"meta":{"clue":{"query":"create","identity":"operator","id":null,"limit":null,"skip":0,"data":{"email":"bb@aa","passwordHash":"1"}},"fetchedAt":"2018-10-10T14:50:27.759Z","responseMeta":{"date":"Wed, 10 Oct 2018 14:50:27 GMT","connection":"keep-alive","content-length":"44","content-type":"application/json; charset=utf-8"}}},
+            {"originalRequestId":2,"lastRequestId":2,"pending":true,"updating":false,"error":false,"success":false,"data":{"id":10,"email":"bb@aa","passwordHash":"1"},"createdByUpdate":false,"updates":{},"meta":{"clue":{"query":"create","identity":"operator","id":null,"limit":null,"skip":0,"data":{"email":"bb@aa","passwordHash":"1"}},"fetchedAt":"2018-10-10T14:50:27.759Z","responseMeta":{"date":"Wed, 10 Oct 2018 14:50:27 GMT","connection":"keep-alive","content-length":"44","content-type":"application/json; charset=utf-8"}}},
+            {"originalRequestId":2,"lastRequestId":2,"pending":false,"updating":false,"error":true,"success":false,"data":{"id":10,"email":"bb@aa","passwordHash":"1"},"createdByUpdate":false,"updates":{},"meta":{"clue":{"query":"create","identity":"operator","id":null,"limit":null,"skip":0,"data":{"email":"bb@aa","passwordHash":"1"}},"fetchedAt":"2018-10-10T14:50:27.759Z","responseMeta":{"date":"Wed, 10 Oct 2018 14:50:27 GMT","connection":"keep-alive","content-length":"44","content-type":"application/json; charset=utf-8"}}}
+          ]
+        }
+        items={ this.props.createdOperators }
+        content={ operator => operator.email }
+        url={ operator => `/operators/${operator.id}` }
+      />
       <Loader item={ operators }>
         <Paper>
           <ModelTable

@@ -1,7 +1,8 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
-import TextField from '@material-ui/core/TextField';
 import { omit, each } from "lodash";
+import TextField from "@material-ui/core/TextField";
+
 const Ajv = require("ajv");
 const ajv = new Ajv({ allErrors: true });
 

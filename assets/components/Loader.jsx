@@ -1,8 +1,8 @@
 import React, { Component, Fragment } from "react";
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import './Loader.scss';
+import CircularProgress from "@material-ui/core/CircularProgress";
+import Card from "@material-ui/core/Card";
+import CardContent from "@material-ui/core/CardContent";
+import "./Loader.scss";
 
 export default (props) => {
   if (!props.item || props.item.pending) {

@@ -1,12 +1,12 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
-import ModelForm from './ModelForm.jsx';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Button from '@material-ui/core/Button';
+import ModelForm from "./ModelForm.jsx";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import Button from "@material-ui/core/Button";
 
 export default class ModelDialog extends Component {
   constructor(props) {
@@ -82,7 +82,7 @@ export default class ModelDialog extends Component {
   }
 };
 
-ModelForm.propTypes = {
+ModelDialog.propTypes = {
   open: PropTypes.bool,
   title: PropTypes.string,
   schema: PropTypes.object.isRequired,

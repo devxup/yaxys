@@ -6,15 +6,6 @@ module.exports = {
   entry: "./assets/app.jsx",
   plugins: [
     new CleanWebpackPlugin(["public"]),
-    new CopyWebpackPlugin([
-      {
-        from: "assets/static",
-        to: "",
-        ignore: [
-          ".DS_Store"
-        ]
-      }
-    ])
   ],
   output: {
     filename: "bundle.js",
