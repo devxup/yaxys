@@ -1,0 +1,6 @@
+{
+  "jwt": {
+    "secret": "test_unique_string",
+    "lifetime": 1
+  }
+}

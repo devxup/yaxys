@@ -23,7 +23,12 @@ yaxys.init()
           yaxys.logger.error("Password is required!");
           return;
         }
-        await yaxys.db.insert("operator", { email: argv.email, passwordHash: AuthService.encryptPassword(String(argv.pwd)) });
+        await yaxys.db.insert("operator", {
+          email: argv.email,
+          passwordHash: AuthService.encryptPassword(String(argv.pwd)),
+          rights: {},
+          isAdministrator: true
+        });
         yaxys.logger.info("done");
       },
       encrypt_password() {

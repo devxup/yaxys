@@ -94,4 +94,68 @@ describe ("AuthService", () => {
       global.yaxys = yaxysBuffer;
     });
   });
+
+  describe("Check rights", () => {
+    const testCases = [
+      {
+        title: "Operator with admin rights",
+        operator: {
+          id: 111,
+          email: "test@test.test",
+          passwordHash: "someHash",
+          rights: {},
+          isAdministrator: true
+        },
+        modelKey: "someModel",
+        right: "anyRight",
+        expectedResult: true
+      },
+      {
+        title: "Operator with needed rights",
+        operator: {
+          id: 111,
+          email: "test@test.test",
+          passwordHash: "someHash",
+          rights: {
+            "somemodel": ["read", "update", "neededright"]
+          }
+        },
+        modelKey: "someModel", //should be lowercase normally, but we are testing if the function still works
+        right: "neededRight",
+        expectedResult: true
+      },
+      {
+        title: "Operator without needed rights",
+        operator: {
+          id: 111,
+          email: "test@test.test",
+          passwordHash: "someHash",
+          rights: {
+            "somemodel": ["read", "update"]
+          }
+        },
+        modelKey: "someModel",
+        right: "neededRight",
+        expectedResult: false
+      },
+      {
+        title: "Operator without rights for this model",
+        operator: {
+          id: 111,
+          email: "test@test.test",
+          passwordHash: "someHash",
+          rights: {
+            "anothermodel": ["read", "update"]
+          }
+        },
+        modelKey: "someModel",
+        right: "read",
+        expectedResult: false
+      }
+    ];
+
+    testCases.forEach(testCase => it(testCase.title, () => {
+      expect(AuthService.checkRight(testCase.operator, testCase.modelKey, testCase.right)).toBe(testCase.expectedResult);
+    }));
+  });
 });

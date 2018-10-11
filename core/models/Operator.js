@@ -13,9 +13,15 @@ module.exports = {
         title: "Password",
         type: "string",
         password: true
+      },
+      rights: {
+        type: "json"
+      },
+      isAdministrator: {
+        type: "boolean"
       }
     },
-    required: ["email", "passwordHash"]
+    required: ["email", "passwordHash", "rights"]
   },
   
   api: {

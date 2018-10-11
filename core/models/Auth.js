@@ -13,6 +13,7 @@ module.exports = {
     ],
     "auth/me": [
       PolicyService.checkAndInjectOperator,
+      PolicyService.hasRight("auth", "read"),
       (ctx) => {
         ctx.response.body = ctx.operator;
       }
