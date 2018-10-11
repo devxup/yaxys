@@ -23,5 +23,19 @@ module.exports = {
         await _createTableForSchema(model, yaxys.models[model].schema);
       }
     }
+  },
+
+  removePasswordProperties(data, schema) {
+    _.each(schema.properties, (property, propertyKey) => {
+      if (!property.password) { return; }
+      delete data[propertyKey];
+    });
+  },
+
+  encryptPasswordProperties(data, schema) {
+    _.each(schema.properties, (property, propertyKey) => {
+      if (!property.password || !data[propertyKey]) { return; }
+      data[propertyKey] = AuthService.encryptPassword(data[propertyKey]);
+    });
   }
-}
+};
