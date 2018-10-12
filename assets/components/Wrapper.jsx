@@ -158,15 +158,28 @@ const styles = theme => ({
 });
 @withStyles(styles)
 export default class Bar extends Component {
-  state = {
-    open: false,
-  };
+  constructor(props) {
+    super(props);
+
+    if (localStorage.getItem("isDrawerClosed")) {
+      this.state = {
+        open: localStorage.getItem("isDrawerClosed") === "true",
+      };
+    } else {
+      localStorage.setItem("isDrawerClosed", "true");
+      this.state = {
+        open: true,
+      };
+    }
+  }
 
   handleDrawerOpen = () => {
+    localStorage.setItem("isDrawerClosed", "true");
     this.setState({ open: true });
   };
 
   handleDrawerClose = () => {
+    localStorage.setItem("isDrawerClosed", "false");
     this.setState({ open: false });
   };
 
