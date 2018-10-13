@@ -9,14 +9,17 @@ import { BrowserRouter } from "react-router-dom";
 
 import routes from "./routes.jsx";
 import YaxysClue from "./services/YaxysClue";
+import { meReducer, meSaga } from "./services/Me";
 
 const sagaMiddleware = createSagaMiddleware();
 const middleware = [sagaMiddleware];
 
 const store = createStore(combineReducers({
-  "YaxysClue": YaxysClue.reducer
+  YaxysClue: YaxysClue.reducer,
+  Me: meReducer
 }), applyMiddleware(sagaMiddleware));
 sagaMiddleware.run(YaxysClue.saga);
+sagaMiddleware.run(meSaga);
 
 import './app.scss';
 

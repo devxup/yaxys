@@ -5,7 +5,7 @@ export default ReduxClue({
   apiPrefix: "api",
   apiPluralize: false,
   models: [
-    "operator"
+    "operator", "auth"
   ]
 });
 

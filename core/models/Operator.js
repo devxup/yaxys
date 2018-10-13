@@ -33,6 +33,7 @@ module.exports = {
       RestService.update("operator")
     ],
     "post operator": [
+      PolicyService.debugRandomWaiter,
       PolicyService.encodePasswords("operator"),
       PolicyService.removePasswordsFromResponse("operator"),
       RestService.create("operator")

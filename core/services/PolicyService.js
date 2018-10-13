@@ -8,7 +8,7 @@ module.exports = {
     }
   },
 
-  async debugRandomWaiterProperty(ctx, next) {
+  async debugRandomWaiter(ctx, next) {
     try {
       await new Promise((resolve, reject) => {
         setTimeout(() => {

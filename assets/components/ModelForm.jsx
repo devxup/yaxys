@@ -109,6 +109,7 @@ export default class ModelForm extends Component {
         if (this.props.onEnter) {
           this.props.onEnter()
         }
+        break;
     }
   };
 

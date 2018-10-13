@@ -66,15 +66,7 @@ export default class Operators extends Component {
         <AddIcon />
       </Button>
       <h1 style={{ marginTop: 0 }}>Operators</h1>
-      { JSON.stringify(this.props.createdOperators) }
       <Created
-        items2={
-          [
-            {"originalRequestId":2,"lastRequestId":2,"pending":false,"updating":false,"error":false,"success":true,"data":{"id":10,"email":"bb@aa","passwordHash":"1"},"createdByUpdate":false,"updates":{},"meta":{"clue":{"query":"create","identity":"operator","id":null,"limit":null,"skip":0,"data":{"email":"bb@aa","passwordHash":"1"}},"fetchedAt":"2018-10-10T14:50:27.759Z","responseMeta":{"date":"Wed, 10 Oct 2018 14:50:27 GMT","connection":"keep-alive","content-length":"44","content-type":"application/json; charset=utf-8"}}},
-            {"originalRequestId":2,"lastRequestId":2,"pending":true,"updating":false,"error":false,"success":false,"data":{"id":10,"email":"bb@aa","passwordHash":"1"},"createdByUpdate":false,"updates":{},"meta":{"clue":{"query":"create","identity":"operator","id":null,"limit":null,"skip":0,"data":{"email":"bb@aa","passwordHash":"1"}},"fetchedAt":"2018-10-10T14:50:27.759Z","responseMeta":{"date":"Wed, 10 Oct 2018 14:50:27 GMT","connection":"keep-alive","content-length":"44","content-type":"application/json; charset=utf-8"}}},
-            {"originalRequestId":2,"lastRequestId":2,"pending":false,"updating":false,"error":true,"success":false,"data":{"id":10,"email":"bb@aa","passwordHash":"1"},"createdByUpdate":false,"updates":{},"meta":{"clue":{"query":"create","identity":"operator","id":null,"limit":null,"skip":0,"data":{"email":"bb@aa","passwordHash":"1"}},"fetchedAt":"2018-10-10T14:50:27.759Z","responseMeta":{"date":"Wed, 10 Oct 2018 14:50:27 GMT","connection":"keep-alive","content-length":"44","content-type":"application/json; charset=utf-8"}}}
-          ]
-        }
         items={ this.props.createdOperators }
         content={ operator => operator.email }
         url={ operator => `/operators/${operator.id}` }

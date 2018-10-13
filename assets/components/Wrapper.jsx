@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from "react";
+import { connect } from "react-redux";
 import { withStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
 
@@ -25,6 +26,11 @@ import PeopleOutlineIcon from "@material-ui/icons/PeopleOutline";
 import MeetingRoomIcon from "@material-ui/icons/MeetingRoom";
 import PictureInPictureIcon from "@material-ui/icons/PictureInPicture";
 import SettingsIcon from "@material-ui/icons/Settings";
+import Avatar from '@material-ui/core/Avatar';
+import PersonIcon from '@material-ui/icons/Person';
+
+import { meSelector } from "../services/Me";
+
 
 const drawerWidth = 240;
 const lists = {
@@ -155,8 +161,31 @@ const styles = theme => ({
   tableContainer: {
     height: 320,
   },
+  avatar: {
+    margin: 10,
+  },
+  authLogin: {
+    cursor: "pointer",
+  },
+  authLoginSpan: {
+    float: "right",
+    lineHeight:"66px",
+    marginLeft:10,
+    fontSize: 16,
+    fontWeight:600
+  },
+  authMe: {
+    color: "white",
+    fontWeight: 400,
+    fontSize: 16
+  }
 });
 @withStyles(styles)
+@connect(
+  (state, props) => ({
+    me: meSelector(state)
+  })
+)
 export default class Bar extends Component {
   state = {
     open: false,
@@ -169,6 +198,21 @@ export default class Bar extends Component {
   handleDrawerClose = () => {
     this.setState({ open: false });
   };
+
+  renderAuth() {
+    const { classes } = this.props;
+    if (this.props.me) {
+      return <Link to="/login" className={ classes.authMe }>
+        { this.props.me.email }
+      </Link>;
+    }
+    return <div className={ classes.authLogin }>
+      <span className={ classes.authLoginSpan }>Log in</span>
+      <Avatar className={ classes.avatar }>
+        <PersonIcon />
+      </Avatar>
+    </div>
+  }
 
   render() {
     const { classes } = this.props;
@@ -199,11 +243,9 @@ export default class Bar extends Component {
           >
             Yaxys dashboard
           </Typography>
-          <IconButton color="inherit">
-            <Badge badgeContent={4} color="secondary">
-              <NotificationsIcon />
-            </Badge>
-          </IconButton>
+          {
+            this.renderAuth()
+          }
         </Toolbar>
       </AppBar>
       <Drawer
