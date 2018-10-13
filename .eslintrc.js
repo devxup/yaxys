@@ -1,0 +1,76 @@
+module.exports = {
+  "env": {
+    "browser": true,
+    "es6": true,
+    "node": true,
+    "jest/globals": true,
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:jest/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+  ],
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "experimentalObjectRestSpread": true,
+      "jsx": true
+    },
+    "sourceType": "module"
+  },
+  "plugins": [
+    "react",
+    "jest"
+  ],
+  "rules": {
+    "import/no-unresolved": 1,
+    "eol-last": [2, "always"],
+    "no-console": 1,
+    "no-debugger": 1,
+    "no-unused-vars": [1, { ignoreRestSiblings: true }],
+    "linebreak-style": ["error", "unix"],
+    "react/display-name": 1,
+    "react/forbid-prop-types": [1, { forbid: ["any"] }],
+    "react/jsx-boolean-value": 0,
+    "react/jsx-closing-bracket-location": 0,
+    "react/jsx-indent-props": 0,
+    "react/jsx-key": 1,
+    "react/jsx-max-props-per-line": 0,
+    "react/jsx-no-bind": [1, { allowArrowFunctions: true }],
+    "react/jsx-no-duplicate-props": 1,
+    "react/jsx-no-literals": 0,
+    "react/jsx-no-undef": 1,
+    "react/jsx-pascal-case": 1,
+    "react/jsx-sort-prop-types": 0,
+    "react/jsx-sort-props": 0,
+    "react/jsx-uses-react": 1,
+    "react/jsx-uses-vars": 1,
+    "react/jsx-wrap-multilines": [1, { arrow: false, declaration: false }],
+    "react/no-danger": 1,
+    "react/no-did-mount-set-state": 1,
+    "react/no-did-update-set-state": 1,
+    "react/no-direct-mutation-state": 1,
+    "react/no-multi-comp": 1,
+    "react/no-set-state": 0,
+    "react/no-unknown-property": 1,
+    "react/prefer-es6-class": 1,
+    "react/prop-types": 1,
+    "react/react-in-jsx-scope": 1,
+    "react/self-closing-comp": 1,
+    "react/sort-comp": 1,
+    "jest/no-focused-tests": 1,
+    "jest/no-identical-title": 2,
+    "jest/valid-expect": 2,
+
+    // prettier-oriented rules
+    "semi": [1, "never"],
+    "max-len": [1, { code: 100, ignoreStrings: true, ignoreTemplateLiterals: true }],
+    "comma-dangle": [1, "always-multiline"],
+    "quotes": [1, "double", { avoidEscape: true }],
+    "space-in-parens": [1, "never"],
+    "comma-spacing": 1,
+    "object-curly-spacing": [1, "always"],
+  }
+};
