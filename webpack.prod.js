@@ -9,22 +9,22 @@ const config = {
   entry: ["babel-polyfill", "./assets/app.jsx", "./assets/app.scss"],
   output: {
     filename: "bundle.js",
-    path: path.resolve(__dirname, "public")
+    path: path.resolve(__dirname, "public"),
   },
   plugins: [
     new CleanWebpackPlugin(["public"]),
     new webpack.DefinePlugin({
-      "process.env.NODE_ENV": JSON.stringify("production")
-    })
+      "process.env.NODE_ENV": JSON.stringify("production"),
+    }),
   ],
   module: {
     rules: [
       {
         include: [path.resolve("node_modules")],
-        sideEffects: false
-      }
-    ]
-  }
-};
+        sideEffects: false,
+      },
+    ],
+  },
+}
 
-module.exports = merge(baseConfig, config);
+module.exports = merge(baseConfig, config)

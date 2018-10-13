@@ -1,19 +1,26 @@
-import React, { Component, Fragment } from "react";
-import PropTypes from "prop-types";
+import React, { Component } from "react"
+import PropTypes from "prop-types"
 
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Button from '@material-ui/core/Button';
+import Dialog from "@material-ui/core/Dialog"
+import DialogActions from "@material-ui/core/DialogActions"
+import DialogContent from "@material-ui/core/DialogContent"
+import DialogContentText from "@material-ui/core/DialogContentText"
+import DialogTitle from "@material-ui/core/DialogTitle"
+import Button from "@material-ui/core/Button"
 
-import { withImmutablePropsFixed } from "../services/Utils.jsx";
+import { withImmutablePropsFixed } from "../services/Utils.jsx"
 
 class ErrorDialog extends Component {
+  static propTypes = {
+    open: PropTypes.bool,
+    title: PropTypes.string,
+    item: PropTypes.object,
+    onClose: PropTypes.func,
+  }
+
   render() {
-    const { open, item, onClose, title, children } = this.props;
-    return <Dialog
+    const { open, item, onClose, title } = this.props
+    return (<Dialog
       open={ open }
       onClose={ onClose }
     >
@@ -28,15 +35,8 @@ class ErrorDialog extends Component {
           { "Close" }
         </Button>
       </DialogActions>
-    </Dialog>
+    </Dialog>)
   }
-};
+}
 
-ErrorDialog.propTypes = {
-  open: PropTypes.bool,
-  title: PropTypes.string,
-  item: PropTypes.object,
-  onClose: PropTypes.func
-};
-
-export default withImmutablePropsFixed("items")(ErrorDialog);
+export default withImmutablePropsFixed("items")(ErrorDialog)

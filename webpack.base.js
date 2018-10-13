@@ -1,22 +1,17 @@
-const path = require("path");
-const CleanWebpackPlugin = require("clean-webpack-plugin");
-const CopyWebpackPlugin = require("copy-webpack-plugin");
+const path = require("path")
 
 module.exports = {
   entry: "./assets/app.jsx",
-  plugins: [
-    new CleanWebpackPlugin(["public"]),
-  ],
   output: {
     filename: "bundle.js",
-    path: path.resolve(__dirname, "public")
+    path: path.resolve(__dirname, "public"),
   },
   module: {
     rules: [
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loader: "babel-loader"
+        loader: "babel-loader",
       },
       {
         test: /\.(jsx)$/,
@@ -24,21 +19,21 @@ module.exports = {
         use: {
           loader: "babel-loader",
           options: {
-            presets: ["babel-preset-react"]
-          }
-        }
+            presets: ["babel-preset-react"],
+          },
+        },
       },
       {
         test: /\.scss$/,
         use: [
           "style-loader", // creates style nodes from JS strings
           "css-loader", // translates CSS into CommonJS
-          "sass-loader" // compiles Sass to CSS, using Node Sass by default
-        ]
-      }
-    ]
+          "sass-loader", // compiles Sass to CSS, using Node Sass by default
+        ],
+      },
+    ],
   },
   devServer: {
-    contentBase: "./public"
-  }
-};
+    contentBase: "./public",
+  },
+}

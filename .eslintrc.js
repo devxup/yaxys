@@ -1,35 +1,54 @@
 module.exports = {
-  "env": {
-    "browser": true,
-    "es6": true,
-    "node": true,
+  env: {
+    browser: true,
+    es6: true,
+    node: true,
     "jest/globals": true,
   },
-  "extends": [
+  extends: [
     "eslint:recommended",
     "plugin:react/recommended",
     "plugin:jest/recommended",
     "plugin:import/errors",
     "plugin:import/warnings",
   ],
-  "parser": "babel-eslint",
-  "parserOptions": {
-    "ecmaFeatures": {
-      "experimentalObjectRestSpread": true,
-      "jsx": true
-    },
-    "sourceType": "module"
+  globals: {
+    _: false,
+    it: false,
+    describe: false,
+
+    yaxys: false,
+
+    // Classes
+    Adapter: false,
+    App: false,
+    PageRouter: false,
+
+    // Services
+    AuthService: false,
+    ModelService: false,
+    PolicyService: false,
+    RestService: false,
+    UtilService: false,
+
+    // client-side
+    yaxysConstants: false
   },
-  "plugins": [
-    "react",
-    "jest"
-  ],
-  "rules": {
+  parser: "babel-eslint",
+  parserOptions: {
+    ecmaFeatures: {
+      experimentalObjectRestSpread: true,
+      jsx: true,
+    },
+    sourceType: "module",
+  },
+  plugins: ["react", "jest"],
+  rules: {
     "import/no-unresolved": 1,
     "eol-last": [2, "always"],
     "no-console": 1,
     "no-debugger": 1,
-    "no-unused-vars": [1, { ignoreRestSiblings: true }],
+    "no-unused-vars": [1, { ignoreRestSiblings: true, args: "none" }],
     "linebreak-style": ["error", "unix"],
     "react/display-name": 1,
     "react/forbid-prop-types": [1, { forbid: ["any"] }],
@@ -51,26 +70,26 @@ module.exports = {
     "react/no-danger": 1,
     "react/no-did-mount-set-state": 1,
     "react/no-did-update-set-state": 1,
-    "react/no-direct-mutation-state": 1,
-    "react/no-multi-comp": 1,
+    "react/no-direct-mutation-state": 0,
+    "react/no-multi-comp": 0,
     "react/no-set-state": 0,
     "react/no-unknown-property": 1,
     "react/prefer-es6-class": 1,
-    "react/prop-types": 1,
+    "react/prop-types": [2, { ignore: ["classes", "children"] }],
     "react/react-in-jsx-scope": 1,
     "react/self-closing-comp": 1,
-    "react/sort-comp": 1,
+    "react/sort-comp": 2,
     "jest/no-focused-tests": 1,
     "jest/no-identical-title": 2,
     "jest/valid-expect": 2,
 
     // prettier-oriented rules
-    "semi": [1, "never"],
+    semi: [1, "never"],
     "max-len": [1, { code: 100, ignoreStrings: true, ignoreTemplateLiterals: true }],
     "comma-dangle": [1, "always-multiline"],
-    "quotes": [1, "double", { avoidEscape: true }],
+    quotes: [1, "double", { avoidEscape: true }],
     "space-in-parens": [1, "never"],
     "comma-spacing": 1,
     "object-curly-spacing": [1, "always"],
-  }
-};
+  },
+}

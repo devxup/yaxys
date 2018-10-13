@@ -5883,9 +5883,9 @@ redent@^1.0.0:
     indent-string "^2.1.0"
     strip-indent "^1.0.1"
 
-redux-clue@^0.0.10:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/redux-clue/-/redux-clue-0.0.10.tgz#fff8b00c0e1efd83dfabe27344d7c28ca29824f6"
+redux-clue@0.0.11:
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/redux-clue/-/redux-clue-0.0.11.tgz#019070a88c1b123cd6a8341933b164cf8679c407"
   dependencies:
     axios "^0.18.0"
     immutable "^3.8.2"

@@ -18,5 +18,8 @@
   "jwt": {
     "secret": "some_unique_string",
     "lifetime": 86400
+  },
+  "debug": {
+    "pauseAndRandomError": false
   }
 }
