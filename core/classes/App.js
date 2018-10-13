@@ -65,6 +65,12 @@ module.exports = class App extends Koa {
     this.use(this.pageRouter.routes())
   }
 
+  /**
+   * Requires the whole folder of Node.js modules and assign them into the global
+   * @param {String} folder The folder to require
+   * @returns {Object} The object containing modules with their filenames as the keys
+   * @private
+   */
   _requireFolder(folder) {
     const modules = requireAll({
       dirname: `${__dirname}/../${folder}`,
@@ -74,9 +80,13 @@ module.exports = class App extends Koa {
     return modules
   }
 
+  /**
+   * Perform all the required initializations
+   * – DB Adapter initialization
+   * – UtilService initialization
+   */
   async init() {
     await this.db.init(config.get("db"))
     UtilService.init()
-    26
   }
 }
