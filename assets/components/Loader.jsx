@@ -33,7 +33,7 @@ export default function Loader(props) {
 }
 
 Loader.propTypes = {
-  item: PropTypes.object.isRequired,
+  item: PropTypes.object,
   loadingText: PropTypes.string,
   errorText: PropTypes.string,
   retryText: PropTypes.string,

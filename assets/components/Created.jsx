@@ -19,7 +19,7 @@ import { green, yellow } from "@material-ui/core/colors"
 import { lighten } from "@material-ui/core/styles/colorManipulator"
 
 import YaxysClue from "../services/YaxysClue"
-import { withImmutablePropsFixed } from "../services/Utils.jsx"
+import { withImmutablePropsFixed } from "../services/Utils.js"
 import ErrorDialog from "./ErrorDialog.jsx"
 
 const styles = theme => ({

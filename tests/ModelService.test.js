@@ -44,7 +44,6 @@ describe("ModelService", () => {
           after: {
             p1: "hash_of_A",
             p2: "B",
-            p3: "",
           },
         },
       ]

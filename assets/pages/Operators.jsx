@@ -7,6 +7,7 @@ import AddIcon from "@material-ui/icons/Add"
 import Button from "@material-ui/core/Button"
 
 import YaxysClue, { queries } from "../services/YaxysClue"
+import { withConstants } from "../services/Utils"
 
 import Loader from "../components/Loader.jsx"
 import Wrapper from "../components/Wrapper.jsx"
@@ -24,6 +25,7 @@ const createdOperatorsSelector = YaxysClue.selectors.byClue(
 )
 
 export default
+@withConstants
 @connect(
   (state, props) => ({
     operators: operatorsSelector(state, props),

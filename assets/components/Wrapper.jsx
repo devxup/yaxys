@@ -186,7 +186,7 @@ export default
 }))
 class Wrapper extends Component {
   static propTypes = {
-    me: PropTypes.string,
+    me: PropTypes.object,
   }
 
   state = {

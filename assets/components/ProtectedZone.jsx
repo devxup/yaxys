@@ -16,7 +16,7 @@ export default
 )
 class ProtectedZone extends Component {
   static propTypes = {
-    me: PropTypes.string,
+    me: PropTypes.object,
   }
   render() {
     if (!this.props.me) {

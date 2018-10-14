@@ -30,6 +30,9 @@ module.exports = {
       RestService.find("operator"),
     ],
     "put operator/:id": [
+      config.get("debug.pauseAndRandomError")
+        ? PolicyService.pauseAndRandomError
+        : true,
       PolicyService.encodePasswords("operator"),
       PolicyService.removePasswordsFromResponse("operator"),
       RestService.update("operator"),

@@ -36,7 +36,11 @@ module.exports = {
 
   encryptPasswordProperties(data, schema) {
     _.each(schema.properties, (property, propertyKey) => {
-      if (!property.password || !data[propertyKey]) {
+      if (!property.password) {
+        return
+      }
+      if (!data[propertyKey]) {
+        delete data[propertyKey]
         return
       }
       data[propertyKey] = AuthService.encryptPassword(data[propertyKey])

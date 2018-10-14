@@ -8,7 +8,7 @@ import DialogContentText from "@material-ui/core/DialogContentText"
 import DialogTitle from "@material-ui/core/DialogTitle"
 import Button from "@material-ui/core/Button"
 
-import { withImmutablePropsFixed } from "../services/Utils.jsx"
+import { withImmutablePropsFixed } from "../services/Utils.js"
 
 class ErrorDialog extends Component {
   static propTypes = {
