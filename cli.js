@@ -28,6 +28,8 @@ yaxys
         await yaxys.db.insert("operator", {
           email: argv.email,
           passwordHash: AuthService.encryptPassword(String(argv.pwd)),
+          rights: {},
+          isAdministrator: true,
         })
         yaxys.logger.info("done")
       },

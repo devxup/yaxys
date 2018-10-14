@@ -4501,6 +4501,7 @@ lodash.isstring@^4.0.1:
 lodash.merge@^4.6.1:
   version "4.6.1"
   resolved "https://registry.yarnpkg.com/lodash.merge/-/lodash.merge-4.6.1.tgz#adc25d9cb99b9391c59624f379fbba60d7111d54"
+  integrity sha512-AOYza4+Hf5z1/0Hztxpm2/xiPZgi/cjMqdnKTUWTBSKchJlxXXuUSxCCl8rJlf4g6yww/j6mA8nC8Hw/EZWxKQ==
 
 lodash.mergewith@^4.6.0:
   version "4.6.1"
@@ -4807,6 +4808,7 @@ ms@^2.1.1:
 mui-table@^2.1.6:
   version "2.1.6"
   resolved "https://registry.yarnpkg.com/mui-table/-/mui-table-2.1.6.tgz#41c2aa5130aaf60e47540168cafa8cd2be0adbae"
+  integrity sha512-0wUfgUrEQ6d9SjoGlWimsOkdaUOCa2pM/jSoeGZxy1WWU52Br+s+5z27k4Xm5rAMayx4sMPvT0908QgY58Mlhg==
   dependencies:
     classnames "^2.2.6"
     lodash.merge "^4.6.1"

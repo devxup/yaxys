@@ -3,7 +3,7 @@ const config = require("config")
 const jwt = require("jsonwebtoken")
 
 module.exports = {
-  OPERATOR_ATTRIBUTES_FOR_JWT: ["id", "email"],
+  OPERATOR_ATTRIBUTES_FOR_JWT: ["id", "email", "rights", "isAdministrator"],
 
   /**
    * Encrypt the password using bcrypt
@@ -57,4 +57,7 @@ module.exports = {
     const result = jwt.verify(token, config.get("jwt.secret"))
     return _.omit(result, "iat")
   },
+
+  checkRight: (operator, modelKey, right) =>
+    !!(operator.isAdministrator || (operator.rights && operator.rights[modelKey.toLowerCase()] && operator.rights[modelKey.toLowerCase()].includes(right.toLowerCase())))
 }

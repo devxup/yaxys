@@ -16,6 +16,12 @@ module.exports = {
         type: "string",
         password: true,
       },
+      rights: {
+        type: "json",
+      },
+      isAdministrator: {
+        type: "boolean",
+      },
     },
     required: ["email", "passwordHash"],
   },
