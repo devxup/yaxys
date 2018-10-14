@@ -21,7 +21,7 @@ module.exports = {
         type: "boolean"
       }
     },
-    required: ["email", "passwordHash", "rights"]
+    required: ["email", "passwordHash"]
   },
   
   api: {

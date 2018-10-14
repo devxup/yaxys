@@ -1,6 +1,8 @@
 const PolicyService = require ("../core/services/PolicyService.js");
 global.AuthService = require ("../core/services/AuthService.js");
 global._ = require("lodash");
+const config = require("config");
+const jwt = require("jsonwebtoken");
 
 describe ("PolicyService", () => {
   describe ("check and inject operator", () => {
@@ -36,17 +38,16 @@ describe ("PolicyService", () => {
       };
       PolicyService.checkAndInjectOperator(mockCtx, mockNext);
       if (testCase.error) {
-        expect(mockThrow.mock.calls.length).toBe(1);
-        expect(mockNext.mock.calls.length).toBe(0);
-        expect(mockThrow.mock.calls[0][0]).toBe(401);
-        expect(mockThrow.mock.calls[0][1]).toBe("unauthorized");
+        expect(mockThrow.mock.calls).toStrictEqual([[401, "unauthorized"]]);
         expect(mockCtx.operator).toBeNull();
       } else {
-        expect(mockNext.mock.calls.length).toBe(1);
+        expect(mockNext.mock.calls).toStrictEqual([[]]);
         expect(mockThrow.mock.calls.length).toBe(0);
-        expect(mockCtx.operator.id).toBe(testCase.operator.id);
-        expect(mockCtx.operator.email).toBe(testCase.operator.email);
-        expect(mockCtx.operator.exp).toBeGreaterThan(Date.now()/1000);
+        expect(mockCtx.operator).toStrictEqual({
+          id: testCase.operator.id,
+          email: testCase.operator.email,
+          exp: jwt.verify(testCase.token, config.get("jwt.secret")).iat + config.get("jwt.lifetime")
+        });
       }
     }));
   });
@@ -92,10 +93,8 @@ describe ("PolicyService", () => {
       };
       PolicyService.hasRight(testCase.modelKey, testCase.right)(mockCtx, mockNext);
       if (testCase.error) {
-        expect(mockThrow.mock.calls.length).toBe(1);
+        expect(mockThrow.mock.calls).toStrictEqual([[403, "You don't have rights to perform this action"]]);
         expect(mockNext.mock.calls.length).toBe(0);
-        expect(mockThrow.mock.calls[0][0]).toBe(403);
-        expect(mockThrow.mock.calls[0][1]).toBe("You don't have rights to perform this action");
       } else {
         expect(mockNext.mock.calls.length).toBe(1);
         expect(mockThrow.mock.calls.length).toBe(0);
