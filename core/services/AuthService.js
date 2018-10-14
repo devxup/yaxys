@@ -59,5 +59,11 @@ module.exports = {
   },
 
   checkRight: (operator, modelKey, right) =>
-    !!(operator.isAdministrator || (operator.rights && operator.rights[modelKey.toLowerCase()] && operator.rights[modelKey.toLowerCase()].includes(right.toLowerCase())))
+    !!(operator.isAdministrator
+      || (
+        operator.rights
+        && operator.rights[modelKey.toLowerCase()]
+        && operator.rights[modelKey.toLowerCase()].includes(right.toLowerCase())
+      )
+    ),
 }

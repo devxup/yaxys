@@ -1,5 +1,4 @@
 module.exports = {
-
   /**
    * Check the token from the "jwt" cookie, get the operator out of it and inject into the ctx
    * If the token is invalid, throw 401 error
@@ -85,7 +84,7 @@ module.exports = {
   },
 
   hasRight: (modelKey, right) => async (ctx, next) =>
-    (AuthService.checkRight(ctx.operator, modelKey, right))
+    AuthService.checkRight(ctx.operator, modelKey, right)
       ? await next()
-      : ctx.throw(403, "You don't have rights to perform this action")
+      : ctx.throw(403, "You don't have rights to perform this action"),
 }

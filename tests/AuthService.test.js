@@ -96,7 +96,7 @@ describe("AuthService", () => {
     afterAll(() => {
       global.yaxys = yaxysBuffer
     })
-  });
+  })
 
   describe("Check rights", () => {
     const testCases = [
@@ -107,11 +107,11 @@ describe("AuthService", () => {
           email: "test@test.test",
           passwordHash: "someHash",
           rights: {},
-          isAdministrator: true
+          isAdministrator: true,
         },
         modelKey: "someModel",
         right: "anyRight",
-        expectedResult: true
+        expectedResult: true,
       },
       {
         title: "Operator with needed rights",
@@ -120,12 +120,12 @@ describe("AuthService", () => {
           email: "test@test.test",
           passwordHash: "someHash",
           rights: {
-            "somemodel": ["read", "update", "neededright"]
-          }
+            somemodel: ["read", "update", "neededright"],
+          },
         },
         modelKey: "someModel", //should be lowercase normally, but we are testing if the function still works
         right: "neededRight",
-        expectedResult: true
+        expectedResult: true,
       },
       {
         title: "Operator without needed rights",
@@ -134,12 +134,12 @@ describe("AuthService", () => {
           email: "test@test.test",
           passwordHash: "someHash",
           rights: {
-            "somemodel": ["read", "update"]
-          }
+            somemodel: ["read", "update"],
+          },
         },
         modelKey: "someModel",
         right: "neededRight",
-        expectedResult: false
+        expectedResult: false,
       },
       {
         title: "Operator without rights for this model",
@@ -148,17 +148,21 @@ describe("AuthService", () => {
           email: "test@test.test",
           passwordHash: "someHash",
           rights: {
-            "anothermodel": ["read", "update"]
-          }
+            anothermodel: ["read", "update"],
+          },
         },
         modelKey: "someModel",
         right: "read",
-        expectedResult: false
-      }
-    ];
+        expectedResult: false,
+      },
+    ]
 
-    testCases.forEach(testCase => it(testCase.title, () => {
-      expect(AuthService.checkRight(testCase.operator, testCase.modelKey, testCase.right)).toBe(testCase.expectedResult);
-    }));
-  });
-});
+    testCases.forEach(testCase =>
+      it(testCase.title, () => {
+        expect(AuthService.checkRight(testCase.operator, testCase.modelKey, testCase.right)).toBe(
+          testCase.expectedResult
+        )
+      })
+    )
+  })
+})
