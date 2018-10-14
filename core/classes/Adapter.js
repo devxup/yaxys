@@ -35,10 +35,18 @@ module.exports = class Adapter {
     this.schemas = {}
   }
 
+  /**
+   * Init the adapter by performing simple async query.
+   * Knex doesn't actually perform connections and other async operatons before the first query
+   */
   async init() {
     await this.knex.raw("select now();")
   }
 
+  /**
+   * Start the transaction and return its context
+   * @returns {Promise<Object>} The transaction context to use in further queries
+   */
   async transaction() {
     return new Promise((resolve, reject) => {
       this.knex
@@ -49,18 +57,33 @@ module.exports = class Adapter {
     })
   }
 
+  /**
+   * Commit the transaction
+   * @param {Object} trx The transaction context created by await Adapter.transaction()
+   */
   async transactionCommit(trx) {
     await trx.commit()
   }
 
+  /**
+   * Rollback the transaction
+   * @param {Object} trx The transaction context created by await Adapter.transaction()
+   */
   async transactionRollback(trx) {
     await trx.rollback()
   }
 
-  _sanitize(schemaKey, data) {
-    const schema = this.schemas[schemaKey]
+  /**
+   * Sanitize the data using model's schema before updating or inserting
+   * @param {String} identity The models' identity
+   * @param {Object} data The data to sanitize
+   * @returns {void}
+   * @private
+   */
+  _sanitize(identity, data) {
+    const schema = this.schemas[identity]
     if (!schema) {
-      throw new Error(`schema ${schemaKey} not found`)
+      throw new Error(`schema ${identity} not found`)
     }
     if (!data) {
       throw new Error("data is required")
@@ -85,29 +108,49 @@ module.exports = class Adapter {
     })
   }
 
-  registerSchema(schemaKey, schema) {
-    this.schemas[schemaKey] = schema
+  /**
+   * Register given schema into the schemas' registry
+   * @param {String} identity The model's identity
+   * @param {Object} schema The schema to register
+   */
+  registerSchema(identity, schema) {
+    this.schemas[identity] = schema
   }
 
-  async insert(schemaKey, data, trx) {
+  /**
+   * Insert new model into the table
+   * @param {String} identity The model's identity
+   * @param {Object} data The model blank to insert
+   * @param {Object} [trx] The transaction context
+   * @returns {Promise<Object>} The inserted model containing all of the fields, includeing id
+   */
+  async insert(identity, data, trx) {
     const dataToInsert = data.id ? data : _.omit(data, "id")
 
-    const fixedData = this._sanitize(schemaKey, dataToInsert)
+    const fixedData = this._sanitize(identity, dataToInsert)
 
-    const insert = this.knex(schemaKey)
+    const insert = this.knex(identity)
       .insert(fixedData)
       .returning("*")
     const result = trx ? await insert.transacting(trx) : await insert
     return result[0]
   }
 
-  async update(schemaKey, id, data, trx) {
+  /**
+   * Update the model by it's id
+   * @param {String} identity The model's identity
+   * @param {String|Integer} id  Model's id
+   * @param {Object} data new The patch for the model's instance
+   * @param {Object} [trx] The transaction context
+   * @returns {Promise<Object>} The inserted model containing all of the fields, includeing id
+   */
+  async update(identity, id, data, trx) {
     if (!id) {
       throw new Error("id is required")
     }
-    const fixedData = this._sanitize(schemaKey, data)
+    const fixedData = this._sanitize(identity, data)
 
-    const update = this.knex(schemaKey)
+    const update = this.knex(identity)
       .where({ id })
       .update(fixedData)
       .returning("*")
@@ -120,12 +163,28 @@ module.exports = class Adapter {
     return result[0]
   }
 
-  async findOne(schemaKey, filter, options, trx) {
-    return (await this.find(schemaKey, filter, Object.assign({ limit: 1 }, options), trx))[0]
+  /**
+   * Find the first model matching the filter
+   * @param {String} identity The model's identity
+   * @param {Object} filter The filter to match
+   * @param {Object} [options] The options to find
+   * @param {Object} [trx] The transaction context
+   * @returns {Promise<Object|undefined>} The model found or undefined
+   */
+  async findOne(identity, filter, options, trx) {
+    return (await this.find(identity, filter, Object.assign({ limit: 1 }, options), trx))[0]
   }
 
-  async find(schemaKey, filter, options, trx) {
-    let query = this.knex(schemaKey).where(filter)
+  /**
+   * Find models matching the criteria
+   * @param {String} identity The model's identity
+   * @param {Object} filter The filter to match
+   * @param {Object} [options] The options to find
+   * @param {Object} [trx] The transaction context
+   * @returns {Promise<Array<Object>>} The array of found models
+   */
+  async find(identity, filter, options, trx) {
+    let query = this.knex(identity).where(filter)
     _.each(Object.assign({}, this.options, options), (value, key) => {
       switch (key) {
         case "limit":
@@ -144,13 +203,20 @@ module.exports = class Adapter {
     return trx ? query.transacting(trx) : query
   }
 
-  _newTable(schemaKey, schema) {
-    return this.knex.schema.createTable(schemaKey, table => {
+  /**
+   * Create the knex promise which, when called then(), will create the table for given model
+   * @param {String} identity The model's identity
+   * @param {Object} schema The model's schema
+   * @returns {{ then: Function }} The knex promise
+   * @private
+   */
+  _newTable(identity, schema) {
+    return this.knex.schema.createTable(identity, table => {
       table.increments("id").primary()
       _.forEach(schema.properties, (value, key) => {
         if (key === "id") return
         if (!POSTGRES_TYPES.includes(value.type)) {
-          throw new Error(`Incorrect data type ${value.type} of field ${key} in ${schemaKey}`)
+          throw new Error(`Incorrect data type ${value.type} of field ${key} in ${identity}`)
         }
         const attribute = table[value.type](key)
         if (Array.isArray(schema.required) && schema.required.includes(key)) {
@@ -160,14 +226,28 @@ module.exports = class Adapter {
     })
   }
 
-  async createTable(schemaKey, schema) {
-    await this._newTable(schemaKey, schema).then()
+  /**
+   * Create the table for given model
+   * @param {String} identity The model's identity
+   * @param {Object} schema The model's schema
+   */
+  async createTable(identity, schema) {
+    await this._newTable(identity, schema).then()
   }
 
-  getSQLForCreateTable(schemaKey, schema) {
-    return this._newTable(schemaKey, schema).toString()
+  /**
+   * Get the SQL for creating the table of the given model
+   * @param {String} identity The model's identity
+   * @param {Object} schema The model's schema
+   * @returns {String} The SQL
+   */
+  getSQLForCreateTable(identity, schema) {
+    return this._newTable(identity, schema).toString()
   }
 
+  /**
+   * Gracefully shutdown the adapter
+   */
   async shutdown() {
     await this.knex.destroy()
   }

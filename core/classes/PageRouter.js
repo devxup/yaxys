@@ -9,6 +9,12 @@ module.exports = class PageRouter extends Router {
     this.get("*", PageRouter._servePages)
   }
 
+  /**
+   * Set the handler for static files routes.
+   * In Dev mode, use koa-webpack-dev-middleware
+   * In Prod mode, use just StaticRouter
+   * @private
+   */
   async _setStaticRouting() {
     if (config.util.getEnv("NODE_ENV") === "development" && !Number(process.env.SERVER_ONLY)) {
       const webpack = require("webpack")
@@ -27,6 +33,11 @@ module.exports = class PageRouter extends Router {
     }
   }
 
+  /**
+   * Page requests handler. Return static content for the SPA, later we can o the SSR here.
+   * @param {Object} ctx Koa context
+   * @private
+   */
   static _servePages(ctx) {
     ctx.body = `<!doctype html>
 <html>

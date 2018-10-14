@@ -1,12 +1,30 @@
+/**
+ * Get the SQL for creating table for specific model
+ * @param {String} identity The identity of the model
+ * @param {Object} jsonSchema The model's schema
+ * @returns {String} The SQL
+ * @private
+ */
 const _getSQLForSchema = function(identity, jsonSchema) {
   return yaxys.db.getSQLForCreateTable(identity, jsonSchema)
 }
 
+/**
+ * Create the table for specific model
+ * @param {String} identity The identity of the model
+ * @param {Object} jsonSchema The model's schema
+ * @private
+ */
 const _createTableForSchema = async function(identity, jsonSchema) {
   await yaxys.db.createTable(identity, jsonSchema)
 }
 
 module.exports = {
+
+  /**
+   * Get the SQL for creating tables for all the models
+   * @returns {String} The SQL
+   */
   getSQLForAllModels() {
     let result = ""
     for (let model in yaxys.models) {
@@ -17,6 +35,9 @@ module.exports = {
     return result
   },
 
+  /**
+   * Create the tables for all the models
+   */
   async createTablesForAllModels() {
     for (let model in yaxys.models) {
       if (yaxys.models[model].schema) {
@@ -25,6 +46,11 @@ module.exports = {
     }
   },
 
+  /**
+   * Patch the model instance by removing all the password fields from it
+   * @param {Object} data model instance
+   * @param {Object} schema model schema – to detect which fields are passwords
+   */
   removePasswordProperties(data, schema) {
     _.each(schema.properties, (property, propertyKey) => {
       if (!property.password) {
@@ -34,6 +60,11 @@ module.exports = {
     })
   },
 
+  /**
+   * Patch the model instance by encrypting all the password fields using AuthService.encryptPassword
+   * @param {Object} data model instance
+   * @param {Object} schema model schema – to detect which fields are passwords
+   */
   encryptPasswordProperties(data, schema) {
     _.each(schema.properties, (property, propertyKey) => {
       if (!property.password) {

@@ -34,7 +34,7 @@ describe("RestService", () => {
     }
   }
 
-  const schemaKey = "operator"
+  const identity = "operator"
   const testCaseSets = {
     findOne: [
       {
@@ -42,7 +42,7 @@ describe("RestService", () => {
         ctx: new CTXEmulator({
           params: { id: 1 },
         }),
-        result: ["findOne", schemaKey, { id: 1 }],
+        result: ["findOne", identity, { id: 1 }],
       },
       {
         title: "No id",
@@ -69,14 +69,14 @@ describe("RestService", () => {
           findOne: () => null,
         },
         error: true,
-        result: [404, `${schemaKey} #1 not found`],
+        result: [404, `${identity} #1 not found`],
       },
     ],
     find: [
       {
         title: "Empty case",
         ctx: new CTXEmulator(),
-        result: ["find", schemaKey, {}, {}],
+        result: ["find", identity, {}, {}],
       },
       {
         title: "Mixed filter and reserved keywords",
@@ -87,7 +87,7 @@ describe("RestService", () => {
             someAttribute: 3,
           },
         }),
-        result: ["find", schemaKey, { someAttribute: 3 }, { limit: 1, skip: 2 }],
+        result: ["find", identity, { someAttribute: 3 }, { limit: 1, skip: 2 }],
       },
       {
         title: "Direct sort",
@@ -96,7 +96,7 @@ describe("RestService", () => {
             sort: "someAttribute",
           },
         }),
-        result: ["find", schemaKey, {}, { sort: { someAttribute: 1 } }],
+        result: ["find", identity, {}, { sort: { someAttribute: 1 } }],
       },
       {
         title: "Negative sort",
@@ -105,7 +105,7 @@ describe("RestService", () => {
             sort: "-someAttribute",
           },
         }),
-        result: ["find", schemaKey, {}, { sort: { someAttribute: -1 } }],
+        result: ["find", identity, {}, { sort: { someAttribute: -1 } }],
       },
       {
         title: "Complicated sort",
@@ -114,7 +114,7 @@ describe("RestService", () => {
             sort: '{"a": 1, "b":-1}',
           },
         }),
-        result: ["find", schemaKey, {}, { sort: { a: 1, b: -1 } }],
+        result: ["find", identity, {}, { sort: { a: 1, b: -1 } }],
       },
     ],
   }
@@ -128,7 +128,7 @@ describe("RestService", () => {
             yaxys.db = Object.assign({}, yaxys.db, testCase.dbPatch)
           }
 
-          const promise = RestService[setKey](schemaKey)(testCase.ctx)
+          const promise = RestService[setKey](identity)(testCase.ctx)
           if (testCase.error) {
             await expect(promise).rejects.toThrow("ctx exception")
           } else {

@@ -83,9 +83,11 @@ module.exports = {
     "jest/no-identical-title": 2,
     "jest/valid-expect": 2,
 
+    "valid-jsdoc": [2, { "requireReturn": false }],
+
     // prettier-oriented rules
     semi: [1, "never"],
-    "max-len": [1, { code: 100, ignoreStrings: true, ignoreTemplateLiterals: true }],
+    "max-len": [1, { code: 120, ignoreStrings: true, ignoreTemplateLiterals: true }],
     "comma-dangle": [1, "always-multiline"],
     quotes: [1, "double", { avoidEscape: true }],
     "space-in-parens": [1, "never"],

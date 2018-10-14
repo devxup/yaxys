@@ -1,18 +1,42 @@
 module.exports = {
-  findOne(schemaKey) {
+  /**
+   * Create the model-specific request handler which responds the single model instance by its id
+   * id should be bind by router into ctx.params.id
+   * @param {String} identity The model's identity
+   * @returns {Function} The handler
+   */
+  findOne(identity) {
+    /**
+     * Find the model of given identity by ctx.params.id
+     * @param {Object} ctx Koa context
+     * @param {String} ctx.params.id The id parameter
+     */
     return async ctx => {
       if (!ctx.params.id) {
         ctx.throw(400, "id is required")
       }
-      const instance = await yaxys.db.findOne(schemaKey, { id: ctx.params.id })
+      const instance = await yaxys.db.findOne(identity, { id: ctx.params.id })
       if (!instance) {
-        ctx.throw(404, `${schemaKey} #${ctx.params.id} not found`)
+        ctx.throw(404, `${identity} #${ctx.params.id} not found`)
       }
       ctx.body = instance
     }
   },
 
-  find(schemaKey) {
+  /**
+   * Create the model-specific request handler which responds the list of models
+   * @param {String} identity The model's identity
+   * @returns {Function} The handler
+   */
+  find(identity) {
+    /**
+     * Find the models of given identity and request parameters
+     * @param {Object} ctx Koa context
+     * @param {String} [ctx.params.sort] The sorting order. Can be the JSON like "{p1:1, p2:-1}",
+     *                 parameter name like "p1" or negative parameter name like "-p1"
+     * @param {String} [ctx.params.skip] How many models to skip (String containing Integer)
+     * @param {String} [ctx.params.limit] How maany model to query (String containing Integer)
+     */
     return async ctx => {
       const options = {}
       const filter = {}
@@ -37,23 +61,45 @@ module.exports = {
         }
       })
 
-      ctx.body = await yaxys.db.find(schemaKey, filter, options)
+      ctx.body = await yaxys.db.find(identity, filter, options)
     }
   },
 
-  update(schemaKey) {
+  /**
+   * Create the model-specific request handler which updates the model by it's id
+   * id should be bind by router into ctx.params.id
+   * @param {String} identity The model's identity
+   * @returns {Function} The handler
+   */
+  update(identity) {
+    /**
+     * Update the model of given identity by ctx.params.id
+     * @param {Object} ctx Koa context
+     * @param {String} ctx.params.id The id parameter
+     * @param {String} ctx.request.body The data for updating
+     */
     return async ctx => {
       if (!ctx.params.id) {
         ctx.throw(400, "id is required")
       }
 
-      ctx.body = await yaxys.db.update(schemaKey, ctx.params.id, ctx.request.body)
+      ctx.body = await yaxys.db.update(identity, ctx.params.id, ctx.request.body)
     }
   },
 
-  create(schemaKey) {
+  /**
+   * Create the model-specific request handler which creates new model of specified identity
+   * @param {String} identity The model's identity
+   * @returns {Function} The handler
+   */
+  create(identity) {
+    /**
+     * Create the model of given identity
+     * @param {Object} ctx Koa context
+     * @param {String} ctx.request.body The data to insert
+     */
     return async ctx => {
-      ctx.body = await yaxys.db.insert(schemaKey, ctx.request.body)
+      ctx.body = await yaxys.db.insert(identity, ctx.request.body)
     }
   },
 }
