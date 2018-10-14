@@ -39,7 +39,6 @@
     "mui-table": "^2.1.6",
     "node-sass": "^4.9.3",
     "pg": "^7.4.3",
-    "pre-commit": "^1.2.2",
     "prop-types": "^15.6.2",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
@@ -47,7 +46,7 @@
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
     "redux": "^4.0.0",
-    "redux-clue": "0.0.12",
+    "redux-clue": "^0.0.12",
     "redux-saga": "^0.16.0",
     "require-all": "^3.0.0",
     "sass-loader": "^7.1.0",
@@ -93,6 +92,6 @@
     ]
   },
   "pre-commit": [
-    "eslint"
+    "test", "eslint"
   ]
 }
