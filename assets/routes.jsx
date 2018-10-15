@@ -15,9 +15,9 @@ export default (store, constants) => {
   return <Provider store={store}>
     <Theme>
       <Switch>
-        <Route exact path="/" component={ Index } />
-        <Route exact path="/operators" render={ props => <Operators constants={ constants } /> }  />
-        <Route exact path="/operators/:id" component={ Operator } />
+        <Route exact path="/" render={ props => <Index url= "/" /> } />
+        <Route exact path="/operators" render={ props => <Operators constants={ constants } url= "/operators" /> } />
+        <Route exact path="/operators/:id" render={ props => <Operator url= "/operators" /> } />
       </Switch>
     </Theme>
   </Provider>;

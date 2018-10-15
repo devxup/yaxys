@@ -49,7 +49,7 @@ export default class Operators extends Component {
 
   render() {
     const { constants, operators } = this.props;
-    return <Wrapper>
+    return <Wrapper url = { this.props.url }>
       <Button variant="fab" color="secondary" onClick={ this.onAdd } style={{ float:"right" }} title="Create operator">
         <AddIcon />
       </Button>

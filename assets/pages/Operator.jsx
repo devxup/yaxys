@@ -29,7 +29,7 @@ export default class Operators extends Component {
   }
 
   render() {
-    return <Wrapper>
+    return <Wrapper url = { this.props.url }>
       <h1 style={{ marginTop: 0 }}>Operator #{ this.props.match.params.id }</h1>
       <Loader item={ this.props.operator }>
         {

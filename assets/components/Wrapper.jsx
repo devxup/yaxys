@@ -69,12 +69,12 @@ const lists = {
   ]
 };
 
-const getList = key => <List>
+const getList = (key, url) => <List>
   {
     lists[key].map(
       (item, index) =>
       <Link to={ item.url } key={ index }>
-        <ListItem button>
+        <ListItem button selected={ url === item.url }>
           <ListItemIcon>{ React.createElement(item.icon) }</ListItemIcon>
           <ListItemText primary={ item.title } />
         </ListItem>
@@ -171,7 +171,7 @@ export default class Bar extends Component {
   };
 
   render() {
-    const { classes } = this.props;
+    const { classes, url } = this.props;
 
     return <div className={classes.root}>
       <AppBar
@@ -219,9 +219,9 @@ export default class Bar extends Component {
           </IconButton>
         </div>
         <Divider />
-        { getList("primary") }
+        { getList("primary", url) }
         <Divider />
-        { getList("secondary") }
+        { getList("secondary", url) }
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
