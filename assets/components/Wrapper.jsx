@@ -160,26 +160,18 @@ const styles = theme => ({
 export default class Bar extends Component {
   constructor(props) {
     super(props);
-
-    if (localStorage.getItem("isDrawerClosed")) {
-      this.state = {
-        open: localStorage.getItem("isDrawerClosed") === "true",
-      };
-    } else {
-      localStorage.setItem("isDrawerClosed", "true");
-      this.state = {
-        open: true,
-      };
-    }
+    this.state = {
+      open: !localStorage.getItem("isDrawerClosed")
+    };
   }
 
   handleDrawerOpen = () => {
-    localStorage.setItem("isDrawerClosed", "true");
+    localStorage.removeItem("isDrawerClosed");
     this.setState({ open: true });
   };
 
   handleDrawerClose = () => {
-    localStorage.setItem("isDrawerClosed", "false");
+    localStorage.setItem("isDrawerClosed", 'true');
     this.setState({ open: false });
   };
 
