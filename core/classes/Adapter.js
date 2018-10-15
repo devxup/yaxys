@@ -222,6 +222,9 @@ module.exports = class Adapter {
         if (Array.isArray(schema.required) && schema.required.includes(key)) {
           attribute.notNullable()
         }
+        if (value.unique) {
+          table.unique(key)
+        }
       })
     })
   }
