@@ -5,11 +5,13 @@ module.exports = {
     properties: {
       id: {
         type: "integer",
+        unique: true,
       },
       email: {
         title: "E-mail",
         type: "string",
         format: "email",
+        unique: true,
       },
       passwordHash: {
         title: "Password",
