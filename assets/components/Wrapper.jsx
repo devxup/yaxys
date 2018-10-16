@@ -190,14 +190,16 @@ class Wrapper extends Component {
   }
 
   state = {
-    open: false,
+    open: !localStorage.getItem("isDrawerClosed"),
   }
 
   handleDrawerOpen = () => {
+    localStorage.removeItem("isDrawerClosed")
     this.setState({ open: true })
-  }
+  };
 
   handleDrawerClose = () => {
+    localStorage.setItem("isDrawerClosed", "true")
     this.setState({ open: false })
   }
 
