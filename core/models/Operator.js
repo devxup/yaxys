@@ -5,7 +5,6 @@ module.exports = {
     properties: {
       id: {
         type: "integer",
-        unique: true,
       },
       email: {
         title: "E-mail",
