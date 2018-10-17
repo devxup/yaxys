@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from "react";
 import { withStyles } from '@material-ui/core/styles';
 import { Link } from 'react-router-dom';
+import { withRouter} from "react-router";
 
 import classNames from 'classnames';
 import Drawer from '@material-ui/core/Drawer';
@@ -69,12 +70,12 @@ const lists = {
   ]
 };
 
-const getList = key => <List>
+const getList = (key, url) => <List>
   {
     lists[key].map(
       (item, index) =>
       <Link to={ item.url } key={ index }>
-        <ListItem button>
+        <ListItem button selected={ (url === item.url) || ((item.url.indexOf(url.toLowerCase()) === 0) && !(url === "/")) }>
           <ListItemIcon>{ React.createElement(item.icon) }</ListItemIcon>
           <ListItemText primary={ item.title } />
         </ListItem>
@@ -156,7 +157,7 @@ const styles = theme => ({
     height: 320,
   },
 });
-@withStyles(styles)
+@withStyles(styles)@withRouter
 export default class Bar extends Component {
   state = {
     open: false,
@@ -171,7 +172,8 @@ export default class Bar extends Component {
   };
 
   render() {
-    const { classes } = this.props;
+    const { classes, location } = this.props;
+    const url = location.pathname;
 
     return <div className={classes.root}>
       <AppBar
@@ -219,9 +221,9 @@ export default class Bar extends Component {
           </IconButton>
         </div>
         <Divider />
-        { getList("primary") }
+        { getList("primary", url ) }
         <Divider />
-        { getList("secondary") }
+        { getList("secondary", url ) }
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
