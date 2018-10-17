@@ -4,6 +4,7 @@ import { connect } from "react-redux"
 
 import { withStyles } from "@material-ui/core/styles"
 import { Link } from "react-router-dom"
+import { withRouter } from "react-router"
 
 import classNames from "classnames"
 import Drawer from "@material-ui/core/Drawer"
@@ -73,19 +74,6 @@ const lists = {
     },
   ],
 }
-
-const getList = key => (
-  <List>
-    {lists[key].map((item, index) => (
-      <Link to={item.url} key={index}>
-        <ListItem button>
-          <ListItemIcon>{React.createElement(item.icon)}</ListItemIcon>
-          <ListItemText primary={item.title} />
-        </ListItem>
-      </Link>
-    ))}
-  </List>
-)
 
 const styles = theme => ({
   root: {
@@ -177,9 +165,22 @@ const styles = theme => ({
     fontWeight: 400,
     fontSize: 16,
   },
+  drawerItem: {
+    color: "rgba(0, 0, 0, 0.54)",
+  },
+  drawerItemSelected: {
+    backgroundColor: `${theme.palette.primary[500]} !important`,
+    color: "white !important",
+    fontWeight: 600,
+  },
+  drawerItemInheritColor: {
+    color: "inherit !important",
+    fontWeight: "inherit !important",
+  },
 })
 
 export default
+@withRouter
 @withStyles(styles)
 @connect((state, props) => ({
   me: meSelector(state),
@@ -187,6 +188,7 @@ export default
 class Wrapper extends Component {
   static propTypes = {
     me: PropTypes.object,
+    location: PropTypes.object,
   }
 
   state = {
@@ -196,7 +198,7 @@ class Wrapper extends Component {
   handleDrawerOpen = () => {
     localStorage.removeItem("isDrawerClosed")
     this.setState({ open: true })
-  };
+  }
 
   handleDrawerClose = () => {
     localStorage.setItem("isDrawerClosed", "true")
@@ -222,9 +224,36 @@ class Wrapper extends Component {
     )
   }
 
+  renderList(key) {
+    const { classes, location } = this.props
+    const url = location.pathname
+    return (
+      <List>
+        {lists[key].map((item, index) => (
+          <Link to={item.url} key={index}>
+            <ListItem
+              button
+              selected={
+                item.url === "/" ? url === item.url : url.indexOf(item.url.toLowerCase()) === 0
+              }
+              classes={{ root: classes.drawerItem, selected: classes.drawerItemSelected }}
+            >
+              <ListItemIcon classes={{ root: classes.drawerItemInheritColor }}>
+                {React.createElement(item.icon)}
+              </ListItemIcon>
+              <ListItemText
+                classes={{ primary: classes.drawerItemInheritColor }}
+                primary={item.title}
+              />
+            </ListItem>
+          </Link>
+        ))}
+      </List>
+    )
+  }
+
   render() {
     const { classes } = this.props
-
     return (
       <div className={classes.root}>
         <AppBar
@@ -268,9 +297,9 @@ class Wrapper extends Component {
             </IconButton>
           </div>
           <Divider />
-          {getList("primary")}
+          {this.renderList("primary")}
           <Divider />
-          {getList("secondary")}
+          {this.renderList("secondary")}
         </Drawer>
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />

@@ -18,7 +18,7 @@ module.exports = {
         password: true,
       },
       rights: {
-        type: "json",
+        type: "object",
       },
       isAdministrator: {
         type: "boolean",
