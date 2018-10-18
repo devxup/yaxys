@@ -1,5 +1,6 @@
 module.exports = {
   schema: {
+    title: "Operator Profile",
     properties: {
       id: {
         type: "integer",
@@ -13,14 +14,32 @@ module.exports = {
         type: "string",
       },
       rights: {
-        title: "Rights",
         type: "object",
       },
     },
-    required: [],
+    required: ["title"],
   },
 
   api: {
-
+    "operatorprofile/:id": [
+      PolicyService.checkAndInjectOperator,
+      PolicyService.hasRight("operatorprofile", "read"),
+      RestService.findOne("operatorprofile"),
+    ],
+    "operatorprofile": [
+      PolicyService.checkAndInjectOperator,
+      PolicyService.hasRight("operatorprofile", "read"),
+      RestService.find("operatorprofile"),
+    ],
+    "put operatorprofile/:id": [
+      PolicyService.checkAndInjectOperator,
+      PolicyService.hasRight("operatorprofile", "update"),
+      RestService.update("operatorprofile"),
+    ],
+    "post operatorprofile": [
+      PolicyService.checkAndInjectOperator,
+      PolicyService.hasRight("operatorprofile", "create"),
+      RestService.create("operatorprofile"),
+    ],
   },
 }

@@ -1,6 +1,5 @@
 /* eslint-disable react/prop-types */
 import React, { Component } from "react"
-import { Link } from "react-router-dom"
 import { connect } from "react-redux"
 
 import Paper from "@material-ui/core/Paper"
@@ -16,34 +15,34 @@ import Created from "../components/Created.jsx"
 import ModelTable from "../components/ModelTable.jsx"
 import ModelDialog from "../components/ModelDialog.jsx"
 
-const operatorsClue = props => ({ identity: "operator", query: queries.FIND, sort: { id: 1 } })
-const operatorsSelector = YaxysClue.selectors.byClue(operatorsClue)
+const profilesClue = props => ({ identity: "operatorprofile", query: queries.FIND, sort: { id: 1 } })
+const profilesSelector = YaxysClue.selectors.byClue(profilesClue)
 
-const CREATED_OPERATORS_MARKER = "operators-page"
-const createdOperatorsSelector = YaxysClue.selectors.byClue(
-  props => ({ identity: "operator", query: queries.CREATE }),
-  { marker: CREATED_OPERATORS_MARKER }
+const CREATED_PROFILES_MARKER = "profiles-page"
+const createdProfilesSelector = YaxysClue.selectors.byClue(
+  props => ({ identity: "operatorprofile", query: queries.CREATE }),
+  { marker: CREATED_PROFILES_MARKER }
 )
 
 export default
 @withConstants
 @connect(
   (state, props) => ({
-    operators: operatorsSelector(state, props),
-    createdOperators: createdOperatorsSelector(state, props),
+    profiles: profilesSelector(state, props),
+    createdProfiles: createdProfilesSelector(state, props),
   }),
   {
-    loadOperators: YaxysClue.actions.byClue,
-    createOperator: YaxysClue.actions.byClue,
+    loadProfiles: YaxysClue.actions.byClue,
+    createProfile: YaxysClue.actions.byClue,
   }
 )
-class Operators extends Component {
+class OperatorProfiles extends Component {
   state = {
     addOpen: false,
   }
 
   componentDidMount() {
-    this.props.loadOperators(operatorsClue(this.props))
+    this.props.loadProfiles(profilesClue(this.props))
   }
 
   onAdd = event => {
@@ -57,18 +56,18 @@ class Operators extends Component {
   onAddReady = values => {
     this.setState({ addOpen: false })
 
-    this.props.createOperator(
+    this.props.createProfile(
       {
-        identity: "operator",
+        identity: "operatorprofile",
         query: queries.CREATE,
         data: values,
       },
-      { marker: CREATED_OPERATORS_MARKER }
+      { marker: CREATED_PROFILES_MARKER }
     )
   }
 
   render() {
-    const { constants, operators } = this.props
+    const { constants, profiles } = this.props
     return (
       <Wrapper>
         <Button
@@ -76,41 +75,37 @@ class Operators extends Component {
           color="secondary"
           onClick={this.onAdd}
           style={{ float: "right" }}
-          title="Create operator"
+          title="Create new profile"
         >
           <AddIcon />
         </Button>
-        <h1 style={{ marginTop: 0 }}>Operators</h1>
-        <p>
-          Also, you can control operators&#39; rights
-          by <Link to={"/settings/operator-profiles"}>managing their profiles</Link>
-        </p>
+        <h1 style={{ marginTop: 0 }}>Operator Profiles</h1>
         <Created
-          items={this.props.createdOperators}
-          content={operator => operator.email}
-          url={operator => `/operators/${operator.id}`}
+          items={this.props.createdProfiles}
+          content={profile => profile.title}
+          url={profile => `/settings/operator-profiles/${profile.id}`}
         />
-        <Loader item={operators}>
+        <Loader item={profiles}>
           <Paper>
             <ModelTable
               schema={constants.schemas.operator}
-              data={(operators && operators.data) || []}
-              url={operator => `/operators/${operator.id}`}
-              columns={["id", "email"]}
+              data={(profiles && profiles.data) || []}
+              url={profile => `/settings/operator-profiles/${profile.id}`}
+              columns={["id", "title"]}
             />
           </Paper>
         </Loader>
         <br />
         <ModelDialog
-          title="Create new operator"
+          title="Create new operator profile"
           open={this.state.addOpen}
           onClose={this.onAddClose}
           onReady={this.onAddReady}
-          schema={constants.schemas.operator}
-          attributes={["email", "passwordHash"]}
+          schema={constants.schemas.operatorprofile}
+          attributes={ ["title"] }
           btnReady="Create"
         >
-          Please provide email address and password for the new operator.
+          Please provide title the new operator profile.
         </ModelDialog>
       </Wrapper>
     )

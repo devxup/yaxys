@@ -4,7 +4,7 @@ export default ReduxClue({
   storeKey: "YaxysClue",
   apiPrefix: "api",
   apiPluralize: false,
-  models: ["operator", "auth"],
+  models: ["operator", "auth", "operatorprofile"],
 })
 
 export const queries = rQueries

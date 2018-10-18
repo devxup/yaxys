@@ -63,7 +63,7 @@ module.exports = {
       || (
         operator.rights
         && operator.rights[modelKey.toLowerCase()]
-        && operator.rights[modelKey.toLowerCase()].includes(right.toLowerCase())
+        && operator.rights[modelKey.toLowerCase()][right.toLowerCase()]
       )
     ),
 }

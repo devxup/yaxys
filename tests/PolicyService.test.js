@@ -26,8 +26,17 @@ describe("PolicyService", () => {
         error: true,
       },
     ]
+
+    let yaxysBuffer
+    beforeAll(() => yaxysBuffer = global.yaxys)
+    afterAll(() => global.yaxys = yaxysBuffer)
     testCases.forEach(testCase =>
-      it(testCase.title, () => {
+      it(testCase.title, async () => {
+        global.yaxys = {
+          db: {
+            findOne: () => testCase.operator
+          }
+        }
         const mockThrow = jest.fn()
         const mockNext = jest.fn()
         let mockCtx = {
@@ -37,7 +46,7 @@ describe("PolicyService", () => {
           throw: mockThrow,
           operator: null,
         }
-        PolicyService.checkAndInjectOperator(mockCtx, mockNext)
+        await PolicyService.checkAndInjectOperator(mockCtx, mockNext)
         if (testCase.error) {
           expect(mockThrow.mock.calls).toStrictEqual([[401, "unauthorized"]])
           expect(mockCtx.operator).toBeNull()
@@ -47,8 +56,7 @@ describe("PolicyService", () => {
           expect(mockCtx.operator).toStrictEqual({
             id: testCase.operator.id,
             email: testCase.operator.email,
-            exp:
-              jwt.verify(testCase.token, config.get("jwt.secret")).iat + config.get("jwt.lifetime"),
+            exp: jwt.verify(testCase.token, config.get("jwt.secret")).iat + config.get("jwt.lifetime"),
           })
         }
       })
@@ -64,7 +72,7 @@ describe("PolicyService", () => {
           email: "test@test.test",
           passwordHash: "someHash",
           rights: {
-            somemodel: ["read", "update", "neededright"],
+            somemodel: {"read": true, "update": true, "neededright": true},
           },
         },
         modelKey: "somemodel",
@@ -78,7 +86,7 @@ describe("PolicyService", () => {
           email: "test@test.test",
           passwordHash: "someHash",
           rights: {
-            somemodel: ["read", "update"],
+            somemodel: {"read": true, "update": true},
           },
         },
         modelKey: "someModel",
@@ -86,7 +94,6 @@ describe("PolicyService", () => {
         error: true,
       },
     ]
-
     testCases.forEach(testCase =>
       it(testCase.title, () => {
         const mockThrow = jest.fn()

@@ -62,7 +62,7 @@ export default class ModelDialog extends Component {
   };
 
   render() {
-    const { open, onClose, title, children, schema, btnReady, btnClose } = this.props
+    const { open, onClose, title, children, schema, btnReady, btnClose, attributes } = this.props
     return (<Dialog
       open={ open }
       onClose={ onClose }
@@ -80,7 +80,7 @@ export default class ModelDialog extends Component {
           forceValidation={ this.state.forceValidation }
           schema={ schema }
           margin="dense"
-          attributes={[ "email", "passwordHash" ]}
+          attributes={ attributes}
         />
       </DialogContent>
       <DialogActions>

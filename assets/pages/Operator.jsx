@@ -5,10 +5,12 @@ import { connect } from "react-redux"
 import YaxysClue, { queries } from "../services/YaxysClue"
 import { pick, cloneDeep, pull } from "lodash"
 
-import { withConstants } from "../services/Utils"
-import FormControlLabel from "@material-ui/core/FormControlLabel"
-import Switch from "@material-ui/core/Switch"
+import { Paper, FormControlLabel, Switch } from '@material-ui/core';
+import { withStyles } from "@material-ui/core/styles"
 
+import { withConstants } from "../services/Utils"
+
+import RightsEditor from "../components/RightsEditor.jsx"
 import Wrapper from "../components/Wrapper.jsx"
 import Loader from "../components/Loader.jsx"
 import Update from "../components/Update.jsx"
@@ -21,7 +23,15 @@ const operatorClue = props => ({
 })
 const operatorSelector = YaxysClue.selectors.byClue(operatorClue)
 
+const styles = {
+  rights: {
+    padding: "1px 30px 20px",
+    margin: "0 0 30px 0"
+  }
+}
+
 export default
+@withStyles(styles)
 @withConstants
 @connect(
   (state, props) => ({
@@ -68,13 +78,22 @@ class Operator extends Component {
         : {}
 
     operator.passwordHash = ""
+    operator.rights = cloneDeep(operator.rights)
 
     return operator
   }
 
   onFormChange = data => {
     this.setState({
-      operator: data.values,
+      operator: { ...this.state.operator, ...data.values },
+      modifiedAt: new
+      Date().getTime(),
+    })
+  }
+
+  onRightsChange = rights => {
+    this.setState({
+      operator: { ...this.state.operator, rights: Object.assign({}, rights) },
       modifiedAt: new Date().getTime(),
     })
   }
@@ -86,9 +105,15 @@ class Operator extends Component {
   }
 
   render() {
-    const { operator, match } = this.props
+    const { operator, match, classes } = this.props
+    const update = <Update
+      clue={operatorClue(this.props)}
+      current={this.state.operator}
+      schema={this.state.schema}
+      modifiedAt={this.state.modifiedAt}
+    />
     return (
-      <Wrapper>
+      <Wrapper bottom={update}>
         <h1 style={{ marginTop: 0 }}>Operator #{match.params.id}</h1>
         <Loader item={operator}>
           <Fragment>
@@ -101,13 +126,11 @@ class Operator extends Component {
               margin="dense"
               attributes={["email", "passwordHash"]}
             />
-            { JSON.stringify(this.state.operator) }
-            <br />checked: { JSON.stringify(this.state.operator.isAdministrator)}
             <br />
             <FormControlLabel
               control={
                 <Switch
-                  checked={ String(this.state.operator.isAdministrator) === "true" }
+                  checked={ !!this.state.operator.isAdministrator }
                   onChange={this.handleSingleChange("isAdministrator")}
                   color="primary"
                   value="isAdministrator"
@@ -115,12 +138,18 @@ class Operator extends Component {
               }
               label="isAdministrator"
             />
-            <Update
-              clue={operatorClue(this.props)}
-              current={this.state.operator}
-              schema={this.state.schema}
-              modifiedAt={this.state.modifiedAt}
-            />
+
+            {
+              !this.state.operator.isAdministrator
+              && <Paper className={classes.rights}>
+                <h5>The operator&#39;s rights:</h5>
+                <RightsEditor
+                  hasEmpty={true}
+                  values={(this.state.operator && this.state.operator.rights) || {}}
+                  onChange={this.onRightsChange}
+                />
+              </Paper>
+            }
           </Fragment>
         </Loader>
       </Wrapper>

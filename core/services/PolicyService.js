@@ -1,13 +1,16 @@
 module.exports = {
   /**
-   * Check the token from the "jwt" cookie, get the operator out of it and inject into the ctx
+   * Check the token from the "jwt" cookie, get the operator out of it,
+   * then get the operator with found id from the db and inject it into the ctx
    * If the token is invalid, throw 401 error
    * @param {Object} ctx Koa context
    * @param {Function} next Koa next function
    */
   checkAndInjectOperator: async (ctx, next) => {
     try {
-      ctx.operator = AuthService.checkAndDecodeToken(ctx.cookies.get("jwt"))
+      const operatorFromToken = AuthService.checkAndDecodeToken(ctx.cookies.get("jwt"))
+      ctx.operator = await yaxys.db.findOne("operator", { id: operatorFromToken.id })
+      ctx.operator.exp = operatorFromToken.exp
     } catch (err) {
       ctx.throw(401, "unauthorized")
     }
