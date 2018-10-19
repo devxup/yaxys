@@ -157,7 +157,6 @@ describe("RestService", () => {
         }),
         result: ["find", identity, {}, { sort: { a: 1, b: -1 } }, null, [], []],
       },
-
       {
         title: "Query with 1:m populate",
         ctx: new CTXEmulator({

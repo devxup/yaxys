@@ -18,8 +18,7 @@ module.exports = {
       let otmPopulate = []
       let mtmPopulate = []
       if (ctx.query.populate) {
-        const parsedArgs = ctx.query.populate.split(",")
-        for (let arg of parsedArgs) {
+        for (let arg of ctx.query.populate.split(",")) {
           switch (arg.split(":").length) {
             case 1:
               otmPopulate.push(arg)
