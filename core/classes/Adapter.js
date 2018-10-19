@@ -169,10 +169,22 @@ module.exports = class Adapter {
    * @param {Object} filter The filter to match
    * @param {Object} [options] The options to find
    * @param {Object} [trx] The transaction context
+   * @param {Array} [otmPopulate] Fields to be populated with 1:m relation
+   * @param {Object[]} [mtmPopulate] Identities of models to be linked with m:m relation
+   * @param {String} mtmPopulate[].linkerModel The linker model identity
+   * @param {String} mtmPopulate[].initialModel The initial model identity
+   * @param {String} mtmPopulate[].modelToLink The model to link identity
    * @returns {Promise<Object|undefined>} The model found or undefined
    */
-  async findOne(identity, filter, options, trx) {
-    return (await this.find(identity, filter, Object.assign({ limit: 1 }, options), trx))[0]
+  async findOne(identity, filter, options, trx, otmPopulate = [], mtmPopulate = []) {
+    let result = (await this.find(identity, filter, Object.assign({ limit: 1 }, options), trx))[0]
+    for (let field of otmPopulate) {
+      await this._oneToModelPopulate([result], field)
+    }
+    for (let field of mtmPopulate) {
+      await this._modelToModelPopulate([result], field.linkerModel, field.initialModel, field.modelToLink)
+    }
+    return result
   }
 
   /**
@@ -181,9 +193,14 @@ module.exports = class Adapter {
    * @param {Object} filter The filter to match
    * @param {Object} [options] The options to find
    * @param {Object} [trx] The transaction context
+   * @param {Array} [otmPopulate] Fields to be populated with 1:m relation
+   * @param {Object[]} [mtmPopulate] Identities of models to be linked with m:m relation
+   * @param {String} mtmPopulate[].linkerModel The linker model identity
+   * @param {String} mtmPopulate[].initialModel The initial model identity
+   * @param {String} mtmPopulate[].modelToLink The model to link identity
    * @returns {Promise<Array<Object>>} The array of found models
    */
-  async find(identity, filter, options, trx) {
+  async find(identity, filter, options, trx, otmPopulate = [], mtmPopulate = []) {
     let query = this.knex(identity).where(filter)
     _.each(Object.assign({}, this.options, options), (value, key) => {
       switch (key) {
@@ -200,7 +217,79 @@ module.exports = class Adapter {
       }
     })
 
-    return trx ? query.transacting(trx) : query
+    let result = await (trx ? query.transacting(trx) : query)
+    for (let field of otmPopulate) {
+      await this._oneToModelPopulate(result, field)
+    }
+    for (let field of mtmPopulate) {
+      await this._modelToModelPopulate(result, field.linkerModel, field.initialModel, field.modelToLink)
+    }
+    return result
+  }
+
+  /**
+   * Populates the given models with 1:m relation
+   * @param {Object[]} initialModelArr The array of models to be populated
+   * @param {String} populatingModelIdentity The identity of related model
+   * @private
+   */
+  async _oneToModelPopulate(initialModelArr, populatingModelIdentity) {
+    let idsSet = new Set()
+    for (let model of initialModelArr) {
+      idsSet.add(model[populatingModelIdentity])
+    }
+    const idsArr = [...idsSet]
+
+    const populatingModelsArr = await this.knex(populatingModelIdentity.toLowerCase()).whereIn("id", idsArr)
+    for (let model of initialModelArr) {
+      for (let populatingModel of populatingModelsArr) {
+        if (model[populatingModelIdentity] === populatingModel.id) {
+          model[populatingModelIdentity] = populatingModel
+          break
+        }
+      }
+    }
+  }
+
+  /**
+   * Populates the given model with m:m relation
+   * @param {Array} initialModelArr The array of models to be populated
+   * @param {String} linkerModelIdentity The identity of linker model
+   * @param {String} initialModelIdentity The identity of initial model
+   * @param {String} modelToLinkIdentity The identity of model to be linked
+   * @private
+   */
+  async _modelToModelPopulate(initialModelArr, linkerModelIdentity, initialModelIdentity, modelToLinkIdentity) {
+    let initialModelIdsSet = new Set()
+    for (let initialModel of initialModelArr) {
+      initialModelIdsSet.add(initialModel.id)
+      initialModel[modelToLinkIdentity] = []
+    }
+    const initialModelIdsArr = [...initialModelIdsSet]
+
+    const linkerModelArr = await this
+      .knex(linkerModelIdentity.toLowerCase())
+      .whereIn(initialModelIdentity, initialModelIdsArr)
+    let modelToLinkIdsSet = new Set()
+    for (let linkerModel of linkerModelArr) {
+      modelToLinkIdsSet.add(linkerModel[modelToLinkIdentity])
+    }
+    const modelToLinkIdsArr = [...modelToLinkIdsSet]
+
+    const modelToLinkArr = await this.knex(modelToLinkIdentity.toLowerCase()).whereIn("id", modelToLinkIdsArr)
+    for (let linkerModel of linkerModelArr) {
+      for (let initialModel of initialModelArr) {
+        if (initialModel.id === linkerModel[initialModelIdentity]) {
+          for (let modelToLink of modelToLinkArr) {
+            if (modelToLink.id === linkerModel[modelToLinkIdentity]) {
+              initialModel[modelToLinkIdentity].push(modelToLink)
+              break
+            }
+          }
+          break
+        }
+      }
+    }
   }
 
   /**
@@ -215,10 +304,13 @@ module.exports = class Adapter {
       table.increments("id").primary()
       _.forEach(schema.properties, (value, key) => {
         if (key === "id") return
-        if (!POSTGRES_TYPES.includes(value.type)) {
+        if (!POSTGRES_TYPES.concat("object", "array").includes(value.type)) {
           throw new Error(`Incorrect data type ${value.type} of field ${key} in ${identity}`)
         }
-        const attribute = table[value.type](key)
+        let attribute;
+        ["object", "array"].includes(value.type)
+          ? attribute = table.json(key)
+          : attribute = table[value.type](key)
         if (Array.isArray(schema.required) && schema.required.includes(key)) {
           attribute.notNullable()
         }

@@ -19,6 +19,11 @@ module.exports = {
   },
 
   api: {
-
+    "operatorprofilebinding": [
+      RestService.find("operatorprofilebinding"),
+    ],
+    "operatorprofilebinding/:id": [
+      RestService.findOne("operatorprofilebinding"),
+    ],
   },
 }

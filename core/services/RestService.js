@@ -15,7 +15,28 @@ module.exports = {
       if (!ctx.params.id) {
         ctx.throw(400, "id is required")
       }
-      const instance = await yaxys.db.findOne(identity, { id: ctx.params.id })
+      let otmPopulate = []
+      let mtmPopulate = []
+      if (ctx.query.populate) {
+        const parsedArgs = ctx.query.populate.split(",")
+        for (let arg of parsedArgs) {
+          switch (arg.split(":").length) {
+            case 1:
+              otmPopulate.push(arg)
+              break
+            case 3:
+              mtmPopulate.push({
+                linkerModel: arg.split(":")[0],
+                initialModel: arg.split(":")[1],
+                modelToLink: arg.split(":")[2],
+              })
+              break
+            default:
+              ctx.throw(400, "Bad request")
+          }
+        }
+      }
+      const instance = await yaxys.db.findOne(identity, { id: ctx.params.id }, null, null, otmPopulate, mtmPopulate)
       if (!instance) {
         ctx.throw(404, `${identity} #${ctx.params.id} not found`)
       }
@@ -40,6 +61,8 @@ module.exports = {
     return async ctx => {
       const options = {}
       const filter = {}
+      let otmPopulate = []
+      let mtmPopulate = []
       _.each(ctx.query, (v, k) => {
         switch (k) {
           case "sort":
@@ -55,13 +78,31 @@ module.exports = {
           case "limit":
             options[k] = v
             break
+          case "populate":
+            for (let arg of v.split(",")) {
+              switch (arg.split(":").length) {
+                case 1:
+                  otmPopulate.push(arg)
+                  break
+                case 3:
+                  mtmPopulate.push({
+                    linkerModel: arg.split(":")[0],
+                    initialModel: arg.split(":")[1],
+                    modelToLink: arg.split(":")[2],
+                  })
+                  break
+                default:
+                  ctx.throw(400, "Bad request")
+              }
+            }
+            break
           default:
             filter[k] = v
             break
         }
       })
 
-      ctx.body = await yaxys.db.find(identity, filter, options)
+      ctx.body = await yaxys.db.find(identity, filter, options, null, otmPopulate, mtmPopulate)
     }
   },
 

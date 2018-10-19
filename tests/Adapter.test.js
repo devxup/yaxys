@@ -5,27 +5,78 @@ const Promise = require("bluebird")
 describe("Adapter", () => {
   let gAdapter
 
-  const tableName = "fake_item"
+  const tableNames = ["fake_item", "fake_linker", "fake_initial", "fake_to_link"]
   const getDropQueryForTable = tableName => `DROP TABLE IF EXISTS ${tableName}`
-  const createQuery = `CREATE TABLE ${tableName} (
-    "id" serial not null,
-    "a1" integer,
-    "a2" text,
-    "a3" json DEFAULT NULL,
-    constraint "${tableName}_pkey" primary key ("id")
-  );`
+  const createQueries = [
+    `CREATE TABLE ${tableNames[0]} (
+      "id" serial not null,
+      "a1" integer,
+      "a2" text,
+      "a3" json DEFAULT NULL,
+      constraint "${tableNames[0]}_pkey" primary key ("id")
+    );`,
+    `CREATE TABLE ${tableNames[1]} (
+      "id" serial not null,
+      "fake_initial" integer,
+      "fake_to_link" integer,
+      constraint "${tableNames[1]}_pkey" primary key ("id")
+    );`,
+    `CREATE TABLE ${tableNames[2]} (
+      "id" serial not null,
+      "x1" text,
+      "x2" text,
+      constraint "${tableNames[2]}_pkey" primary key ("id")
+    );`,
+    `CREATE TABLE ${tableNames[3]} (
+      "id" serial not null,
+      "y1" text,
+      "y2" text,
+      constraint "${tableNames[3]}_pkey" primary key ("id")
+    );`,
+  ]
+  const insertQueries = [
+    `INSERT INTO ${tableNames[1]} VALUES (1, 1, 1), (2, 2, 2), (3, 1, 2)`,
+    `INSERT INTO ${tableNames[2]} VALUES (1, 'one', 'hey'), (2, 'two', 'ho'), (3, 'no', 'noooo')`,
+    `INSERT INTO ${tableNames[3]} VALUES (1, 'three', 'lets'), (2, 'four', 'go')`,
+  ]
+
 
   beforeAll(async () => {
     gAdapter = new Adapter(config.get("db"))
     await gAdapter.init()
-    await gAdapter.knex.raw(getDropQueryForTable(tableName))
-    await gAdapter.knex.raw(createQuery)
+    for (let tableName of tableNames) {
+      await gAdapter.knex.raw(getDropQueryForTable(tableName))
+    }
+    for (let createQuery of createQueries) {
+      await gAdapter.knex.raw(createQuery)
+    }
+    for (let insertQuery of insertQueries) {
+      await gAdapter.knex.raw(insertQuery)
+    }
 
-    gAdapter.registerSchema("fake_item", {
+    gAdapter.registerSchema(tableNames[0], {
       properties: {
         a1: { type: "integer" },
         a2: { type: "string" },
         a3: { type: "json" },
+      },
+    })
+    gAdapter.registerSchema(tableNames[1], {
+      properties: {
+        fake_initial: { type: "integer" },
+        fake_to_link: { type: "integer" },
+      },
+    })
+    gAdapter.registerSchema(tableNames[2], {
+      properties: {
+        x1: { type: "string" },
+        x2: { type: "string" },
+      },
+    })
+    gAdapter.registerSchema(tableNames[3], {
+      properties: {
+        y1: { type: "string" },
+        y2: { type: "string" },
       },
     })
   })
@@ -35,56 +86,176 @@ describe("Adapter", () => {
       {
         title: "simple insert",
         method: "insert",
-        args: [tableName, { a1: 1, a2: "v1" }],
+        args: [tableNames[0], { a1: 1, a2: "v1" }],
         result: { id: 1, a1: 1, a2: "v1", a3: null },
       },
       {
         title: "simple update",
         method: "update",
-        args: [tableName, 1, { a1: 3, a3: { k: 1 } }],
+        args: [tableNames[0], 1, { a1: 3, a3: { k: 1 } }],
         result: { id: 1, a1: 3, a2: "v1", a3: { k: 1 } },
       },
       {
         title: "update unexisting item",
         method: "update",
-        args: [tableName, 1000, { a1: 2, a3: { k: 1 } }],
+        args: [tableNames[0], 1000, { a1: 2, a3: { k: 1 } }],
         error: "Update failed – record with id 1000 not found",
       },
       {
         title: "insert another item",
         method: "insert",
-        args: [tableName, { a1: 4 }],
+        args: [tableNames[0], { a1: 4 }],
         result: { id: 2, a2: null, a1: 4, a3: null },
       },
       {
         title: "findOne with back sort",
         method: "findOne",
-        args: [tableName, {}, { limit: 2, sort: { id: -1 } }],
+        args: [tableNames[0], {}, { limit: 2, sort: { id: -1 } }],
         result: { id: 2, a2: null, a1: 4, a3: null },
       },
       {
         title: "find with direct sort",
         method: "find",
-        args: [tableName, {}, { sort: { id: 1 } }],
+        args: [tableNames[0], {}, { sort: { id: 1 } }],
         result: [{ id: 1, a1: 3, a2: "v1", a3: { k: 1 } }, { id: 2, a2: null, a1: 4, a3: null }],
       },
       {
         title: "find with back sort",
         method: "find",
-        args: [tableName, {}, { sort: { id: -1 } }],
+        args: [tableNames[0], {}, { sort: { id: -1 } }],
         result: [{ id: 2, a2: null, a1: 4, a3: null }, { id: 1, a1: 3, a2: "v1", a3: { k: 1 } }],
       },
       {
         title: "find with back sort and limit",
         method: "find",
-        args: [tableName, {}, { sort: { id: -1 }, limit: 1 }],
+        args: [tableNames[0], {}, { sort: { id: -1 }, limit: 1 }],
         result: [{ id: 2, a2: null, a1: 4, a3: null }],
       },
       {
         title: "find with filter",
         method: "find",
-        args: [tableName, { a1: 3 }, { sort: { id: -1 }, limit: 1 }],
+        args: [tableNames[0], { a1: 3 }, { sort: { id: -1 }, limit: 1 }],
         result: [{ id: 1, a1: 3, a2: "v1", a3: { k: 1 } }],
+      },
+      {
+        title: "find with 1:m populate",
+        method: "find",
+        args: [tableNames[1], {}, {}, null, ["fake_initial"]],
+        result: [
+          {
+            id: 1,
+            fake_initial: {
+              id: 1,
+              x1: "one",
+              x2: "hey",
+            },
+            fake_to_link: 1,
+          },
+          {
+            id: 2,
+            fake_initial: {
+              id: 2,
+              x1: "two",
+              x2: "ho",
+            },
+            fake_to_link: 2,
+          },
+          {
+            id: 3,
+            fake_initial: {
+              id: 1,
+              x1: "one",
+              x2: "hey",
+            },
+            fake_to_link: 2,
+          },
+        ],
+      },
+      {
+        title: "find with m:m populate",
+        method: "find",
+        args: [tableNames[2], {}, {}, null, [], [{
+          linkerModel: tableNames[1],
+          initialModel: tableNames[2],
+          modelToLink: tableNames[3],
+        }]],
+        result: [
+          {
+            id: 1,
+            x1: "one",
+            x2: "hey",
+            fake_to_link: [
+              {
+                id: 1,
+                y1: "three",
+                y2: "lets",
+              },
+              {
+                id: 2,
+                y1: "four",
+                y2: "go",
+              },
+            ],
+          },
+          {
+            id: 2,
+            x1: "two",
+            x2: "ho",
+            fake_to_link: [
+              {
+                id: 2,
+                y1: "four",
+                y2: "go",
+              },
+            ],
+          },
+          {
+            id: 3,
+            x1: "no",
+            x2: "noooo",
+            fake_to_link: [],
+          },
+        ],
+      },
+      {
+        title: "findOne with 1:m populate",
+        method: "findOne",
+        args: [tableNames[1], { id: 1 }, {}, null, ["fake_initial"]],
+        result: {
+          id: 1,
+          fake_initial: {
+            id: 1,
+            x1: "one",
+            x2: "hey",
+          },
+          fake_to_link: 1,
+        },
+      },
+      {
+        title: "findOne with m:m populate",
+        method: "findOne",
+        args: [tableNames[2], { id: 1 }, {}, null, [], [{
+          linkerModel: tableNames[1],
+          initialModel: tableNames[2],
+          modelToLink: tableNames[3],
+        }]],
+        result: {
+          id: 1,
+          x1: "one",
+          x2: "hey",
+          fake_to_link: [
+            {
+              id: 1,
+              y1: "three",
+              y2: "lets",
+            },
+            {
+              id: 2,
+              y1: "four",
+              y2: "go",
+            },
+          ],
+        },
       },
     ]
 
@@ -109,19 +280,19 @@ describe("Adapter", () => {
           {
             // inserting item under transaction
             method: "insert",
-            args: [tableName, { a1: 10 }, "_trx_"],
+            args: [tableNames[0], { a1: 10 }, "_trx_"],
             result: { id: 3, a1: 10, a2: null, a3: null },
           },
           {
             // finding item under transaction – should get result
             method: "findOne",
-            args: [tableName, { a1: 10 }, null, "_trx_"],
+            args: [tableNames[0], { a1: 10 }, null, "_trx_"],
             result: { id: 3, a1: 10, a2: null, a3: null },
           },
           {
             // finding item without transaction – should be empty
             method: "findOne",
-            args: [tableName, { a1: 10 }],
+            args: [tableNames[0], { a1: 10 }],
             result: undefined,
           },
           {
@@ -132,13 +303,13 @@ describe("Adapter", () => {
           {
             // ensuring there is an error after transaction rollback
             method: "findOne",
-            args: [tableName, { a1: 10 }, null, "_trx_"],
+            args: [tableNames[0], { a1: 10 }, null, "_trx_"],
             error: "Transaction query already complete",
           },
           {
             // ensuring there is no item without transaction
             method: "findOne",
-            args: [tableName, { a1: 10 }],
+            args: [tableNames[0], { a1: 10 }],
             result: undefined,
           },
         ],
@@ -150,19 +321,19 @@ describe("Adapter", () => {
             // inserting item under transaction
             // id is 4, since even rolled back transaction affects autoincrements
             method: "insert",
-            args: [tableName, { a1: 10 }, "_trx_"],
+            args: [tableNames[0], { a1: 10 }, "_trx_"],
             result: { id: 4, a1: 10, a2: null, a3: null },
           },
           {
             // finding item under transaction – should get result
             method: "findOne",
-            args: [tableName, { a1: 10 }, null, "_trx_"],
+            args: [tableNames[0], { a1: 10 }, null, "_trx_"],
             result: { id: 4, a1: 10, a2: null, a3: null },
           },
           {
             // finding item without transaction – should be empty
             method: "findOne",
-            args: [tableName, { a1: 10 }],
+            args: [tableNames[0], { a1: 10 }],
             result: undefined,
           },
           {
@@ -173,13 +344,13 @@ describe("Adapter", () => {
           {
             // ensuring there is an error after transaction commit
             method: "findOne",
-            args: [tableName, { a1: 10 }, null, "_trx_"],
+            args: [tableNames[0], { a1: 10 }, null, "_trx_"],
             error: "Transaction query already complete",
           },
           {
             // ensuring there is an item after transaction committed
             method: "findOne",
-            args: [tableName, { a1: 10 }],
+            args: [tableNames[0], { a1: 10 }],
             result: { id: 4, a1: 10, a2: null, a3: null },
           },
         ],
