@@ -13,6 +13,7 @@ import Index from "./pages/Index.jsx"
 import Login from "./pages/Login.jsx"
 import Operators from "./pages/Operators.jsx"
 import Operator from "./pages/Operator.jsx"
+import Me from "./pages/Me.jsx"
 
 /* eslint-disable-next-line react/display-name */
 export default (store, constants) => (
@@ -23,6 +24,7 @@ export default (store, constants) => (
           <Route exact path="/login" component={Login} />
           <ProtectedZone>
             <Route exact path="/" component={Index} />
+            <Route exact path="/me" component={Me} />
             <Route exact path="/operators" component={Operators} />
             <Route exact path="/operators/:id" component={Operator} />
           </ProtectedZone>

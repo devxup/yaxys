@@ -6,6 +6,8 @@ import { withStyles } from "@material-ui/core/styles"
 import { Link } from "react-router-dom"
 import { withRouter } from "react-router"
 
+import LoginDialog from "./LoginDialog.jsx"
+
 import classNames from "classnames"
 import Drawer from "@material-ui/core/Drawer"
 import AppBar from "@material-ui/core/AppBar"
@@ -191,8 +193,12 @@ class Wrapper extends Component {
     location: PropTypes.object,
   }
 
-  state = {
-    open: !localStorage.getItem("isDrawerClosed"),
+  constructor(props) {
+    super(props)
+    this.state = {
+      open: !localStorage.getItem("isDrawerClosed"),
+      LoginDetailsOpen: false,
+    }
   }
 
   handleDrawerOpen = () => {
@@ -205,22 +211,30 @@ class Wrapper extends Component {
     this.setState({ open: false })
   }
 
+  closeLoginDialog = () => {
+    this.setState({ LoginDetailsOpen: false })
+  }
+
+  showLoginDialog = () => {
+    this.setState({ LoginDetailsOpen: true })
+  }
+
   renderAuth() {
     const { classes } = this.props
     if (this.props.me) {
       return (
-        <Link to="/login" className={classes.authMe}>
+        <Link to="/me" className={classes.authMe}>
           {this.props.me.email}
         </Link>
       )
     }
     return (
-      <div className={classes.authLogin}>
-        <span className={classes.authLoginSpan}>Log in</span>
-        <Avatar className={classes.avatar}>
-          <PersonIcon />
-        </Avatar>
-      </div>
+        <div className={classes.authLogin} onClick={this.showLoginDialog}>
+          <span className={classes.authLoginSpan}>Log in</span>
+          <Avatar className={classes.avatar}>
+            <PersonIcon />
+          </Avatar>
+        </div>
     )
   }
 
@@ -282,6 +296,7 @@ class Wrapper extends Component {
               Yaxys dashboard
             </Typography>
             {this.renderAuth()}
+            <LoginDialog open={this.state.LoginDetailsOpen} onClose={this.closeLoginDialog} />
           </Toolbar>
         </AppBar>
         <Drawer
