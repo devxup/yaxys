@@ -83,8 +83,22 @@ module.exports = {
     }
   },
 
-  hasRight: (modelKey, right) => async (ctx, next) =>
-    AuthService.checkRight(ctx.operator, modelKey, right)
-      ? await next()
-      : ctx.throw(403, "You don't have rights to perform this action"),
+  /**
+   * Create the policy which checks if the operator has rights to perform some action
+   * @param {String} modelKey The name of the model for which we are checking rights
+   * @param {String} right The name of the right
+   * @returns {Function} The policy
+   */
+  hasRight: (modelKey, right) =>
+    /**
+     * If access is granted, call next middleware of throw 403 exception otherwise
+     * @param {Object} ctx Koa context
+     * @param {Function} next Koa next function
+     */
+    async (ctx, next) => {
+      let response = await AuthService.checkRight(ctx.operator, modelKey, right)
+      response
+        ? await next()
+        : ctx.throw(403, "You don't have rights to perform this action")
+    },
 }

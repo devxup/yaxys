@@ -58,12 +58,45 @@ module.exports = {
     return _.omit(result, "iat")
   },
 
-  checkRight: (operator, modelKey, right) =>
-    !!(operator.isAdministrator
-      || (
-        operator.rights
-        && operator.rights[modelKey.toLowerCase()]
-        && operator.rights[modelKey.toLowerCase()].includes(right.toLowerCase())
-      )
-    ),
+  /**
+   * Check if operator has rights to perform an action
+   * @param {Object} operator The operator object
+   * @param {String} modelKey The name of the model for which we are checking rights
+   * @param {String} right The name of the right
+   * @returns {Promise<boolean>} True if operator has rights and false if not
+   */
+  checkRight: async (operator, modelKey, right) => {
+    if (operator.isAdministrator) {
+      return true
+    }
+
+    if (operator.rights
+      && operator.rights[modelKey.toLowerCase()]
+      && (!(operator.rights[modelKey.toLowerCase()][right.toLowerCase()] == null))
+    ) {
+      return !!operator.rights[modelKey.toLowerCase()][right.toLowerCase()]
+    }
+
+    const profilesArr = (await yaxys.db.findOne(
+      "operator",
+      { id: operator.id },
+      null,
+      null,
+      [],
+      [{
+        linkerModel: "operatorProfileBinding",
+        initialModel: "operator",
+        modelToLink: "operatorProfile",
+      }])).operatorProfile
+
+    for (let profile of profilesArr) {
+      if (profile.rights
+        && profile.rights[modelKey.toLowerCase()]
+        && profile.rights[modelKey.toLowerCase()][right.toLowerCase()]
+      ) {
+        return true
+      }
+    }
+    return false
+  },
 }
