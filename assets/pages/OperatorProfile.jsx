@@ -124,6 +124,7 @@ class OperatorProfile extends Component {
               <Paper className={classes.rights}>
                 <h5>The profile rights:</h5>
                 <RightsEditor
+                  type="profile"
                   values={(this.state.operatorProfile && this.state.operatorProfile.rights) || {}}
                   onChange={this.onRightsChange}
                 />

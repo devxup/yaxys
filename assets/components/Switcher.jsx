@@ -33,7 +33,7 @@ export default class Switcher extends Component {
     const props = propsArg || this.props
     return {
       index: -1,
-      value: undefined,
+      value: null,
       label: props.emptyLabel,
       classes: props.emptyClasses,
       props: props.emptyProps,
@@ -79,7 +79,6 @@ export default class Switcher extends Component {
   }
 
   render() {
-
     return <Button
       onClick={ this.onClick }
       classes={ Object.assign({}, this.props.classes, this.state.valueObject && this.state.valueObject.classes) }

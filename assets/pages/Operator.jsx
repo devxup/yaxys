@@ -144,7 +144,7 @@ class Operator extends Component {
               && <Paper className={classes.rights}>
                 <h5>The operator&#39;s rights:</h5>
                 <RightsEditor
-                  hasEmpty={true}
+                  type="operator"
                   values={(this.state.operator && this.state.operator.rights) || {}}
                   onChange={this.onRightsChange}
                 />

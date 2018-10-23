@@ -1,18 +1,16 @@
 import React, { Component, Fragment } from "react"
 import PropTypes from "prop-types"
-
-import { withStyles } from "@material-ui/core/styles"
-
-import { withConstants } from "../services/Utils"
 import classNames from "classnames"
 
-import Switcher from "./Switcher.jsx"
-
+import { withStyles } from "@material-ui/core/styles"
 import { red, green, grey } from "@material-ui/core/colors"
+
+import { withConstants } from "../services/Utils"
+import Switcher from "./Switcher.jsx"
 
 const styles = theme => ({
   switcherCommon: {
-    width: 180,
+    width: 190,
     marginRight: 10,
     background: grey["200"],
     "&:hover": {
@@ -43,10 +41,10 @@ export default
 @withStyles(styles)
 class RightsEditor extends Component {
   static propTypes = {
+    type: PropTypes.arrayOf(),
     values: PropTypes.object,
     constants: PropTypes.object,
     onChange: PropTypes.func,
-    hasEmpty: PropTypes.bool,
   }
 
   constructor(props) {
@@ -62,10 +60,12 @@ class RightsEditor extends Component {
   }
 
   renderRight(identity, right, rightTitle) {
-    const { classes, hasEmpty } = this.props
-    const rawValue = this.state.values[identity] && this.state.values[identity][right];
-    const choices = hasEmpty
-      ? [
+    const { classes, type } = this.props
+    const rawValue = this.state.values[identity] && this.state.values[identity][right]
+    let choices
+    switch (type) {
+      case "operator":
+        choices = [
           {
             label: `${rightTitle}: denied`,
             value: false,
@@ -78,27 +78,37 @@ class RightsEditor extends Component {
             value: true,
             classes: {
               root: classNames(classes.switcherCommon, classes.switcherAllowed),
-            }
-          }
+            },
+          },
         ]
-      : [
-        {
-          label: `${rightTitle}: allowed`,
-          value: true,
-          classes: {
-            root: classNames(classes.switcherCommon, classes.switcherAllowed),
-          }
-        }
-      ]
+        break
+      case "profile":
+        choices = [
+          {
+            label: `${rightTitle}: allowed`,
+            value: true,
+            classes: {
+              root: classNames(classes.switcherCommon, classes.switcherAllowed),
+            },
+          },
+        ]
+        break
+    }
     return (
       <Switcher
         emptyAllow={ true }
-        emptyLabel={ !hasEmpty ? `${rightTitle}: don't touch` : `${rightTitle}: from profile`}
+        emptyLabel={
+          type === "profile"
+            ? `${rightTitle}: don't change`
+            : `${rightTitle}: from profile`
+        }
         classes={{ root: classes.switcherCommon }}
         choices={choices}
         onChange={this.onChange(identity, right)}
         value={
-          hasEmpty ? rawValue: !!rawValue
+          type === "profile"
+            ? !!rawValue || null
+            : rawValue
         }
       />
     )

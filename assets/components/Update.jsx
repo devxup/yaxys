@@ -111,6 +111,7 @@ class Update extends Component {
 
   _isChanged(propsArg) {
     const props = propsArg || this.props
+
     return !isEqual(
       pickBy(props.item && props.item.data, identity),
       pickBy(props.current, identity)
