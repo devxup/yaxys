@@ -210,7 +210,8 @@ export default class Wrapper extends Component {
     me: PropTypes.object,
     location: PropTypes.object,
     bottom: PropTypes.object,
-    breadcrumb: PropTypes.array,
+    breadcrumbs: PropTypes.array,
+    isBreadcrumbsRoot: PropTypes.bool,
   }
 
   state = {
@@ -310,7 +311,8 @@ export default class Wrapper extends Component {
               <MenuIcon />
             </IconButton>
               <Breadcrumbs
-                items={ this.props.breadcrumb }
+                isRoot={ this.props.isBreadcrumbsRoot }
+                items={ this.props.breadcrumbs }
               />
             {this.renderAuth()}
           </Toolbar>

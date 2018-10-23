@@ -7,7 +7,7 @@ export default class Login extends Component {
   render() {
     return (
       <Wrapper
-        breadcrumb={
+        breadcrumbs={
           [
             "Login",
           ]

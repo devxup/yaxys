@@ -105,7 +105,18 @@ export default class OperatorProfile extends Component {
       />
     )
     return (
-      <Wrapper bottom={update}>
+      <Wrapper
+        bottom={update}
+        breadcrumbs={
+          [
+            { title: "Settings", url: "/settings" },
+            { title: "Operator profiles", url: "/settings/operator-profiles" },
+            operatorProfile && operatorProfile.success
+              ? `#${match.params.id} ${operatorProfile.data.title}`
+              : `Operator profile #${match.params.id}`,
+          ]
+        }
+      >
         <h1 style={{ marginTop: 0 }}>Operator Profile #{match.params.id}</h1>
         <Loader item={operatorProfile}>
           <Fragment>

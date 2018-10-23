@@ -15,7 +15,11 @@ import Created from "../components/Created.jsx"
 import ModelTable from "../components/ModelTable.jsx"
 import ModelDialog from "../components/ModelDialog.jsx"
 
-const profilesClue = props => ({ identity: "operatorprofile", query: queries.FIND, sort: { id: 1 } })
+const profilesClue = props => ({
+  identity: "operatorprofile",
+  query: queries.FIND,
+  sort: { id: 1 },
+})
 const profilesSelector = YaxysClue.selectors.byClue(profilesClue)
 
 const CREATED_PROFILES_MARKER = "profiles-page"
@@ -24,7 +28,6 @@ const createdProfilesSelector = YaxysClue.selectors.byClue(
   { marker: CREATED_PROFILES_MARKER }
 )
 
-export default
 @withConstants
 @connect(
   (state, props) => ({
@@ -36,7 +39,7 @@ export default
     createProfile: YaxysClue.actions.byClue,
   }
 )
-class OperatorProfiles extends Component {
+export default class OperatorProfiles extends Component {
   state = {
     addOpen: false,
   }
@@ -69,7 +72,7 @@ class OperatorProfiles extends Component {
   render() {
     const { constants, profiles } = this.props
     return (
-      <Wrapper>
+      <Wrapper breadcrumbs={[{ title: "Settings", url: "/settings" }, "Operator profiles"]}>
         <Button
           variant="fab"
           color="secondary"
@@ -102,7 +105,7 @@ class OperatorProfiles extends Component {
           onClose={this.onAddClose}
           onReady={this.onAddReady}
           schema={constants.schemas.operatorprofile}
-          attributes={ ["title"] }
+          attributes={["title"]}
           btnReady="Create"
         >
           Please provide title the new operator profile.

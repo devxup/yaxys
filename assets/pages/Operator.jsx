@@ -115,10 +115,10 @@ export default class Operator extends Component {
     return (
       <Wrapper
         bottom={update}
-        breadcrumb={
+        breadcrumbs={
           [
             { title: "Operators", url: "/operators" },
-            "Operator",
+            `Operator #${match.params.id}`,
           ]
         }
       >
