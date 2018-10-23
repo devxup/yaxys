@@ -88,7 +88,13 @@ class Operator extends Component {
   render() {
     const { operator, match } = this.props
     return (
-      <Wrapper>
+      <Wrapper
+      breadcrumb={
+        [
+          { title: "Operators", url: "/operators" },
+          "Operator",
+        ]
+      }>
         <h1 style={{ marginTop: 0 }}>Operator #{match.params.id}</h1>
         <Loader item={operator}>
           <Fragment>

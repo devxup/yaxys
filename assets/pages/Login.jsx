@@ -6,7 +6,13 @@ import LoginForm from "../components/LoginForm.jsx"
 export default class Login extends Component {
   render() {
     return (
-      <Wrapper>
+      <Wrapper
+        breadcrumb={
+          [
+            "Login",
+          ]
+        }
+      >
         <h1 style={{ marginTop: 0 }}>Login to Yaxys</h1>
         <LoginForm />
       </Wrapper>
