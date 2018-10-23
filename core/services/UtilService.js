@@ -1,5 +1,9 @@
+const config = require("config")
+
 module.exports = {
-  constants: {},
+  constants: {
+    timezone: config.get("timezone"),
+  },
 
   /**
    * Perform the rest of initialization:
