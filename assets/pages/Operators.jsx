@@ -70,7 +70,13 @@ class Operators extends Component {
   render() {
     const { constants, operators } = this.props
     return (
-      <Wrapper>
+      <Wrapper
+        breadcrumb={
+          [
+            "Operators",
+          ]
+        }
+      >
         <Button
           variant="fab"
           color="secondary"

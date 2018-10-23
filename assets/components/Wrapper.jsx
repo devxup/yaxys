@@ -11,7 +11,6 @@ import Drawer from "@material-ui/core/Drawer"
 import AppBar from "@material-ui/core/AppBar"
 import Toolbar from "@material-ui/core/Toolbar"
 import List from "@material-ui/core/List"
-import Typography from "@material-ui/core/Typography"
 import Divider from "@material-ui/core/Divider"
 import IconButton from "@material-ui/core/IconButton"
 import MenuIcon from "@material-ui/icons/Menu"
@@ -29,6 +28,7 @@ import PictureInPictureIcon from "@material-ui/icons/PictureInPicture"
 import SettingsIcon from "@material-ui/icons/Settings"
 import Avatar from "@material-ui/core/Avatar"
 import PersonIcon from "@material-ui/icons/Person"
+import Breadcrumbs from "../components/Breadcrumbs.jsx"
 
 import { meSelector } from "../services/Me"
 
@@ -110,9 +110,6 @@ const styles = theme => ({
   },
   menuButtonHidden: {
     display: "none",
-  },
-  title: {
-    flexGrow: 1,
   },
   drawerPaper: {
     position: "relative",
@@ -213,6 +210,7 @@ export default class Wrapper extends Component {
     me: PropTypes.object,
     location: PropTypes.object,
     bottom: PropTypes.object,
+    breadcrumb: PropTypes.array,
   }
 
   state = {
@@ -311,15 +309,9 @@ export default class Wrapper extends Component {
             >
               <MenuIcon />
             </IconButton>
-            <Typography
-              component="h1"
-              variant="title"
-              color="inherit"
-              noWrap
-              className={classes.title}
-            >
-              Yaxys dashboard
-            </Typography>
+              <Breadcrumbs
+                items={ this.props.breadcrumb }
+              />
             {this.renderAuth()}
           </Toolbar>
         </AppBar>

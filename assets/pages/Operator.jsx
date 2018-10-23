@@ -113,7 +113,15 @@ export default class Operator extends Component {
       />
     )
     return (
-      <Wrapper bottom={update}>
+      <Wrapper
+        bottom={update}
+        breadcrumb={
+          [
+            { title: "Operators", url: "/operators" },
+            "Operator",
+          ]
+        }
+      >
         <h1 style={{ marginTop: 0 }}>Operator #{match.params.id}</h1>
         <Loader item={operator}>
           <Fragment>
