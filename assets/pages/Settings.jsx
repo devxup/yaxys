@@ -2,10 +2,9 @@
 import React, { Component } from "react"
 import { Link } from "react-router-dom"
 
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from "@material-ui/core/styles"
 import Paper from "@material-ui/core/Paper"
 import Wrapper from "../components/Wrapper.jsx"
-
 
 const styles = theme => ({
   root: {
@@ -15,9 +14,8 @@ const styles = theme => ({
   },
 })
 
-export default
 @withStyles(styles)
-class Settings extends Component {
+export default class Settings extends Component {
   render() {
     const { classes } = this.props
     return (

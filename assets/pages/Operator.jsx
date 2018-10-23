@@ -5,7 +5,7 @@ import { connect } from "react-redux"
 import YaxysClue, { queries } from "../services/YaxysClue"
 import { pick, cloneDeep, pull } from "lodash"
 
-import { Paper, FormControlLabel, Switch } from '@material-ui/core';
+import { Paper, FormControlLabel, Switch } from "@material-ui/core"
 import { withStyles } from "@material-ui/core/styles"
 
 import { withConstants } from "../services/Utils"
@@ -26,11 +26,10 @@ const operatorSelector = YaxysClue.selectors.byClue(operatorClue)
 const styles = {
   rights: {
     padding: "1px 30px 20px",
-    margin: "0 0 30px 0"
-  }
+    margin: "0 0 30px 0",
+  },
 }
 
-export default
 @withStyles(styles)
 @withConstants
 @connect(
@@ -41,7 +40,7 @@ export default
     loadOperator: YaxysClue.actions.byClue,
   }
 )
-class Operator extends Component {
+export default class Operator extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -86,8 +85,7 @@ class Operator extends Component {
   onFormChange = data => {
     this.setState({
       operator: { ...this.state.operator, ...data.values },
-      modifiedAt: new
-      Date().getTime(),
+      modifiedAt: new Date().getTime(),
     })
   }
 
@@ -106,12 +104,14 @@ class Operator extends Component {
 
   render() {
     const { operator, match, classes } = this.props
-    const update = <Update
-      clue={operatorClue(this.props)}
-      current={this.state.operator}
-      schema={this.state.schema}
-      modifiedAt={this.state.modifiedAt}
-    />
+    const update = (
+      <Update
+        clue={operatorClue(this.props)}
+        current={this.state.operator}
+        schema={this.state.schema}
+        modifiedAt={this.state.modifiedAt}
+      />
+    )
     return (
       <Wrapper bottom={update}>
         <h1 style={{ marginTop: 0 }}>Operator #{match.params.id}</h1>
@@ -130,7 +130,7 @@ class Operator extends Component {
             <FormControlLabel
               control={
                 <Switch
-                  checked={ !!this.state.operator.isAdministrator }
+                  checked={!!this.state.operator.isAdministrator}
                   onChange={this.handleSingleChange("isAdministrator")}
                   color="primary"
                   value="isAdministrator"
@@ -139,9 +139,8 @@ class Operator extends Component {
               label="isAdministrator"
             />
 
-            {
-              !this.state.operator.isAdministrator
-              && <Paper className={classes.rights}>
+            {!this.state.operator.isAdministrator && (
+              <Paper className={classes.rights}>
                 <h5>The operator&#39;s rights:</h5>
                 <RightsEditor
                   type="operator"
@@ -149,7 +148,7 @@ class Operator extends Component {
                   onChange={this.onRightsChange}
                 />
               </Paper>
-            }
+            )}
           </Fragment>
         </Loader>
       </Wrapper>

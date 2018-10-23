@@ -36,9 +36,11 @@ module.exports = {
   },
   parser: "babel-eslint",
   parserOptions: {
+    ecmaVersion: 2018,
     ecmaFeatures: {
       experimentalObjectRestSpread: true,
       jsx: true,
+      legacyDecorators: true,
     },
     sourceType: "module",
   },
@@ -48,7 +50,7 @@ module.exports = {
     "eol-last": [2, "always"],
     "no-console": 1,
     "no-debugger": 1,
-    "no-unused-vars": [1, { ignoreRestSiblings: true, args: "none" }],
+    "no-unused-vars": [2, { ignoreRestSiblings: true, args: "none" }],
     "linebreak-style": ["error", "unix"],
     "react/display-name": 1,
     "react/forbid-prop-types": [1, { forbid: ["any"] }],
@@ -86,12 +88,12 @@ module.exports = {
     "valid-jsdoc": [2, { "requireReturn": false }],
 
     // prettier-oriented rules
-    semi: [1, "never"],
+    "semi": [2, "never"],
     "max-len": [1, { code: 120, ignoreStrings: true, ignoreTemplateLiterals: true }],
-    "comma-dangle": [1, "always-multiline"],
-    quotes: [1, "double", { avoidEscape: true }],
-    "space-in-parens": [1, "never"],
-    "comma-spacing": 1,
-    "object-curly-spacing": [1, "always"],
+    "comma-dangle": [2, "always-multiline"],
+    "quotes": [1, "double", { avoidEscape: true }],
+    "space-in-parens": [2, "never"],
+    "comma-spacing": 2,
+    "object-curly-spacing": [2, "always"],
   },
 }

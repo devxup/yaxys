@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from "react"
+import React, { Component } from "react"
 import PropTypes from "prop-types"
 import Button from "@material-ui/core/Button"
 import { isNil, findIndex } from "lodash"
@@ -18,7 +18,7 @@ export default class Switcher extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      valueObject: this.getValueObject(props)
+      valueObject: this.getValueObject(props),
     }
   }
 
@@ -56,7 +56,7 @@ export default class Switcher extends Component {
 
   onClick = event => {
     const { choices, emptyAllow, onChange } = this.props
-    const index = (this.state.valueObject && this.state.valueObject.index)
+    const index = this.state.valueObject && this.state.valueObject.index
     let nextIndex = index + 1
 
     let valueObject = null
@@ -79,12 +79,18 @@ export default class Switcher extends Component {
   }
 
   render() {
-    return <Button
-      onClick={ this.onClick }
-      classes={ Object.assign({}, this.props.classes, this.state.valueObject && this.state.valueObject.classes) }
-      { ...(this.state.valueObject && this.state.valueObject.props) }
-    >
-      { (this.state.valueObject && this.state.valueObject.label) || "Unknown value" }
-    </Button>
+    return (
+      <Button
+        onClick={this.onClick}
+        classes={Object.assign(
+          {},
+          this.props.classes,
+          this.state.valueObject && this.state.valueObject.classes
+        )}
+        {...this.state.valueObject && this.state.valueObject.props}
+      >
+        {(this.state.valueObject && this.state.valueObject.label) || "Unknown value"}
+      </Button>
+    )
   }
 }

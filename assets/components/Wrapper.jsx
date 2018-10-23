@@ -1,4 +1,4 @@
-import React, {Component, Fragment} from "react"
+import React, { Component, Fragment } from "react"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
 
@@ -186,7 +186,7 @@ const styles = theme => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen,
     }),
-    zIndex:100
+    zIndex: 100,
   },
   bottomClosed: {
     left: theme.spacing.unit * 7,
@@ -203,13 +203,12 @@ const styles = theme => ({
   },
 })
 
-export default
 @withRouter
 @withStyles(styles)
 @connect((state, props) => ({
   me: meSelector(state),
 }))
-class Wrapper extends Component {
+export default class Wrapper extends Component {
   static propTypes = {
     me: PropTypes.object,
     location: PropTypes.object,
@@ -279,13 +278,17 @@ class Wrapper extends Component {
 
   renderBottom() {
     const { classes, bottom } = this.props
-    if (!bottom) { return }
-    return <Fragment>
-      <div className={classes.bottomSpacer} />
-      <div className={ classNames(classes.bottom, !this.state.open && classes.bottomClosed )}>
-        { bottom }
-      </div>
-    </Fragment>
+    if (!bottom) {
+      return
+    }
+    return (
+      <Fragment>
+        <div className={classes.bottomSpacer} />
+        <div className={classNames(classes.bottom, !this.state.open && classes.bottomClosed)}>
+          {bottom}
+        </div>
+      </Fragment>
+    )
   }
 
   render() {
@@ -340,7 +343,7 @@ class Wrapper extends Component {
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
           {this.props.children}
-          { this.renderBottom() }
+          {this.renderBottom()}
         </main>
       </div>
     )

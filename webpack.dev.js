@@ -4,7 +4,7 @@ const webpack = require("webpack")
 
 const config = {
   mode: "development",
-  entry: ["babel-polyfill", "./assets/app.jsx"],
+  entry: ["@babel/polyfill", "./assets/app.jsx"],
   plugins: [
     new webpack.DefinePlugin({
       "process.env.NODE_ENV": JSON.stringify("development"),

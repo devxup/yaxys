@@ -1,5 +1,4 @@
-import React, { createContext, Component } from "react"
-import PropTypes from "prop-types"
+import React, { createContext } from "react"
 
 // Some props coming from selector may be an Immutable Map,
 // so we convert them into JSON using this HOC

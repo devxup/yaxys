@@ -120,7 +120,7 @@ describe("AuthService", () => {
           email: "test@test.test",
           passwordHash: "someHash",
           rights: {
-            somemodel: {"read":true, "update":true, "neededright": true},
+            somemodel: { read: true, update: true, neededright: true },
           },
         },
         modelKey: "someModel", //should be lowercase normally, but we are testing if the function still works
@@ -134,7 +134,7 @@ describe("AuthService", () => {
           email: "test@test.test",
           passwordHash: "someHash",
           rights: {
-            somemodel: {"read": true, "update": true},
+            somemodel: { read: true, update: true },
           },
         },
         modelKey: "someModel",
@@ -148,7 +148,7 @@ describe("AuthService", () => {
           email: "test@test.test",
           passwordHash: "someHash",
           rights: {
-            anothermodel: {"read": true, "update": true},
+            anothermodel: { read: true, update: true },
           },
         },
         modelKey: "someModel",

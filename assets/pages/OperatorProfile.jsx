@@ -3,9 +3,9 @@ import React, { Component, Fragment } from "react"
 import { connect } from "react-redux"
 
 import YaxysClue, { queries } from "../services/YaxysClue"
-import { pick, cloneDeep, pull } from "lodash"
+import { pick, cloneDeep } from "lodash"
 
-import { Paper, FormControlLabel, Switch } from "@material-ui/core"
+import { Paper } from "@material-ui/core"
 import { withStyles } from "@material-ui/core/styles"
 
 import { withConstants } from "../services/Utils"
@@ -30,7 +30,6 @@ const styles = {
   },
 }
 
-export default
 @withStyles(styles)
 @withConstants
 @connect(
@@ -41,7 +40,7 @@ export default
     loadOperatorProfile: YaxysClue.actions.byClue,
   }
 )
-class OperatorProfile extends Component {
+export default class OperatorProfile extends Component {
   constructor(props) {
     super(props)
     this.state = {

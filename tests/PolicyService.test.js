@@ -28,14 +28,14 @@ describe("PolicyService", () => {
     ]
 
     let yaxysBuffer
-    beforeAll(() => yaxysBuffer = global.yaxys)
-    afterAll(() => global.yaxys = yaxysBuffer)
+    beforeAll(() => (yaxysBuffer = global.yaxys))
+    afterAll(() => (global.yaxys = yaxysBuffer))
     testCases.forEach(testCase =>
       it(testCase.title, async () => {
         global.yaxys = {
           db: {
-            findOne: () => testCase.operator
-          }
+            findOne: () => testCase.operator,
+          },
         }
         const mockThrow = jest.fn()
         const mockNext = jest.fn()
@@ -56,7 +56,8 @@ describe("PolicyService", () => {
           expect(mockCtx.operator).toStrictEqual({
             id: testCase.operator.id,
             email: testCase.operator.email,
-            exp: jwt.verify(testCase.token, config.get("jwt.secret")).iat + config.get("jwt.lifetime"),
+            exp:
+              jwt.verify(testCase.token, config.get("jwt.secret")).iat + config.get("jwt.lifetime"),
           })
         }
       })
@@ -72,7 +73,7 @@ describe("PolicyService", () => {
           email: "test@test.test",
           passwordHash: "someHash",
           rights: {
-            somemodel: {"read": true, "update": true, "neededright": true},
+            somemodel: { read: true, update: true, neededright: true },
           },
         },
         modelKey: "somemodel",
@@ -86,7 +87,7 @@ describe("PolicyService", () => {
           email: "test@test.test",
           passwordHash: "someHash",
           rights: {
-            somemodel: {"read": true, "update": true},
+            somemodel: { read: true, update: true },
           },
         },
         modelKey: "someModel",
