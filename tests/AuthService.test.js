@@ -165,4 +165,106 @@ describe("AuthService", () => {
       })
     )
   })
+  describe("hasCustomRights", () => {
+    const testCases = [
+      {
+        title: "No rights",
+        instance: {
+          rights: null,
+        },
+        patch: {
+          rights: null,
+        },
+        expectedResult: false,
+      },
+      {
+        title: "Prefer patch, result = true",
+        instance: {
+          rights: {},
+        },
+        patch: {
+          rights: { operator: { create: false } },
+        },
+        expectedResult: true,
+      },
+      {
+        title: "Prefer patch, result = false",
+        instance: {
+          rights: { operator: { create: false } },
+        },
+        patch: {
+          rights: {},
+        },
+        expectedResult: false,
+      },
+      {
+        title: "Count false as custom",
+        instance: {
+          rights: { operator: { rightName: false } },
+        },
+        expectedResult: true,
+      },
+      {
+        title: "Count true as custom",
+        instance: {
+          rights: { operator: { rightName: true } },
+        },
+        expectedResult: true,
+      },
+      {
+        title: "Count null as not custom",
+        instance: {
+          rights: { operator: { rightName: null } },
+        },
+        expectedResult: false,
+      },
+      {
+        title: "Count undefined as not custom",
+        instance: {
+          rights: { operator: { rightName: undefined } },
+        },
+        expectedResult: false,
+      },
+      {
+        title: "Some rights",
+        instance: {
+          rights: { operator: { rightName: undefined, anotherRight: false } },
+        },
+        expectedResult: true,
+      },
+      {
+        title: "Some models",
+        instance: {
+          rights: { operator: { rightName: undefined }, operatorProfile: { anotherRight: false } },
+        },
+        expectedResult: true,
+      },
+    ]
+
+    let yaxysBuffer
+    beforeAll(() => {
+      yaxysBuffer = global.yaxys
+      global.yaxys = {
+        models: { operator: {}, operatorProfile: {} },
+      }
+    })
+    afterAll(() => {
+      global.yaxys = yaxysBuffer
+    })
+    testCases.forEach(testCase => {
+      it(testCase.title, () => {
+        expect(AuthService.hasCustomRights(testCase.instance, testCase.patch)).toBe(
+          testCase.expectedResult
+        )
+      })
+      it(`${testCase.title}, string case`, () => {
+        expect(AuthService.hasCustomRights(
+          testCase.instance && { ...testCase.instance, rights: JSON.stringify(testCase.instance.rights) },
+          testCase.patch && { ...testCase.patch, rights: JSON.stringify(testCase.patch.rights) },
+        )).toBe(
+          testCase.expectedResult
+        )
+      })
+    })
+  })
 })

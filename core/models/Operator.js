@@ -24,8 +24,22 @@ module.exports = {
       isAdministrator: {
         type: "boolean",
       },
+      hasCustomRights: {
+        title: "Has custom rights",
+        readOnly: true,
+        type: "boolean",
+      },
     },
     required: ["email", "passwordHash"],
+  },
+
+  hooks: {
+    "create:before": (event, trx, blank) => {
+      blank.hasCustomRights = AuthService.hasCustomRights(blank)
+    },
+    "update:before": (trx, old, patch) => {
+      patch.hasCustomRights = AuthService.hasCustomRights(old, patch)
+    },
   },
 
   api: {

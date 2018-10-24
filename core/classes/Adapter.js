@@ -1,5 +1,6 @@
 const knex = require("knex")
 const _ = require("lodash")
+const EventEmitter = require("promise-events")
 
 const DEFAULT_OPTIONS = {
   limit: 100,
@@ -33,6 +34,7 @@ module.exports = class Adapter {
     })
     this.options = Object.assign({}, DEFAULT_OPTIONS, options)
     this.schemas = {}
+    this.emitter = new EventEmitter()
   }
 
   /**
@@ -41,6 +43,15 @@ module.exports = class Adapter {
    */
   async init() {
     await this.knex.raw("select now();")
+  }
+
+  /**
+   * Register db listener
+   * @param {String} event The event to listen
+   * @param {Function} listener The listener
+   */
+  on(event, listener) {
+    this.emitter.on(event, listener)
   }
 
   /**
@@ -129,11 +140,17 @@ module.exports = class Adapter {
 
     const fixedData = this._sanitize(identity, dataToInsert)
 
+    await this.emitter.emit(`${identity}:create:before`, trx, fixedData)
+
     const insert = this.knex(identity)
       .insert(fixedData)
       .returning("*")
     const result = trx ? await insert.transacting(trx) : await insert
-    return result[0]
+    const item = result[0]
+
+    await this.emitter.emit(`${identity}:create:after`, trx, result)
+
+    return item
   }
 
   /**
@@ -150,6 +167,9 @@ module.exports = class Adapter {
     }
     const fixedData = this._sanitize(identity, data)
 
+    const old = await this.findOne(identity, { id }, {}, trx)
+    await this.emitter.emit(`${identity}:update:before`, trx, old, fixedData)
+
     const update = this.knex(identity)
       .where({ id })
       .update(fixedData)
@@ -160,7 +180,10 @@ module.exports = class Adapter {
       throw new Error(`Update failed – record with id ${id} not found`)
     }
 
-    return result[0]
+    const item = result[0]
+    await this.emitter.emit(`${identity}:update:after`, trx, item)
+
+    return item
   }
 
   /**

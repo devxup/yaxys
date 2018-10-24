@@ -59,11 +59,27 @@ module.exports = {
   },
 
   checkRight: (operator, modelKey, right) =>
-    !!(operator.isAdministrator
-      || (
-        operator.rights
-        && operator.rights[modelKey.toLowerCase()]
-        && operator.rights[modelKey.toLowerCase()][right.toLowerCase()]
-      )
+    !!(
+      operator.isAdministrator ||
+      (operator.rights &&
+        operator.rights[modelKey.toLowerCase()] &&
+        operator.rights[modelKey.toLowerCase()][right.toLowerCase()])
     ),
+
+  /**
+   * Calculate hasCustomRights value basing on instance and patch being applied
+   * @param {Object} instance The current instance
+   * @param {Object=} patch The patch being applied
+   * @returns {boolean} The value of hasCustomRights for the model after applying the patch or creating
+   */
+  hasCustomRights(instance, patch = null) {
+    const rightsRaw = (patch && patch.rights) || (instance && instance.rights)
+    const rights = typeof rightsRaw === "string" ? JSON.parse(rightsRaw) : rightsRaw
+    return (
+      !!rights &&
+      _.some(yaxys.models, (model, identity) => {
+        return _.some(rights[identity], value => !_.isNil(value))
+      })
+    )
+  },
 }
