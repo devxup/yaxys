@@ -169,22 +169,10 @@ module.exports = class Adapter {
    * @param {Object} filter The filter to match
    * @param {Object} [options] The options to find
    * @param {Object} [trx] The transaction context
-   * @param {Array} [otmPopulate] Fields to be populated with 1:m relation
-   * @param {Object[]} [mtmPopulate] Identities of models to be linked with m:m relation
-   * @param {String} mtmPopulate[].linkerModel The linker model identity
-   * @param {String} mtmPopulate[].initialModel The initial model identity
-   * @param {String} mtmPopulate[].modelToLink The model to link identity
    * @returns {Promise<Object|undefined>} The model found or undefined
    */
-  async findOne(identity, filter, options, trx, otmPopulate = [], mtmPopulate = []) {
-    let result = (await this.find(identity, filter, Object.assign({ limit: 1 }, options), trx))[0]
-    for (let field of otmPopulate) {
-      await this._oneToModelPopulate([result], field)
-    }
-    for (let field of mtmPopulate) {
-      await this._modelToModelPopulate([result], field.linkerModel, field.initialModel, field.modelToLink)
-    }
-    return result
+  async findOne(identity, filter, options, trx) {
+    return (await this.find(identity, filter, Object.assign({ limit: 1 }, options), trx))[0]
   }
 
   /**
@@ -193,14 +181,9 @@ module.exports = class Adapter {
    * @param {Object} filter The filter to match
    * @param {Object} [options] The options to find
    * @param {Object} [trx] The transaction context
-   * @param {Array} [otmPopulate] Fields to be populated with 1:m relation
-   * @param {Object[]} [mtmPopulate] Identities of models to be linked with m:m relation
-   * @param {String} mtmPopulate[].linkerModel The linker model identity
-   * @param {String} mtmPopulate[].initialModel The initial model identity
-   * @param {String} mtmPopulate[].modelToLink The model to link identity
    * @returns {Promise<Array<Object>>} The array of found models
    */
-  async find(identity, filter, options, trx, otmPopulate = [], mtmPopulate = []) {
+  async find(identity, filter, options, trx) {
     let query = this.knex(identity).where(filter)
     _.each(Object.assign({}, this.options, options), (value, key) => {
       switch (key) {
@@ -218,77 +201,121 @@ module.exports = class Adapter {
     })
 
     let result = await (trx ? query.transacting(trx) : query)
-    for (let field of otmPopulate) {
-      await this._oneToModelPopulate(result, field)
+    if (options.populate) {
+      const populateArgs = this._parsePopulateArguments(options.populate)
+      for (let field of populateArgs.otmPopulate) {
+        await this._oneToManyPopulate(identity, result, field)
+      }
+      for (let field of populateArgs.mtmPopulate) {
+        await this._manyToManyPopulate(identity, result, field.linkerModel, field.initialModel, field.modelToLink)
+      }
     }
-    for (let field of mtmPopulate) {
-      await this._modelToModelPopulate(result, field.linkerModel, field.initialModel, field.modelToLink)
+    return result
+  }
+
+  /**
+   * Parse arguments for populating models
+   * @param {(string|string[])} args Populate arguments
+   * @returns {{otmPopulate: Array, mtmPopulate: Array}} Parsed arguments object
+   * @private
+   */
+  _parsePopulateArguments(args) {
+    const result = { otmPopulate: [], mtmPopulate: [] }
+    let argsCopy
+    Array.isArray(args)
+      ? argsCopy = args
+      : argsCopy = [args]
+    for (let arg of argsCopy) {
+      switch (arg.split(":").length) {
+        case 1:
+          result.otmPopulate.push(arg)
+          break
+        case 3:
+          result.mtmPopulate.push({
+            linkerModel: arg.split(":")[0],
+            initialModel: arg.split(":")[1],
+            modelToLink: arg.split(":")[2],
+          })
+          break
+        default:
+          throw new Error ("Wrong populate arguments")
+      }
     }
     return result
   }
 
   /**
    * Populates the given models with 1:m relation
-   * @param {Object[]} initialModelArr The array of models to be populated
-   * @param {String} populatingModelIdentity The identity of related model
+   * @param {String} identity The initial model identity
+   * @param {Object[]} models Models to be populated
+   * @param {String} populatingField The field to populate
    * @private
    */
-  async _oneToModelPopulate(initialModelArr, populatingModelIdentity) {
-    let idsSet = new Set()
-    for (let model of initialModelArr) {
-      idsSet.add(model[populatingModelIdentity])
-    }
-    const idsArr = [...idsSet]
+  async _oneToManyPopulate(identity, models, populatingField) {
+    const populatingModelIdentity = this.schemas[identity.toLowerCase()].properties[populatingField].model
 
-    const populatingModelsArr = await this.knex(populatingModelIdentity.toLowerCase()).whereIn("id", idsArr)
-    for (let model of initialModelArr) {
-      for (let populatingModel of populatingModelsArr) {
-        if (model[populatingModelIdentity] === populatingModel.id) {
-          model[populatingModelIdentity] = populatingModel
-          break
-        }
-      }
+    let idsSet = new Set()
+    for (let model of models) {
+      idsSet.add(model[populatingField])
+    }
+    const ids = [...idsSet]
+    const populatingModels = await this.knex(populatingModelIdentity.toLowerCase()).whereIn("id", ids)
+
+    const populatingModelsHash = {}
+    for (let populatingModel of populatingModels) {
+      populatingModelsHash[populatingModel.id] = populatingModel
+    }
+
+    for (let model of models) {
+      model[populatingField] = populatingModelsHash[model[populatingField]]
     }
   }
 
   /**
    * Populates the given model with m:m relation
-   * @param {Array} initialModelArr The array of models to be populated
+   * @param {String} identity The identity of initial model
+   * @param {Object[]} models Models to be populated
    * @param {String} linkerModelIdentity The identity of linker model
-   * @param {String} initialModelIdentity The identity of initial model
-   * @param {String} modelToLinkIdentity The identity of model to be linked
+   * @param {String} initialModelField The field of linker model corresponding to initial model
+   * @param {String} linkedModelField The field of linker model corresponding to linked model
    * @private
    */
-  async _modelToModelPopulate(initialModelArr, linkerModelIdentity, initialModelIdentity, modelToLinkIdentity) {
-    let initialModelIdsSet = new Set()
-    for (let initialModel of initialModelArr) {
-      initialModelIdsSet.add(initialModel.id)
-      initialModel[modelToLinkIdentity] = []
-    }
-    const initialModelIdsArr = [...initialModelIdsSet]
+  async _manyToManyPopulate(identity, models, linkerModelIdentity, initialModelField, linkedModelField) {
+    const linkedModelIdentity = this.schemas[linkerModelIdentity.toLowerCase()].properties[linkedModelField].model
 
-    const linkerModelArr = await this
+    let idsSet = new Set()
+    for (let model of models) {
+      idsSet.add(model.id)
+    }
+    const ids = [...idsSet]
+    const linkers = await this
       .knex(linkerModelIdentity.toLowerCase())
-      .whereIn(initialModelIdentity, initialModelIdsArr)
-    let modelToLinkIdsSet = new Set()
-    for (let linkerModel of linkerModelArr) {
-      modelToLinkIdsSet.add(linkerModel[modelToLinkIdentity])
-    }
-    const modelToLinkIdsArr = [...modelToLinkIdsSet]
+      .whereIn(initialModelField, ids)
 
-    const modelToLinkArr = await this.knex(modelToLinkIdentity.toLowerCase()).whereIn("id", modelToLinkIdsArr)
-    for (let linkerModel of linkerModelArr) {
-      for (let initialModel of initialModelArr) {
-        if (initialModel.id === linkerModel[initialModelIdentity]) {
-          for (let modelToLink of modelToLinkArr) {
-            if (modelToLink.id === linkerModel[modelToLinkIdentity]) {
-              initialModel[modelToLinkIdentity].push(modelToLink)
-              break
-            }
-          }
-          break
-        }
+    let linkedModelsIdsSet = new Set()
+    for (let linker of linkers) {
+      linkedModelsIdsSet.add(linker[linkedModelField])
+    }
+    const linkedModelsIds = [...linkedModelsIdsSet]
+    const linkedModels = await this.knex(linkedModelIdentity.toLowerCase()).whereIn("id", linkedModelsIds)
+
+    const linkedModelsHash ={}
+    for (let linkedModel of linkedModels) {
+      linkedModelsHash[linkedModel.id] = linkedModel
+    }
+
+    const linkersHash = {}
+    for (let linker of linkers) {
+      if (!Array.isArray(linkersHash[linker[initialModelField]])) {
+        linkersHash[linker[initialModelField]] = []
       }
+      linkersHash[linker[initialModelField]].push(linkedModelsHash[linker[linkedModelField]])
+    }
+
+    for (let model of models) {
+      linkersHash[model.id]
+        ? model[linkedModelIdentity] = linkersHash[model.id]
+        : model[linkedModelIdentity] = []
     }
   }
 

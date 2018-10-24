@@ -17,8 +17,8 @@ describe("Adapter", () => {
     );`,
     `CREATE TABLE ${tableNames[1]} (
       "id" serial not null,
-      "fake_initial" integer,
-      "fake_to_link" integer,
+      "fake_initial_field" integer,
+      "fake_to_link_field" integer,
       constraint "${tableNames[1]}_pkey" primary key ("id")
     );`,
     `CREATE TABLE ${tableNames[2]} (
@@ -63,8 +63,8 @@ describe("Adapter", () => {
     })
     gAdapter.registerSchema(tableNames[1], {
       properties: {
-        fake_initial: { type: "integer" },
-        fake_to_link: { type: "integer" },
+        fake_initial_field: { type: "integer", model: "fake_initial" },
+        fake_to_link_field: { type: "integer", model: "fake_to_link" },
       },
     })
     gAdapter.registerSchema(tableNames[2], {
@@ -140,45 +140,41 @@ describe("Adapter", () => {
       {
         title: "find with 1:m populate",
         method: "find",
-        args: [tableNames[1], {}, {}, null, ["fake_initial"]],
+        args: [tableNames[1], {}, { populate: "fake_initial_field" }],
         result: [
           {
             id: 1,
-            fake_initial: {
+            fake_initial_field: {
               id: 1,
               x1: "one",
               x2: "hey",
             },
-            fake_to_link: 1,
+            fake_to_link_field: 1,
           },
           {
             id: 2,
-            fake_initial: {
+            fake_initial_field: {
               id: 2,
               x1: "two",
               x2: "ho",
             },
-            fake_to_link: 2,
+            fake_to_link_field: 2,
           },
           {
             id: 3,
-            fake_initial: {
+            fake_initial_field: {
               id: 1,
               x1: "one",
               x2: "hey",
             },
-            fake_to_link: 2,
+            fake_to_link_field: 2,
           },
         ],
       },
       {
         title: "find with m:m populate",
         method: "find",
-        args: [tableNames[2], {}, {}, null, [], [{
-          linkerModel: tableNames[1],
-          initialModel: tableNames[2],
-          modelToLink: tableNames[3],
-        }]],
+        args: [tableNames[2], {}, { populate: `${tableNames[1]}:fake_initial_field:fake_to_link_field` }],
         result: [
           {
             id: 1,
@@ -220,25 +216,21 @@ describe("Adapter", () => {
       {
         title: "findOne with 1:m populate",
         method: "findOne",
-        args: [tableNames[1], { id: 1 }, {}, null, ["fake_initial"]],
+        args: [tableNames[1], { id: 1 }, { populate: "fake_initial_field" }],
         result: {
           id: 1,
-          fake_initial: {
+          fake_initial_field: {
             id: 1,
             x1: "one",
             x2: "hey",
           },
-          fake_to_link: 1,
+          fake_to_link_field: 1,
         },
       },
       {
         title: "findOne with m:m populate",
         method: "findOne",
-        args: [tableNames[2], { id: 1 }, {}, null, [], [{
-          linkerModel: tableNames[1],
-          initialModel: tableNames[2],
-          modelToLink: tableNames[3],
-        }]],
+        args: [tableNames[2], { id: 1 }, { populate: `${tableNames[1]}:fake_initial_field:fake_to_link_field` }],
         result: {
           id: 1,
           x1: "one",

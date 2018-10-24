@@ -15,27 +15,13 @@ module.exports = {
       if (!ctx.params.id) {
         ctx.throw(400, "id is required")
       }
-      let otmPopulate = []
-      let mtmPopulate = []
+      let populateArgs = []
       if (ctx.query.populate) {
         for (let arg of ctx.query.populate.split(",")) {
-          switch (arg.split(":").length) {
-            case 1:
-              otmPopulate.push(arg)
-              break
-            case 3:
-              mtmPopulate.push({
-                linkerModel: arg.split(":")[0],
-                initialModel: arg.split(":")[1],
-                modelToLink: arg.split(":")[2],
-              })
-              break
-            default:
-              ctx.throw(400, "Bad request")
-          }
+          populateArgs.push(arg)
         }
       }
-      const instance = await yaxys.db.findOne(identity, { id: ctx.params.id }, null, null, otmPopulate, mtmPopulate)
+      const instance = await yaxys.db.findOne(identity, { id: ctx.params.id }, { populate: populateArgs })
       if (!instance) {
         ctx.throw(404, `${identity} #${ctx.params.id} not found`)
       }
@@ -58,10 +44,8 @@ module.exports = {
      * @param {String} [ctx.params.limit] How maany model to query (String containing Integer)
      */
     return async ctx => {
-      const options = {}
+      const options = { populate: [] }
       const filter = {}
-      let otmPopulate = []
-      let mtmPopulate = []
       _.each(ctx.query, (v, k) => {
         switch (k) {
           case "sort":
@@ -79,20 +63,7 @@ module.exports = {
             break
           case "populate":
             for (let arg of v.split(",")) {
-              switch (arg.split(":").length) {
-                case 1:
-                  otmPopulate.push(arg)
-                  break
-                case 3:
-                  mtmPopulate.push({
-                    linkerModel: arg.split(":")[0],
-                    initialModel: arg.split(":")[1],
-                    modelToLink: arg.split(":")[2],
-                  })
-                  break
-                default:
-                  ctx.throw(400, "Bad request")
-              }
+              options.populate.push(arg)
             }
             break
           default:
@@ -101,7 +72,7 @@ module.exports = {
         }
       })
 
-      ctx.body = await yaxys.db.find(identity, filter, options, null, otmPopulate, mtmPopulate)
+      ctx.body = await yaxys.db.find(identity, filter, options)
     }
   },
 
