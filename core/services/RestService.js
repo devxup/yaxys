@@ -1,4 +1,83 @@
+const config = require("config")
+
 module.exports = {
+  /**
+   * @typedef {Object} APIOptions
+   * @property {boolean} [hasPasswords=false] - add password fields processing
+   * into create and update
+   */
+
+  /**
+   * Generate standard API for the model
+   * @param {String} [identity] The identity of the model
+   * @param {APIOptions} [options] The options
+   * @returns {Object} API object
+   */
+  buildStandardAPI(identity, options = {}) {
+    return ["findOne", "find", "update", "create"].reduce((template, method) => {
+      const isRemoved =
+        options.remove === method ||
+        (Array.isArray(options.remove) && options.remove.includes(method))
+
+      if (!isRemoved) {
+        template[
+          module.exports.getMethodRoute(identity, method)
+        ] = module.exports.getMethodMiddleware(identity, method, options)
+      }
+
+      return template
+    }, {})
+  },
+
+  /**
+   * Get route for standard REST method of given model
+   * @param {String} [identity] The model identity
+   * @param {String} [method] The method
+   * @returns {String} The route
+   */
+  getMethodRoute(identity, method) {
+    switch (method) {
+      case "findOne":
+        return `${identity}/:id`
+      case "find":
+        return `${identity}`
+      case "update":
+        return `put ${identity}/:id`
+      case "create":
+        return `post ${identity}`
+    }
+    throw new Error(`Unknown API method "${method}" detected`)
+  },
+
+  /**
+   * Get the list of the middleware for standard REST method of given model
+   * @param {String} [identity] The model identity
+   * @param {String} [method] The method
+   * @param {APIOptions} [options] The options
+   * @returns {Function[]} The list of middleware functions
+   */
+  getMethodMiddleware(identity, method, options = {}) {
+    const middleware = [
+      PolicyService.checkAndInjectOperator,
+      PolicyService.hasRight(identity, method),
+    ]
+    if (options.hasPasswords) {
+      middleware.push(PolicyService.removePasswordsFromResponse(identity))
+    }
+
+    if (["create", "update"].includes(method)) {
+      if (options.hasPasswords) {
+        middleware.push(PolicyService.encodePasswords(identity))
+      }
+      if (config.get("debug.pauseAndRandomError")) {
+        middleware.push(PolicyService.pauseAndRandomError)
+      }
+    }
+    middleware.push(RestService[method]("operator"))
+
+    return middleware
+  },
+
   /**
    * Create the model-specific request handler which responds the single model instance by its id
    * id should be bind by router into ctx.params.id

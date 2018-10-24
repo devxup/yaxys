@@ -19,7 +19,7 @@ module.exports = {
     required: [],
   },
 
-  api: {
-
-  },
+  api: RestService.buildStandardAPI("operatorprofilebinding", {
+    remove: "update",
+  }),
 }

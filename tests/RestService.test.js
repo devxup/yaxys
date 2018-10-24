@@ -1,4 +1,4 @@
-const RestService = require("../core/services/RestService")
+global.RestService = require("../core/services/RestService")
 global._ = require("lodash")
 
 describe("RestService", () => {
@@ -19,7 +19,14 @@ describe("RestService", () => {
         },
         {}
       ),
+      models: {
+        operator: {},
+      },
     }
+  })
+
+  afterAll(async () => {
+    global.yaxys = yaxysBuffer
   })
 
   class CTXEmulator {
@@ -145,7 +152,75 @@ describe("RestService", () => {
     })
   })
 
-  afterAll(async () => {
-    global.yaxys = yaxysBuffer
+  describe("standard API builder", () => {
+    describe("getMethodMiddleware", () => {
+      let PolicyServiceBuffer, RestServiceBuffer
+      beforeAll(async () => {
+        PolicyServiceBuffer = global.PolicyService
+        global.PolicyService = {
+          checkAndInjectOperator: "checkAndInjectOperator",
+          hasRight: (identity, method) => `hasRight(${identity}, ${method})`,
+          removePasswordsFromResponse: (identity) => `removePasswordsFromResponse(${identity})`,
+          encodePasswords: (identity) => `encodePasswords(${identity})`,
+        }
+        const restServicePatchedMethods = ["find", "findOne", "create", "update"]
+        RestServiceBuffer = _.pick(RestService, restServicePatchedMethods)
+        restServicePatchedMethods.forEach(method => {
+          RestService[method] = identity => `${method}(${identity})`
+        })
+      })
+      afterAll(async () => {
+        global.PolicyService = PolicyServiceBuffer
+        Object.assign(RestService, RestServiceBuffer)
+      })
+
+      const testCases = [
+        {
+          title: "Simple find",
+          args: ["operator", "find"],
+          expectedResult: [
+            "checkAndInjectOperator",
+            "hasRight(operator, find)",
+            "find(operator)",
+          ],
+        },
+        {
+          title: "findOne and passwords",
+          args: ["operator", "findOne", { hasPasswords: true }],
+          expectedResult: [
+            "checkAndInjectOperator",
+            "hasRight(operator, findOne)",
+            "removePasswordsFromResponse(operator)",
+            "findOne(operator)",
+          ],
+        },
+        {
+          title: "findOne and passwords",
+          args: ["operator", "findOne", { hasPasswords: true }],
+          expectedResult: [
+            "checkAndInjectOperator",
+            "hasRight(operator, findOne)",
+            "removePasswordsFromResponse(operator)",
+            "findOne(operator)",
+          ],
+        },
+        {
+          title: "create and passwords",
+          args: ["operator", "create", { hasPasswords: true }],
+          expectedResult: [
+            "checkAndInjectOperator",
+            "hasRight(operator, create)",
+            "removePasswordsFromResponse(operator)",
+            "encodePasswords(operator)",
+            "create(operator)",
+          ],
+        },
+      ]
+      testCases.forEach(testCase => {
+        it(testCase.title, () => {
+          expect(RestService.getMethodMiddleware.apply(null, testCase.args)).toStrictEqual(testCase.expectedResult)
+        })
+      })
+    })
   })
 })
