@@ -41,6 +41,7 @@ class ModelTable extends Component {
     data: PropTypes.arrayOf(PropTypes.object).isRequired,
     url: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
     columns: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.object])),
+    onCellClick: PropTypes.func,
   }
 
   render() {

@@ -15,6 +15,7 @@ import Wrapper from "../components/Wrapper.jsx"
 import Loader from "../components/Loader.jsx"
 import Update from "../components/Update.jsx"
 import ModelForm from "../components/ModelForm.jsx"
+import ModelPicker from "../components/ModelPicker.jsx"
 
 const operatorClue = props => ({
   identity: "operator",
@@ -47,6 +48,7 @@ export default class Operator extends Component {
       operator: this.props2OperatorState(props),
       forceValidation: false,
       schema: this.buildPseudoSchema(),
+      profileOpen: false,
     }
   }
 
@@ -102,6 +104,22 @@ export default class Operator extends Component {
     this.forceUpdate()
   }
 
+  onProfileOpen = () => {
+    this.setState({
+      profileOpen: true,
+    })
+  }
+
+  onProfileClose = () => {
+    this.setState({
+      profileOpen: false,
+    })
+  }
+
+  onProfilePick = (data) => {
+    alert(JSON.stringify(data.rowData))
+  }
+
   render() {
     const { operator, match, classes } = this.props
     const update = (
@@ -148,15 +166,27 @@ export default class Operator extends Component {
             />
 
             {!this.state.operator.isAdministrator && (
-              <Paper className={classes.rights}>
-                <h5>The operator&#39;s rights:</h5>
-                <RightsEditor
-                  type="operator"
-                  values={(this.state.operator && this.state.operator.rights) || {}}
-                  onChange={this.onRightsChange}
-                />
-              </Paper>
+              <Fragment>
+                <Paper className={classes.rights}>
+                  <h5>The operator&#39;s rights:</h5>
+                  <RightsEditor
+                    type="operator"
+                    values={(this.state.operator && this.state.operator.rights) || {}}
+                    onChange={this.onRightsChange}
+                  />
+                </Paper>
+                <button className="btn btn-flat blue lighten-1 white-text"
+                        onClick={this.onProfileOpen}
+                >Add profile</button>
+              </Fragment>
             )}
+            <ModelPicker
+              open={this.state.profileOpen}
+              identity="operatorprofile"
+              onClose={this.onProfileClose}
+              onPick={this.onProfilePick}
+              columns={["id", "title", "description"]}
+            />
           </Fragment>
         </Loader>
       </Wrapper>
