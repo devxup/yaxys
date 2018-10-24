@@ -43,7 +43,7 @@ describe("RestService", () => {
           params: { id: 1 },
           query: {},
         }),
-        result: ["findOne", identity, { id: 1 }, null, null, [], []],
+        result: ["findOne", identity, { id: 1 }, { populate: [] }],
       },
       {
         title: "No id",
@@ -83,7 +83,7 @@ describe("RestService", () => {
             populate: "someModel,anotherModel",
           },
         }),
-        result: ["findOne", identity, { id: 1 }, null, null, ["someModel", "anotherModel"], []],
+        result: ["findOne", identity, { id: 1 }, { populate: ["someModel", "anotherModel"] }],
       },
       {
         title: "Query with m:m populate",
@@ -93,22 +93,7 @@ describe("RestService", () => {
             populate: "someModel:anotherModel:oneMoreModel",
           },
         }),
-        result: ["findOne", identity, { id: 1 }, null, null, [], [{
-          linkerModel: "someModel",
-          initialModel: "anotherModel",
-          modelToLink: "oneMoreModel",
-        }]],
-      },
-      {
-        title: "Bad populate query",
-        ctx: new CTXEmulator({
-          params: { id: 1 },
-          query: {
-            populate: "someModel:anotherModel",
-          },
-        }),
-        error: true,
-        result: [400, "Bad request"],
+        result: ["findOne", identity, { id: 1 }, { populate: ["someModel:anotherModel:oneMoreModel"] }],
       },
     ],
     find: [
@@ -117,7 +102,7 @@ describe("RestService", () => {
         ctx: new CTXEmulator({
           query: {},
         }),
-        result: ["find", identity, {}, {}, null, [], []],
+        result: ["find", identity, {}, { populate: [] }],
       },
       {
         title: "Mixed filter and reserved keywords",
@@ -128,7 +113,7 @@ describe("RestService", () => {
             someAttribute: 3,
           },
         }),
-        result: ["find", identity, { someAttribute: 3 }, { limit: 1, skip: 2 }, null, [], []],
+        result: ["find", identity, { someAttribute: 3 }, { limit: 1, skip: 2, populate: [] }],
       },
       {
         title: "Direct sort",
@@ -137,7 +122,7 @@ describe("RestService", () => {
             sort: "someAttribute",
           },
         }),
-        result: ["find", identity, {}, { sort: { someAttribute: 1 } }, null, [], []],
+        result: ["find", identity, {}, { sort: { someAttribute: 1 }, populate: [] }],
       },
       {
         title: "Negative sort",
@@ -146,7 +131,7 @@ describe("RestService", () => {
             sort: "-someAttribute",
           },
         }),
-        result: ["find", identity, {}, { sort: { someAttribute: -1 } }, null, [], []],
+        result: ["find", identity, {}, { sort: { someAttribute: -1 }, populate: [] }],
       },
       {
         title: "Complicated sort",
@@ -155,7 +140,7 @@ describe("RestService", () => {
             sort: '{"a": 1, "b":-1}',
           },
         }),
-        result: ["find", identity, {}, { sort: { a: 1, b: -1 } }, null, [], []],
+        result: ["find", identity, {}, { sort: { a: 1, b: -1 }, populate: [] }],
       },
       {
         title: "Query with 1:m populate",
@@ -164,7 +149,7 @@ describe("RestService", () => {
             populate: "someModel,anotherModel",
           },
         }),
-        result: ["find", identity, {}, {}, null, ["someModel", "anotherModel"], []],
+        result: ["find", identity, {}, { populate: ["someModel", "anotherModel"] }],
       },
       {
         title: "Query with m:m populate",
@@ -173,21 +158,7 @@ describe("RestService", () => {
             populate: "someModel:anotherModel:oneMoreModel",
           },
         }),
-        result: ["find", identity, {}, {}, null, [], [{
-          linkerModel: "someModel",
-          initialModel: "anotherModel",
-          modelToLink: "oneMoreModel",
-        }]],
-      },
-      {
-        title: "Bad populate query",
-        ctx: new CTXEmulator({
-          query: {
-            populate: "someModel:anotherModel",
-          },
-        }),
-        error: true,
-        result: [400, "Bad request"],
+        result: ["find", identity, {}, { populate: ["someModel:anotherModel:oneMoreModel"] }],
       },
     ],
   }
