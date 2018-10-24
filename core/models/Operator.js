@@ -34,7 +34,7 @@ module.exports = {
   },
 
   hooks: {
-    "create:before": (event, trx, blank) => {
+    "create:before": (trx, blank) => {
       blank.hasCustomRights = AuthService.hasCustomRights(blank)
     },
     "update:before": (trx, old, patch) => {
