@@ -91,13 +91,13 @@ module.exports = {
    */
   hasRight: (modelKey, right) =>
     /**
-     * If access is granted, call next middleware of throw 403 exception otherwise
+     * If access is granted, call next middleware or throw 403 exception otherwise
      * @param {Object} ctx Koa context
      * @param {Function} next Koa next function
      */
     async (ctx, next) => {
-      let response = await AuthService.checkRight(ctx.operator, modelKey, right)
-      response
+      const accessGranted = await AuthService.checkRight(ctx.operator, modelKey, right)
+      accessGranted
         ? await next()
         : ctx.throw(403, "You don't have rights to perform this action")
     },

@@ -72,24 +72,18 @@ module.exports = {
 
     if (operator.rights
       && operator.rights[modelKey.toLowerCase()]
-      && (!(operator.rights[modelKey.toLowerCase()][right.toLowerCase()] == null))
+      && (!(_.isNil(operator.rights[modelKey.toLowerCase()][right.toLowerCase()])))
     ) {
       return !!operator.rights[modelKey.toLowerCase()][right.toLowerCase()]
     }
 
-    const profilesArr = (await yaxys.db.findOne(
+    const profiles = (await yaxys.db.findOne(
       "operator",
       { id: operator.id },
-      null,
-      null,
-      [],
-      [{
-        linkerModel: "operatorProfileBinding",
-        initialModel: "operator",
-        modelToLink: "operatorProfile",
-      }])).operatorProfile
+      { populate: "operatorProfileBinding:operator:operatorProfile" }
+      )).operatorProfile
 
-    for (let profile of profilesArr) {
+    for (let profile of profiles) {
       if (profile.rights
         && profile.rights[modelKey.toLowerCase()]
         && profile.rights[modelKey.toLowerCase()][right.toLowerCase()]
