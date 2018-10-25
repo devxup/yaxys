@@ -98,4 +98,25 @@ describe("ModelService", () => {
       )
     })
   })
+  it("Remove read-only properties", () => {
+    const schema = {
+      properties: {
+        p1: { readOnly: true },
+        p2: {},
+        p3: { readOnly: true },
+        p4: { readOnly: true },
+      },
+    }
+    let data = {
+      p1: "invalid_data",
+      p2: "valid_data",
+      p3: null,
+      p4: undefined,
+    }
+    const modifiedData = {
+      p2: "valid_data",
+    }
+    ModelService.removeReadOnlyProperties(data, schema)
+    expect(data).toStrictEqual(modifiedData)
+  })
 })

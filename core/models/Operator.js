@@ -63,7 +63,7 @@ module.exports = {
         ? PolicyService.pauseAndRandomError
         : true,
 
-      PolicyService.encodePasswords("operator"),
+      PolicyService.sanitizeRequest("operator"),
       PolicyService.removePasswordsFromResponse("operator"),
       RestService.update("operator"),
     ],
@@ -73,7 +73,7 @@ module.exports = {
       config.get("debug.pauseAndRandomError")
         ? PolicyService.pauseAndRandomError
         : true,
-      PolicyService.encodePasswords("operator"),
+      PolicyService.sanitizeRequest("operator"),
       PolicyService.removePasswordsFromResponse("operator"),
       RestService.create("operator"),
     ],

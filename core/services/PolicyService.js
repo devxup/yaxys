@@ -41,7 +41,7 @@ module.exports = {
    * @param {String} identity The model's identity
    * @returns {Function} The policy
    */
-  encodePasswords(identity) {
+  sanitizeRequest(identity) {
     /**
      * If request has body, encode all the password properties using schema for specified identity
      * @param {Object} ctx Koa context
@@ -54,6 +54,7 @@ module.exports = {
 
       const schema = yaxys.models[identity].schema
       ModelService.encryptPasswordProperties(ctx.request.body, schema)
+      ModelService.removeReadOnlyProperties(ctx.request.body, schema)
 
       await next()
     }
