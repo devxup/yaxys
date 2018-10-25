@@ -3,7 +3,6 @@ const config = require("config")
 module.exports = {
   /**
    * @typedef {Object} APIOptions
-   * @property {boolean} [hasPasswords=false] - add password fields processing
    * @property {String|String[]} [exclude=null] - List of methods to exclude
    * into create and update
    */
@@ -67,9 +66,7 @@ module.exports = {
     }
 
     if (["create", "update"].includes(method)) {
-      if (options.hasPasswords) {
-        middleware.push(PolicyService.encodePasswords(identity))
-      }
+      middleware.push(PolicyService.sanitizeRequest(identity))
       if (config.get("debug.pauseAndRandomError")) {
         middleware.push(PolicyService.pauseAndRandomError)
       }

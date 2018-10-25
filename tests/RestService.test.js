@@ -161,7 +161,7 @@ describe("RestService", () => {
           checkAndInjectOperator: "checkAndInjectOperator",
           hasRight: (identity, method) => `hasRight(${identity}, ${method})`,
           removePasswordsFromResponse: (identity) => `removePasswordsFromResponse(${identity})`,
-          encodePasswords: (identity) => `encodePasswords(${identity})`,
+          sanitizeRequest: (identity) => `sanitizeRequest(${identity})`,
         }
         const restServicePatchedMethods = ["find", "findOne", "create", "update"]
         RestServiceBuffer = _.pick(RestService, restServicePatchedMethods)
@@ -185,33 +185,12 @@ describe("RestService", () => {
           ],
         },
         {
-          title: "findOne and passwords",
-          args: ["operator", "findOne", { hasPasswords: true }],
-          expectedResult: [
-            "checkAndInjectOperator",
-            "hasRight(operator, findOne)",
-            "removePasswordsFromResponse(operator)",
-            "findOne(operator)",
-          ],
-        },
-        {
-          title: "findOne and passwords",
-          args: ["operator", "findOne", { hasPasswords: true }],
-          expectedResult: [
-            "checkAndInjectOperator",
-            "hasRight(operator, findOne)",
-            "removePasswordsFromResponse(operator)",
-            "findOne(operator)",
-          ],
-        },
-        {
-          title: "create and passwords",
-          args: ["operator", "create", { hasPasswords: true }],
+          title: "Сreate",
+          args: ["operator", "create"],
           expectedResult: [
             "checkAndInjectOperator",
             "hasRight(operator, create)",
-            "removePasswordsFromResponse(operator)",
-            "encodePasswords(operator)",
+            "sanitizeRequest(operator)",
             "create(operator)",
           ],
         },
