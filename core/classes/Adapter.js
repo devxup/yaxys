@@ -223,7 +223,129 @@ module.exports = class Adapter {
       }
     })
 
-    return trx ? query.transacting(trx) : query
+    let result = await (trx ? query.transacting(trx) : query)
+    if (options.populate) {
+      const populateOptions = this._parsePopulateArguments(options.populate)
+      for (let property of populateOptions.otmPopulate) {
+        await this._oneToManyPopulate(identity, result, property)
+      }
+      for (let property of populateOptions.mtmPopulate) {
+        await this._manyToManyPopulate(
+          identity,
+          result,
+          property.linkerModel,
+          property.initialModel,
+          property.modelToLink)
+      }
+    }
+    return result
+  }
+
+  /**
+   * Parse arguments for populating models
+   * @param {(string|string[])} populateOptionsRaw Populate arguments
+   * @returns {{otmPopulate: Array, mtmPopulate: Array}} Parsed arguments object
+   * @private
+   */
+  _parsePopulateArguments(populateOptionsRaw) {
+    const result = { otmPopulate: [], mtmPopulate: [] }
+    const populateOptionsFixed =
+    Array.isArray(populateOptionsRaw)
+      ? populateOptionsRaw
+      : [populateOptionsRaw]
+    for (let option of populateOptionsFixed) {
+      const parsedOption = option.split(":")
+      switch (parsedOption.length) {
+        case 1:
+          result.otmPopulate.push(option)
+          break
+        case 3:
+          result.mtmPopulate.push({
+            linkerModel: parsedOption[0],
+            initialModel: parsedOption[1],
+            modelToLink: parsedOption[2],
+          })
+          break
+        default:
+          throw new Error ("Wrong populate arguments")
+      }
+    }
+    return result
+  }
+
+  /**
+   * Populates the given models with 1:m relation
+   * @param {String} identity The initial model identity
+   * @param {Object[]} models Models to be populated
+   * @param {String} populatingProperty The field to populate
+   * @private
+   */
+  async _oneToManyPopulate(identity, models, populatingProperty) {
+    const populatingModelIdentity = this.schemas[identity.toLowerCase()].properties[populatingProperty].model
+
+    let idsSet = new Set()
+    for (let model of models) {
+      idsSet.add(model[populatingProperty])
+    }
+    const ids = [...idsSet]
+    const populatingModels = await this.knex(populatingModelIdentity.toLowerCase()).whereIn("id", ids)
+
+    const populatingModelsHash = {}
+    for (let populatingModel of populatingModels) {
+      populatingModelsHash[populatingModel.id] = populatingModel
+    }
+
+    for (let model of models) {
+      model[populatingProperty] = populatingModelsHash[model[populatingProperty]]
+    }
+  }
+
+  /**
+   * Populates the given model with m:m relation
+   * @param {String} identity The identity of initial model
+   * @param {Object[]} models Models to be populated
+   * @param {String} linkerModelIdentity The identity of linker model
+   * @param {String} initialModelProperty The field of linker model corresponding to initial model
+   * @param {String} linkedModelProperty The field of linker model corresponding to linked model
+   * @private
+   */
+  async _manyToManyPopulate(identity, models, linkerModelIdentity, initialModelProperty, linkedModelProperty) {
+    const linkedModelIdentity = this.schemas[linkerModelIdentity.toLowerCase()].properties[linkedModelProperty].model
+
+    let idsSet = new Set()
+    for (let model of models) {
+      idsSet.add(model.id)
+    }
+    const ids = [...idsSet]
+    const linkers = await this
+      .knex(linkerModelIdentity.toLowerCase())
+      .whereIn(initialModelProperty, ids)
+
+    let linkedModelsIdsSet = new Set()
+    for (let linker of linkers) {
+      linkedModelsIdsSet.add(linker[linkedModelProperty])
+    }
+    const linkedModelsIds = [...linkedModelsIdsSet]
+    const linkedModels = await this.knex(linkedModelIdentity.toLowerCase()).whereIn("id", linkedModelsIds)
+
+    const linkedModelsHash ={}
+    for (let linkedModel of linkedModels) {
+      linkedModelsHash[linkedModel.id] = linkedModel
+    }
+
+    const linkersHash = {}
+    for (let linker of linkers) {
+      if (!Array.isArray(linkersHash[linker[initialModelProperty]])) {
+        linkersHash[linker[initialModelProperty]] = []
+      }
+      linkersHash[linker[initialModelProperty]].push(linkedModelsHash[linker[linkedModelProperty]])
+    }
+
+    for (let model of models) {
+      linkersHash[model.id]
+        ? model[linkedModelIdentity] = linkersHash[model.id]
+        : model[linkedModelIdentity] = []
+    }
   }
 
   /**

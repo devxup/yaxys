@@ -48,13 +48,15 @@ describe("RestService", () => {
         title: "Simple case",
         ctx: new CTXEmulator({
           params: { id: 1 },
+          query: {},
         }),
-        result: ["findOne", identity, { id: 1 }],
+        result: ["findOne", identity, { id: 1 }, { populate: [] }],
       },
       {
         title: "No id",
         ctx: new CTXEmulator({
           params: {},
+          query: {},
         }),
         error: true,
         result: [400, "id is required"],
@@ -63,6 +65,7 @@ describe("RestService", () => {
         title: "Zero id",
         ctx: new CTXEmulator({
           params: { id: 0 },
+          query: {},
         }),
         error: true,
         result: [400, "id is required"],
@@ -71,6 +74,7 @@ describe("RestService", () => {
         title: "404",
         ctx: new CTXEmulator({
           params: { id: 1 },
+          query: {},
         }),
         dbPatch: {
           findOne: () => null,
@@ -78,12 +82,34 @@ describe("RestService", () => {
         error: true,
         result: [404, `${identity} #1 not found`],
       },
+      {
+        title: "Query with 1:m populate",
+        ctx: new CTXEmulator({
+          params: { id: 1 },
+          query: {
+            populate: "someModel,anotherModel",
+          },
+        }),
+        result: ["findOne", identity, { id: 1 }, { populate: ["someModel", "anotherModel"] }],
+      },
+      {
+        title: "Query with m:m populate",
+        ctx: new CTXEmulator({
+          params: { id: 1 },
+          query: {
+            populate: "someModel:anotherModel:oneMoreModel",
+          },
+        }),
+        result: ["findOne", identity, { id: 1 }, { populate: ["someModel:anotherModel:oneMoreModel"] }],
+      },
     ],
     find: [
       {
         title: "Empty case",
-        ctx: new CTXEmulator(),
-        result: ["find", identity, {}, {}],
+        ctx: new CTXEmulator({
+          query: {},
+        }),
+        result: ["find", identity, {}, { populate: [] }],
       },
       {
         title: "Mixed filter and reserved keywords",
@@ -94,7 +120,7 @@ describe("RestService", () => {
             someAttribute: 3,
           },
         }),
-        result: ["find", identity, { someAttribute: 3 }, { limit: 1, skip: 2 }],
+        result: ["find", identity, { someAttribute: 3 }, { limit: 1, skip: 2, populate: [] }],
       },
       {
         title: "Direct sort",
@@ -103,7 +129,7 @@ describe("RestService", () => {
             sort: "someAttribute",
           },
         }),
-        result: ["find", identity, {}, { sort: { someAttribute: 1 } }],
+        result: ["find", identity, {}, { sort: { someAttribute: 1 }, populate: [] }],
       },
       {
         title: "Negative sort",
@@ -112,7 +138,7 @@ describe("RestService", () => {
             sort: "-someAttribute",
           },
         }),
-        result: ["find", identity, {}, { sort: { someAttribute: -1 } }],
+        result: ["find", identity, {}, { sort: { someAttribute: -1 }, populate: [] }],
       },
       {
         title: "Complicated sort",
@@ -121,7 +147,25 @@ describe("RestService", () => {
             sort: '{"a": 1, "b":-1}',
           },
         }),
-        result: ["find", identity, {}, { sort: { a: 1, b: -1 } }],
+        result: ["find", identity, {}, { sort: { a: 1, b: -1 }, populate: [] }],
+      },
+      {
+        title: "Query with 1:m populate",
+        ctx: new CTXEmulator({
+          query: {
+            populate: "someModel,anotherModel",
+          },
+        }),
+        result: ["find", identity, {}, { populate: ["someModel", "anotherModel"] }],
+      },
+      {
+        title: "Query with m:m populate",
+        ctx: new CTXEmulator({
+          query: {
+            populate: "someModel:anotherModel:oneMoreModel",
+          },
+        }),
+        result: ["find", identity, {}, { populate: ["someModel:anotherModel:oneMoreModel"] }],
       },
     ],
   }

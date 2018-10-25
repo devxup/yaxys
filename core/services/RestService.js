@@ -92,7 +92,13 @@ module.exports = {
       if (!ctx.params.id) {
         ctx.throw(400, "id is required")
       }
-      const instance = await yaxys.db.findOne(identity, { id: ctx.params.id })
+      let populateArgs = []
+      if (ctx.query.populate) {
+        for (let arg of ctx.query.populate.split(",")) {
+          populateArgs.push(arg)
+        }
+      }
+      const instance = await yaxys.db.findOne(identity, { id: ctx.params.id }, { populate: populateArgs })
       if (!instance) {
         ctx.throw(404, `${identity} #${ctx.params.id} not found`)
       }
@@ -115,7 +121,7 @@ module.exports = {
      * @param {String} [ctx.params.limit] How maany model to query (String containing Integer)
      */
     return async ctx => {
-      const options = {}
+      const options = { populate: [] }
       const filter = {}
       _.each(ctx.query, (v, k) => {
         switch (k) {
@@ -131,6 +137,11 @@ module.exports = {
           case "skip":
           case "limit":
             options[k] = v
+            break
+          case "populate":
+            for (let arg of v.split(",")) {
+              options.populate.push(arg)
+            }
             break
           default:
             filter[k] = v

@@ -36,12 +36,10 @@ module.exports = class App extends Koa {
       _.each(model.hooks, (listener, event) => {
         this.db.on(`${identity}:${event}`, listener)
       })
+      if (model.schema) {
+        this.db.registerSchema(identity, model.schema)
+      }
       _.each(model.api || {}, (handlers, route) => {
-        if (model.schema) {
-          this.db.registerSchema(identity, model.schema)
-        }
-
-
         let method = "get"
         if (/^(get|post|put|delete)\s/i.test(route)) {
           const parts = route.split(/\s/)
