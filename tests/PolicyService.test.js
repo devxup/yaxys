@@ -65,6 +65,12 @@ describe("PolicyService", () => {
   })
 
   describe("Has right", () => {
+    let yaxysBuffer
+
+    beforeAll(() => {
+      yaxysBuffer = global.yaxys
+    })
+
     const testCases = [
       {
         title: "Operator with needed rights",
@@ -73,11 +79,16 @@ describe("PolicyService", () => {
           email: "test@test.test",
           passwordHash: "someHash",
           rights: {
-            somemodel: { read: true, update: true, neededright: true },
+            somemodel: {
+              read: true,
+              update:true,
+              neededright: true,
+            },
           },
         },
         modelKey: "somemodel",
         right: "neededRight",
+        dbResponse: { operatorProfile: [] },
         error: false,
       },
       {
@@ -87,23 +98,32 @@ describe("PolicyService", () => {
           email: "test@test.test",
           passwordHash: "someHash",
           rights: {
-            somemodel: { read: true, update: true },
+            somemodel: {
+              read: true,
+              update:true,
+            },
           },
         },
         modelKey: "someModel",
         right: "neededRight",
+        dbResponse: { operatorProfile: [] },
         error: true,
       },
     ]
     testCases.forEach(testCase =>
-      it(testCase.title, () => {
+      it(testCase.title, async () => {
+        global.yaxys = {
+          db: {
+            findOne: () => testCase.dbResponse,
+          },
+        }
         const mockThrow = jest.fn()
         const mockNext = jest.fn()
         let mockCtx = {
           throw: mockThrow,
           operator: testCase.operator,
         }
-        PolicyService.hasRight(testCase.modelKey, testCase.right)(mockCtx, mockNext)
+        await PolicyService.hasRight(testCase.modelKey, testCase.right)(mockCtx, mockNext)
         if (testCase.error) {
           expect(mockThrow.mock.calls).toStrictEqual([
             [403, "You don't have rights to perform this action"],
@@ -115,5 +135,9 @@ describe("PolicyService", () => {
         }
       })
     )
+
+    afterAll(() => {
+      global.yaxys = yaxysBuffer
+    })
   })
 })
