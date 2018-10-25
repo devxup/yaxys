@@ -6,7 +6,7 @@ import { withStyles } from "@material-ui/core/styles"
 import CircularProgress from "@material-ui/core/CircularProgress"
 import Button from "@material-ui/core/Button"
 
-import { isEqual, omit, pickBy, identity } from "lodash"
+import { isEqual, omit, pick, pickBy, identity } from "lodash"
 import YaxysClue from "../services/YaxysClue"
 import { green, yellow } from "@material-ui/core/colors"
 import classNames from "classnames"
@@ -54,6 +54,7 @@ class Update extends Component {
     current: PropTypes.object,
     schema: PropTypes.object,
     modifiedAt: PropTypes.number,
+    watchProperties: PropTypes.arrayOf(PropTypes.string),
 
     onStatusChanged: PropTypes.func,
     onUpdated: PropTypes.func,
@@ -112,10 +113,15 @@ class Update extends Component {
   _isChanged(propsArg) {
     const props = propsArg || this.props
 
-    return !isEqual(
-      pickBy(props.item && props.item.data, identity),
-      pickBy(props.current, identity)
-    )
+    const itemSnippet = props.watchProperties
+      ? pick(props?.item.data, props.watchProperties)
+      : pickBy(props?.item.data, identity)
+
+    const currentSnippet = props.watchProperties
+      ? pick(props.current, props.watchProperties)
+      : pickBy(props.current, identity)
+
+    return !isEqual(itemSnippet, currentSnippet)
   }
 
   onSave = event => {

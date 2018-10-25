@@ -1,5 +1,10 @@
 const config = require("config")
 
+const METHOD_TO_RIGHT_MAPPING = {
+  find: "read",
+  findOne: "read",
+}
+
 module.exports = {
   /**
    * @typedef {Object} APIOptions
@@ -59,7 +64,7 @@ module.exports = {
   getMethodMiddleware(identity, method, options = {}) {
     const middleware = [
       PolicyService.checkAndInjectOperator,
-      PolicyService.hasRight(identity, method),
+      PolicyService.hasRight(identity, METHOD_TO_RIGHT_MAPPING[method] || method),
     ]
     if (options.hasPasswords) {
       middleware.push(PolicyService.removePasswordsFromResponse(identity))

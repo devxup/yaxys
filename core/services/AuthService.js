@@ -77,11 +77,11 @@ module.exports = {
       return !!operator.rights[modelKey.toLowerCase()][right.toLowerCase()]
     }
 
-    const profiles = (await yaxys.db.findOne(
-      "operator",
-      { id: operator.id },
-      { populate: "operatorProfileBinding:operator:operatorProfile" }
-    )).operatorProfile
+    const profiles = (await yaxys.db.find(
+      "operatorprofilebinding",
+      { operator: operator.id },
+      { populate: "operatorProfile" }
+    ))
 
     for (let profile of profiles) {
       if (profile.rights

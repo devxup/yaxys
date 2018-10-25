@@ -31,6 +31,8 @@ const styles = {
   },
 }
 
+const EDIBLE_PROPERTIES = ["id", "email", "isAdministrator", "rights"]
+
 @withStyles(styles)
 @withConstants
 @connect(
@@ -75,7 +77,7 @@ export default class Operator extends Component {
     const props = propsArg || this.props
     const operator =
       props.operator && props.operator.success
-        ? pick(props.operator.data, "id", "email", "isAdministrator", "rights")
+        ? pick(props.operator.data, EDIBLE_PROPERTIES)
         : {}
 
     operator.passwordHash = ""
@@ -128,6 +130,7 @@ export default class Operator extends Component {
         current={this.state.operator}
         schema={this.state.schema}
         modifiedAt={this.state.modifiedAt}
+        watchProperties={ EDIBLE_PROPERTIES }
       />
     )
     return (

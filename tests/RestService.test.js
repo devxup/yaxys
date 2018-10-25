@@ -224,7 +224,7 @@ describe("RestService", () => {
           args: ["m1", "find"],
           expectedResult: [
             "checkAndInjectOperator",
-            "hasRight(m1, find)",
+            "hasRight(m1, read)",
             "find(m1)",
           ],
         },

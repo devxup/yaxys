@@ -115,6 +115,7 @@ describe("PolicyService", () => {
         global.yaxys = {
           db: {
             findOne: () => testCase.dbResponse,
+            find: () => [],
           },
         }
         const mockThrow = jest.fn()
