@@ -71,7 +71,7 @@ module.exports = {
         middleware.push(PolicyService.pauseAndRandomError)
       }
     }
-    middleware.push(RestService[method]("operator"))
+    middleware.push(RestService[method](identity))
 
     return middleware
   },

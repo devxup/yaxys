@@ -1,6 +1,6 @@
 module.exports = {
   schema: {
-    title: "Operator Profile",
+    title: "Zone",
     properties: {
       id: {
         type: "integer",
@@ -13,12 +13,8 @@ module.exports = {
         title: "Description",
         type: "string",
       },
-      rights: {
-        type: "object",
-      },
     },
-    required: ["title"],
   },
 
-  api: RestService.buildStandardAPI("operatorprofile"),
+  api: RestService.buildStandardAPI("zone"),
 }

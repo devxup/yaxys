@@ -238,10 +238,15 @@ module.exports = class Adapter {
       table.increments("id").primary()
       _.forEach(schema.properties, (value, key) => {
         if (key === "id") return
-        if (!POSTGRES_TYPES.includes(value.type)) {
+
+        const type = ["object", "array"].includes(value.type)
+          ? "json"
+          : value.type
+
+        if (!POSTGRES_TYPES.includes(type)) {
           throw new Error(`Incorrect data type ${value.type} of field ${key} in ${identity}`)
         }
-        const attribute = table[value.type](key)
+        const attribute = table[type](key)
         if (Array.isArray(schema.required) && schema.required.includes(key)) {
           attribute.notNullable()
         }

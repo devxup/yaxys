@@ -20,7 +20,7 @@ describe("RestService", () => {
         {}
       ),
       models: {
-        operator: {},
+        m1: {},
       },
     }
   })
@@ -41,7 +41,7 @@ describe("RestService", () => {
     }
   }
 
-  const identity = "operator"
+  const identity = "m1"
   const testCaseSets = {
     findOne: [
       {
@@ -177,21 +177,21 @@ describe("RestService", () => {
       const testCases = [
         {
           title: "Simple find",
-          args: ["operator", "find"],
+          args: ["m1", "find"],
           expectedResult: [
             "checkAndInjectOperator",
-            "hasRight(operator, find)",
-            "find(operator)",
+            "hasRight(m1, find)",
+            "find(m1)",
           ],
         },
         {
           title: "Сreate",
-          args: ["operator", "create"],
+          args: ["m1", "create"],
           expectedResult: [
             "checkAndInjectOperator",
-            "hasRight(operator, create)",
-            "sanitizeRequest(operator)",
-            "create(operator)",
+            "hasRight(m1, create)",
+            "sanitizeRequest(m1)",
+            "create(m1)",
           ],
         },
       ]
@@ -214,49 +214,49 @@ describe("RestService", () => {
           title: "Simple case",
           options: { op: 1 },
           expectedResult: {
-            "operator/:id": "findOne",
-            "operator": "find",
-            "put operator/:id": "update",
-            "post operator": "create",
+            "m1/:id": "findOne",
+            "m1": "find",
+            "put m1/:id": "update",
+            "post m1": "create",
           },
           expectedCalls: [
-            ["operator", "findOne", { op: 1 }],
-            ["operator", "find", { op: 1 }],
-            ["operator", "update", { op: 1 }],
-            ["operator", "create", { op: 1 }],
+            ["m1", "findOne", { op: 1 }],
+            ["m1", "find", { op: 1 }],
+            ["m1", "update", { op: 1 }],
+            ["m1", "create", { op: 1 }],
           ],
         },
         {
           title: "Exclude single",
           options: { exclude: "update" },
           expectedResult: {
-            "operator/:id": "findOne",
-            "operator": "find",
-            "post operator": "create",
+            "m1/:id": "findOne",
+            "m1": "find",
+            "post m1": "create",
           },
           expectedCalls: [
-            ["operator", "findOne", { exclude: "update" }],
-            ["operator", "find", { exclude: "update" }],
-            ["operator", "create", { exclude: "update" }],
+            ["m1", "findOne", { exclude: "update" }],
+            ["m1", "find", { exclude: "update" }],
+            ["m1", "create", { exclude: "update" }],
           ],
         },
         {
           title: "Exclude list",
           options: { exclude: ["update", "create"] },
           expectedResult: {
-            "operator/:id": "findOne",
-            "operator": "find",
+            "m1/:id": "findOne",
+            "m1": "find",
           },
           expectedCalls: [
-            ["operator", "findOne", { exclude: ["update", "create"] }],
-            ["operator", "find", { exclude: ["update", "create"] }],
+            ["m1", "findOne", { exclude: ["update", "create"] }],
+            ["m1", "find", { exclude: ["update", "create"] }],
           ],
         },
       ]
       testCases.forEach(testCase => {
         it(testCase.title, () => {
           RestService.getMethodMiddleware = jest.fn((identity, method) => method)
-          expect(RestService.buildStandardAPI("operator", testCase.options)).toStrictEqual(testCase.expectedResult)
+          expect(RestService.buildStandardAPI("m1", testCase.options)).toStrictEqual(testCase.expectedResult)
           expect(RestService.getMethodMiddleware.mock.calls).toStrictEqual(testCase.expectedCalls)
         })
       })

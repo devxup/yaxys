@@ -19,7 +19,7 @@ export default class Settings extends Component {
   render() {
     const { classes } = this.props
     return (
-      <Wrapper breadcrumbs={[ "Settings" ]}>
+      <Wrapper breadcrumbs={["Settings"]}>
         <h1 style={{ marginTop: 0 }}>Settings</h1>
 
         <p>Not so much settings so far</p>

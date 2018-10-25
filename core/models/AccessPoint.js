@@ -1,6 +1,6 @@
 module.exports = {
   schema: {
-    title: "Operator Profile",
+    title: "Access Point",
     properties: {
       id: {
         type: "integer",
@@ -13,12 +13,18 @@ module.exports = {
         title: "Description",
         type: "string",
       },
-      rights: {
-        type: "object",
+      door: {
+        title: "Door",
+        type: "integer",
+        model: "door",
+      },
+      zoneTo: {
+        title: "Zone to",
+        type: "integer",
+        model: "zone",
       },
     },
-    required: ["title"],
   },
 
-  api: RestService.buildStandardAPI("operatorprofile"),
+  api: RestService.buildStandardAPI("accesspoint"),
 }
