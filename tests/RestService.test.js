@@ -222,5 +222,65 @@ describe("RestService", () => {
         })
       })
     })
+    describe("buildStandardAPI", () => {
+      let RestServiceBuffer
+      beforeAll(()=> {
+        RestServiceBuffer = _.pick(RestService, "getMethodMiddleware")
+      })
+      afterAll(()=> {
+        Object.assign(RestService, RestServiceBuffer)
+      })
+      const testCases = [
+        {
+          title: "Simple case",
+          options: { op: 1 },
+          expectedResult: {
+            "operator/:id": "findOne",
+            "operator": "find",
+            "put operator/:id": "update",
+            "post operator": "create",
+          },
+          expectedCalls: [
+            ["operator", "findOne", { op: 1 }],
+            ["operator", "find", { op: 1 }],
+            ["operator", "update", { op: 1 }],
+            ["operator", "create", { op: 1 }],
+          ],
+        },
+        {
+          title: "Exclude single",
+          options: { exclude: "update" },
+          expectedResult: {
+            "operator/:id": "findOne",
+            "operator": "find",
+            "post operator": "create",
+          },
+          expectedCalls: [
+            ["operator", "findOne", { exclude: "update" }],
+            ["operator", "find", { exclude: "update" }],
+            ["operator", "create", { exclude: "update" }],
+          ],
+        },
+        {
+          title: "Exclude list",
+          options: { exclude: ["update", "create"] },
+          expectedResult: {
+            "operator/:id": "findOne",
+            "operator": "find",
+          },
+          expectedCalls: [
+            ["operator", "findOne", { exclude: ["update", "create"] }],
+            ["operator", "find", { exclude: ["update", "create"] }],
+          ],
+        },
+      ]
+      testCases.forEach(testCase => {
+        it(testCase.title, () => {
+          RestService.getMethodMiddleware = jest.fn((identity, method) => method)
+          expect(RestService.buildStandardAPI("operator", testCase.options)).toStrictEqual(testCase.expectedResult)
+          expect(RestService.getMethodMiddleware.mock.calls).toStrictEqual(testCase.expectedCalls)
+        })
+      })
+    })
   })
 })

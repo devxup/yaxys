@@ -4,6 +4,7 @@ module.exports = {
   /**
    * @typedef {Object} APIOptions
    * @property {boolean} [hasPasswords=false] - add password fields processing
+   * @property {String|String[]} [exclude=null] - List of methods to exclude
    * into create and update
    */
 
@@ -16,8 +17,8 @@ module.exports = {
   buildStandardAPI(identity, options = {}) {
     return ["findOne", "find", "update", "create"].reduce((template, method) => {
       const isRemoved =
-        options.remove === method ||
-        (Array.isArray(options.remove) && options.remove.includes(method))
+        options.exclude === method ||
+        (Array.isArray(options.exclude) && options.exclude.includes(method))
 
       if (!isRemoved) {
         template[
