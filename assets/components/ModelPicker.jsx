@@ -16,12 +16,11 @@ import Button from "@material-ui/core/Button/Button"
 const modelClue = props => ({
   identity: props.identity,
   query: queries.FIND,
-  options: props.queryOptions,
   sort: { id: 1 },
+  ...props.queryOptions,
 })
 const modelSelector = YaxysClue.selectors.byClue(modelClue)
 
-export default
 @withConstants
 @connect(
   (state, props) => ({
@@ -31,8 +30,9 @@ export default
     loadModels: YaxysClue.actions.byClue,
   }
 )
-class ModelPicker extends Component {
+export default class ModelPicker extends Component {
   static propTypes = {
+    title: PropTypes.string,
     open: PropTypes.bool.isRequired,
     identity: PropTypes.string.isRequired,
     queryOptions: PropTypes.object,
@@ -42,24 +42,38 @@ class ModelPicker extends Component {
   }
 
   componentDidMount() {
-    this.props.loadModels(modelClue(this.props))
+    if (this.props.open) {
+      this.props.loadModels(modelClue(this.props), { force: true })
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.open && !prevProps.open) {
+      this.props.loadModels(modelClue(this.props), { force: true })
+    }
+  }
+
+  onCellClick = data => {
+    this.props.onPick && this.props.onPick(data.rowData)
   }
 
   render() {
-    const { open, identity, onClose, onPick, columns, constants, models } = this.props
-    return (<Dialog open = {open} onClose = {onClose}>
-      <DialogTitle>{constants.schemas[identity].title}</DialogTitle>
-      <ModelTable
-        schema={constants.schemas[identity]}
-        data={models && models.data || []}
-        columns={columns}
-        onCellClick={onPick}
-      />
-      <DialogActions>
-        <Button onClick={onClose} color="primary">
-          { "Cancel" }
-        </Button>
-      </DialogActions>
-    </Dialog>)
+    const { open, identity, onClose, columns, title, constants, models } = this.props
+    return (
+      <Dialog open={open} onClose={onClose}>
+        <DialogTitle>{title || `Select ${constants.schemas[identity].title}`}</DialogTitle>
+        <ModelTable
+          schema={constants.schemas[identity]}
+          data={(models && models.data) || []}
+          columns={columns}
+          onCellClick={this.onCellClick}
+        />
+        <DialogActions>
+          <Button onClick={onClose} color="primary">
+            {"Cancel"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    )
   }
 }

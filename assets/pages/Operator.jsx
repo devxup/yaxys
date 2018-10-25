@@ -116,8 +116,8 @@ export default class Operator extends Component {
     })
   }
 
-  onProfilePick = (data) => {
-    alert(JSON.stringify(data.rowData))
+  onProfilePick = (profile) => {
+    alert(JSON.stringify(profile))
   }
 
   render() {

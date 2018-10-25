@@ -95,7 +95,7 @@ export default class Operators extends Component {
               schema={constants.schemas.operator}
               data={(operators && operators.data) || []}
               url={operator => `/operators/${operator.id}`}
-              columns={["id", "email"]}
+              columns={["id", "email", "isAdministrator", "hasCustomRights"]}
             />
           </Paper>
         </Loader>

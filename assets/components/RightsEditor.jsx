@@ -41,7 +41,7 @@ export default
 @withStyles(styles)
 class RightsEditor extends Component {
   static propTypes = {
-    type: PropTypes.arrayOf(),
+    type: PropTypes.oneOf(["operator", "profile"]),
     values: PropTypes.object,
     constants: PropTypes.object,
     onChange: PropTypes.func,

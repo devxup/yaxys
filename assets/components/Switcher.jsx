@@ -5,7 +5,7 @@ import { isNil, findIndex } from "lodash"
 
 export default class Switcher extends Component {
   static propTypes = {
-    classes: PropTypes.string,
+    classes: PropTypes.object,
     emptyAllow: PropTypes.bool,
     emptyLabel: PropTypes.string,
     emptyClasses: PropTypes.string,
