@@ -202,12 +202,17 @@ module.exports = class Adapter {
 
     let result = await (trx ? query.transacting(trx) : query)
     if (options.populate) {
-      const populateArgs = this._parsePopulateArguments(options.populate)
-      for (let field of populateArgs.otmPopulate) {
-        await this._oneToManyPopulate(identity, result, field)
+      const populateOptions = this._parsePopulateArguments(options.populate)
+      for (let property of populateOptions.otmPopulate) {
+        await this._oneToManyPopulate(identity, result, property)
       }
-      for (let field of populateArgs.mtmPopulate) {
-        await this._manyToManyPopulate(identity, result, field.linkerModel, field.initialModel, field.modelToLink)
+      for (let property of populateOptions.mtmPopulate) {
+        await this._manyToManyPopulate(
+          identity,
+          result,
+          property.linkerModel,
+          property.initialModel,
+          property.modelToLink)
       }
     }
     return result
@@ -215,26 +220,27 @@ module.exports = class Adapter {
 
   /**
    * Parse arguments for populating models
-   * @param {(string|string[])} args Populate arguments
+   * @param {(string|string[])} populateOptionsRaw Populate arguments
    * @returns {{otmPopulate: Array, mtmPopulate: Array}} Parsed arguments object
    * @private
    */
-  _parsePopulateArguments(args) {
+  _parsePopulateArguments(populateOptionsRaw) {
     const result = { otmPopulate: [], mtmPopulate: [] }
-    let argsCopy
-    Array.isArray(args)
-      ? argsCopy = args
-      : argsCopy = [args]
-    for (let arg of argsCopy) {
-      switch (arg.split(":").length) {
+    const populateOptionsFixed =
+    Array.isArray(populateOptionsRaw)
+      ? populateOptionsRaw
+      : [populateOptionsRaw]
+    for (let option of populateOptionsFixed) {
+      const parsedOption = option.split(":")
+      switch (parsedOption.length) {
         case 1:
-          result.otmPopulate.push(arg)
+          result.otmPopulate.push(option)
           break
         case 3:
           result.mtmPopulate.push({
-            linkerModel: arg.split(":")[0],
-            initialModel: arg.split(":")[1],
-            modelToLink: arg.split(":")[2],
+            linkerModel: parsedOption[0],
+            initialModel: parsedOption[1],
+            modelToLink: parsedOption[2],
           })
           break
         default:
@@ -248,15 +254,15 @@ module.exports = class Adapter {
    * Populates the given models with 1:m relation
    * @param {String} identity The initial model identity
    * @param {Object[]} models Models to be populated
-   * @param {String} populatingField The field to populate
+   * @param {String} populatingProperty The field to populate
    * @private
    */
-  async _oneToManyPopulate(identity, models, populatingField) {
-    const populatingModelIdentity = this.schemas[identity.toLowerCase()].properties[populatingField].model
+  async _oneToManyPopulate(identity, models, populatingProperty) {
+    const populatingModelIdentity = this.schemas[identity.toLowerCase()].properties[populatingProperty].model
 
     let idsSet = new Set()
     for (let model of models) {
-      idsSet.add(model[populatingField])
+      idsSet.add(model[populatingProperty])
     }
     const ids = [...idsSet]
     const populatingModels = await this.knex(populatingModelIdentity.toLowerCase()).whereIn("id", ids)
@@ -267,7 +273,7 @@ module.exports = class Adapter {
     }
 
     for (let model of models) {
-      model[populatingField] = populatingModelsHash[model[populatingField]]
+      model[populatingProperty] = populatingModelsHash[model[populatingProperty]]
     }
   }
 
@@ -276,12 +282,12 @@ module.exports = class Adapter {
    * @param {String} identity The identity of initial model
    * @param {Object[]} models Models to be populated
    * @param {String} linkerModelIdentity The identity of linker model
-   * @param {String} initialModelField The field of linker model corresponding to initial model
-   * @param {String} linkedModelField The field of linker model corresponding to linked model
+   * @param {String} initialModelProperty The field of linker model corresponding to initial model
+   * @param {String} linkedModelProperty The field of linker model corresponding to linked model
    * @private
    */
-  async _manyToManyPopulate(identity, models, linkerModelIdentity, initialModelField, linkedModelField) {
-    const linkedModelIdentity = this.schemas[linkerModelIdentity.toLowerCase()].properties[linkedModelField].model
+  async _manyToManyPopulate(identity, models, linkerModelIdentity, initialModelProperty, linkedModelProperty) {
+    const linkedModelIdentity = this.schemas[linkerModelIdentity.toLowerCase()].properties[linkedModelProperty].model
 
     let idsSet = new Set()
     for (let model of models) {
@@ -290,11 +296,11 @@ module.exports = class Adapter {
     const ids = [...idsSet]
     const linkers = await this
       .knex(linkerModelIdentity.toLowerCase())
-      .whereIn(initialModelField, ids)
+      .whereIn(initialModelProperty, ids)
 
     let linkedModelsIdsSet = new Set()
     for (let linker of linkers) {
-      linkedModelsIdsSet.add(linker[linkedModelField])
+      linkedModelsIdsSet.add(linker[linkedModelProperty])
     }
     const linkedModelsIds = [...linkedModelsIdsSet]
     const linkedModels = await this.knex(linkedModelIdentity.toLowerCase()).whereIn("id", linkedModelsIds)
@@ -306,10 +312,10 @@ module.exports = class Adapter {
 
     const linkersHash = {}
     for (let linker of linkers) {
-      if (!Array.isArray(linkersHash[linker[initialModelField]])) {
-        linkersHash[linker[initialModelField]] = []
+      if (!Array.isArray(linkersHash[linker[initialModelProperty]])) {
+        linkersHash[linker[initialModelProperty]] = []
       }
-      linkersHash[linker[initialModelField]].push(linkedModelsHash[linker[linkedModelField]])
+      linkersHash[linker[initialModelProperty]].push(linkedModelsHash[linker[linkedModelProperty]])
     }
 
     for (let model of models) {
