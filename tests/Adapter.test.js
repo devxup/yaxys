@@ -1,6 +1,7 @@
 const Adapter = require("../core/classes/Adapter")
 const config = require("config")
 const Promise = require("bluebird")
+const _ = require("lodash")
 
 describe("Adapter", () => {
   let gAdapter
@@ -40,7 +41,6 @@ describe("Adapter", () => {
     `INSERT INTO ${tableNames[3]} VALUES (1, 'three', 'lets'), (2, 'four', 'go')`,
   ]
 
-
   beforeAll(async () => {
     gAdapter = new Adapter(config.get("db"))
     await gAdapter.init()
@@ -63,14 +63,35 @@ describe("Adapter", () => {
     })
     gAdapter.registerSchema(tableNames[1], {
       properties: {
-        fake_initial_field: { type: "integer", model: "fake_initial" },
-        fake_to_link_field: { type: "integer", model: "fake_to_link" },
+        fake_initial_field: {
+          type: "integer",
+          connection: {
+            type: "m:1",
+            relatedModel: "fake_initial",
+          },
+        },
+        fake_to_link_field: {
+          type: "integer",
+          connection: {
+            type: "m:1",
+            relatedModel: "fake_to_link",
+          },
+        },
       },
     })
     gAdapter.registerSchema(tableNames[2], {
       properties: {
         x1: { type: "string" },
         x2: { type: "string" },
+        relatedList: {
+          type: "integer",
+          virtual: true, connection: {
+            type: "m:m",
+            linkerModel: tableNames[1],
+            linkerMyAttribute: "fake_initial_field",
+            linkerRelatedAttribute: "fake_to_link_field",
+          },
+        },
       },
     })
     gAdapter.registerSchema(tableNames[3], {
@@ -174,13 +195,13 @@ describe("Adapter", () => {
       {
         title: "find with m:m populate",
         method: "find",
-        args: [tableNames[2], {}, { populate: `${tableNames[1]}:fake_initial_field:fake_to_link_field` }],
+        args: [tableNames[2], {}, { populate: "relatedList" }],
         result: [
           {
             id: 1,
             x1: "one",
             x2: "hey",
-            fake_to_link: [
+            relatedList: [
               {
                 id: 1,
                 y1: "three",
@@ -197,7 +218,7 @@ describe("Adapter", () => {
             id: 2,
             x1: "two",
             x2: "ho",
-            fake_to_link: [
+            relatedList: [
               {
                 id: 2,
                 y1: "four",
@@ -209,45 +230,9 @@ describe("Adapter", () => {
             id: 3,
             x1: "no",
             x2: "noooo",
-            fake_to_link: [],
+            relatedList: [],
           },
         ],
-      },
-      {
-        title: "findOne with 1:m populate",
-        method: "findOne",
-        args: [tableNames[1], { id: 1 }, { populate: "fake_initial_field" }],
-        result: {
-          id: 1,
-          fake_initial_field: {
-            id: 1,
-            x1: "one",
-            x2: "hey",
-          },
-          fake_to_link_field: 1,
-        },
-      },
-      {
-        title: "findOne with m:m populate",
-        method: "findOne",
-        args: [tableNames[2], { id: 1 }, { populate: `${tableNames[1]}:fake_initial_field:fake_to_link_field` }],
-        result: {
-          id: 1,
-          x1: "one",
-          x2: "hey",
-          fake_to_link: [
-            {
-              id: 1,
-              y1: "three",
-              y2: "lets",
-            },
-            {
-              id: 2,
-              y1: "four",
-              y2: "go",
-            },
-          ],
-        },
       },
     ]
 
@@ -370,7 +355,7 @@ describe("Adapter", () => {
   describe("getSQL", () => {
     const testCases = [
       {
-        title: "get sql for create table with all possible data types",
+        title: "get sql for create table with all possible data types and 1 virtaul field",
         args: [
           "testtable",
           {
@@ -416,6 +401,10 @@ describe("Adapter", () => {
               },
               p14: {
                 type: "integer",
+              },
+              p15: {
+                type: "integer",
+                virtual: true,
               },
             },
             required: ["p1", "p2"],
@@ -480,7 +469,7 @@ describe("Adapter", () => {
   describe("createTable", () => {
     const testCases = [
       {
-        title: "create table with all possible data types",
+        title: "create table with all possible data types and 1 virtual field",
         args: [
           "testtable",
           {
@@ -526,6 +515,10 @@ describe("Adapter", () => {
               },
               p14: {
                 type: "integer",
+              },
+              p15: {
+                type: "integer",
+                virtual: true,
               },
             },
             required: ["p1", "p2"],
@@ -591,6 +584,13 @@ describe("Adapter", () => {
             .knex(testCase.args[0])
             .columnInfo()
             .then(info => {
+              expect(
+                Object.keys(_.omit(info, "id")).length
+              ).toStrictEqual(
+                Object.keys(
+                  _.omitBy(testCase.args[1].properties, (property, key) => property.virtual || key === "id")
+                ).length
+              )
               for (let property in testCase.args[1].properties) {
                 switch (testCase.args[1].properties[property].type) {
                   case "string":
@@ -615,9 +615,11 @@ describe("Adapter", () => {
                     expect(info[property].type).toStrictEqual("bytea")
                     break
                   default:
-                    expect(
-                      testCase.args[1].properties[property].type === info[property].type
-                    ).toBeTruthy()
+                    if (!testCase.args[1].properties[property].virtual) {
+                      expect(
+                        testCase.args[1].properties[property].type === info[property].type
+                      ).toBeTruthy()
+                    }
                 }
                 if (testCase.args[1].required && testCase.args[1].required.includes(property)) {
                   expect(info[property].nullable).toBeFalsy()

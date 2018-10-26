@@ -50,7 +50,7 @@ describe("RestService", () => {
           params: { id: 1 },
           query: {},
         }),
-        result: ["findOne", identity, { id: 1 }, { populate: [] }],
+        result: ["findOne", identity, { id: 1 }, { populate: undefined }],
       },
       {
         title: "No id",

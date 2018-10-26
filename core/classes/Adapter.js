@@ -125,7 +125,7 @@ module.exports = class Adapter {
    * @param {Object} schema The schema to register
    */
   registerSchema(identity, schema) {
-    this.schemas[identity] = schema
+    this.schemas[identity.toLowerCase()] = schema
   }
 
   /**
@@ -225,126 +225,120 @@ module.exports = class Adapter {
 
     let result = await (trx ? query.transacting(trx) : query)
     if (options.populate) {
-      const populateOptions = this._parsePopulateArguments(options.populate)
-      for (let property of populateOptions.otmPopulate) {
-        await this._oneToManyPopulate(identity, result, property)
-      }
-      for (let property of populateOptions.mtmPopulate) {
-        await this._manyToManyPopulate(
-          identity,
-          result,
-          property.linkerModel,
-          property.initialModel,
-          property.modelToLink)
+      // const populateOptions = this._parsePopulateArguments(options.populate)
+      const propertiesToPopulate = Array.isArray(options.populate)
+        ? options.populate
+        : [options.populate]
+
+      for (let property of propertiesToPopulate) {
+        await this._populate(identity, result, property, trx)
       }
     }
     return result
   }
 
-  /**
-   * Parse arguments for populating models
-   * @param {(string|string[])} populateOptionsRaw Populate arguments
-   * @returns {{otmPopulate: Array, mtmPopulate: Array}} Parsed arguments object
-   * @private
-   */
-  _parsePopulateArguments(populateOptionsRaw) {
-    const result = { otmPopulate: [], mtmPopulate: [] }
-    const populateOptionsFixed =
-    Array.isArray(populateOptionsRaw)
-      ? populateOptionsRaw
-      : [populateOptionsRaw]
-    for (let option of populateOptionsFixed) {
-      const parsedOption = option.split(":")
-      switch (parsedOption.length) {
-        case 1:
-          result.otmPopulate.push(option)
-          break
-        case 3:
-          result.mtmPopulate.push({
-            linkerModel: parsedOption[0],
-            initialModel: parsedOption[1],
-            modelToLink: parsedOption[2],
-          })
-          break
-        default:
-          throw new Error ("Wrong populate arguments")
-      }
-    }
-    return result
+  async _trxWrapper(query, trx) {
+    return trx ? query.transacting(trx) : query
   }
 
   /**
    * Populates the given models with 1:m relation
    * @param {String} identity The initial model identity
    * @param {Object[]} models Models to be populated
-   * @param {String} populatingProperty The field to populate
+   * @param {String} property The property to populate
+   * @param {Object} [trx] The transaction context
    * @private
    */
-  async _oneToManyPopulate(identity, models, populatingProperty) {
-    const populatingModelIdentity = this.schemas[identity.toLowerCase()].properties[populatingProperty].model
+  async _populate(identity, models, property, trx) {
+    const schema = this.schemas[identity.toLowerCase()]
+    const propertySchema = schema.properties[property]
+    const connection = propertySchema.connection
 
-    let idsSet = new Set()
-    for (let model of models) {
-      idsSet.add(model[populatingProperty])
-    }
-    const ids = [...idsSet]
-    const populatingModels = await this.knex(populatingModelIdentity.toLowerCase()).whereIn("id", ids)
+    switch (connection.type) {
+      case "m:m": {
+        const linkerSchema = this.schemas[connection.linkerModel.toLowerCase()]
+        const relatedIdentity = linkerSchema.properties[connection.linkerRelatedAttribute].connection.relatedModel
 
-    const populatingModelsHash = {}
-    for (let populatingModel of populatingModels) {
-      populatingModelsHash[populatingModel.id] = populatingModel
-    }
+        const ids = [ ...new Set(models.map(model => model.id))]
+        const linkerModels = await this._trxWrapper(
+          this.knex(connection.linkerModel.toLowerCase())
+          .whereIn(connection.linkerMyAttribute, ids)
+          .orderBy("id", "asc"),
+          trx
+        )
 
-    for (let model of models) {
-      model[populatingProperty] = populatingModelsHash[model[populatingProperty]]
-    }
-  }
+        const relatedIds = [ ...new Set(linkerModels.map(model => model[connection.linkerRelatedAttribute]))]
+        const relatedModels = await this._trxWrapper(
+          this.knex(relatedIdentity.toLowerCase())
+          .whereIn("id", relatedIds),
+          trx
+        )
+        const relatedHash = relatedModels.reduce((hash, relatedItem) => {
+          hash[relatedItem.id] = relatedItem
+          return hash
+        }, {})
 
-  /**
-   * Populates the given model with m:m relation
-   * @param {String} identity The identity of initial model
-   * @param {Object[]} models Models to be populated
-   * @param {String} linkerModelIdentity The identity of linker model
-   * @param {String} initialModelProperty The field of linker model corresponding to initial model
-   * @param {String} linkedModelProperty The field of linker model corresponding to linked model
-   * @private
-   */
-  async _manyToManyPopulate(identity, models, linkerModelIdentity, initialModelProperty, linkedModelProperty) {
-    const linkedModelIdentity = this.schemas[linkerModelIdentity.toLowerCase()].properties[linkedModelProperty].model
+        const relatedByMyIdHash = linkerModels.reduce((hash, linkerItem) => {
+          const myId = linkerItem[connection.linkerMyAttribute]
+          if (!hash[myId]) {
+            hash[myId] = []
+          }
+          hash[myId].push(relatedHash[linkerItem[connection.linkerRelatedAttribute]])
+          return hash
+        }, {})
 
-    let idsSet = new Set()
-    for (let model of models) {
-      idsSet.add(model.id)
-    }
-    const ids = [...idsSet]
-    const linkers = await this
-      .knex(linkerModelIdentity.toLowerCase())
-      .whereIn(initialModelProperty, ids)
+        for (let model of models) {
+          model[property] = relatedByMyIdHash[model.id] || []
+        }
 
-    let linkedModelsIdsSet = new Set()
-    for (let linker of linkers) {
-      linkedModelsIdsSet.add(linker[linkedModelProperty])
-    }
-    const linkedModelsIds = [...linkedModelsIdsSet]
-    const linkedModels = await this.knex(linkedModelIdentity.toLowerCase()).whereIn("id", linkedModelsIds)
-
-    const linkedModelsHash ={}
-    for (let linkedModel of linkedModels) {
-      linkedModelsHash[linkedModel.id] = linkedModel
-    }
-
-    const linkersHash = {}
-    for (let linker of linkers) {
-      if (!Array.isArray(linkersHash[linker[initialModelProperty]])) {
-        linkersHash[linker[initialModelProperty]] = []
+        break
       }
-      linkersHash[linker[initialModelProperty]].push(linkedModelsHash[linker[linkedModelProperty]])
-    }
+      case "m:1": {
+        const ids = [ ...new Set(models.map(model => model[property]))]
 
-    for (let model of models) {
-      linkersHash[model.id]
-        ? model[linkedModelIdentity] = linkersHash[model.id]
-        : model[linkedModelIdentity] = []
+        const relatedModels = await this._trxWrapper(
+          this.knex(connection.relatedModel.toLowerCase()).whereIn("id", ids),
+          trx
+        )
+
+        const relatedHash = relatedModels.reduce((hash, relatedItem) => {
+          hash[relatedItem.id] = relatedItem
+          return hash
+        }, {})
+
+        for (let model of models) {
+          if (relatedHash[model[property]]) {
+            model[property] = relatedHash[model[property]]
+          }
+        }
+        break
+      }
+      case "1:m": {
+        const ids = [ ...new Set(models.map(model => model.id))]
+
+        const relatedModels = await this._trxWrapper(
+          this.knex(connection.relatedModel.toLowerCase())
+          .whereIn(connection.relatedModelAttribute, ids)
+          .orderBy("id", "asc"),
+          trx
+        )
+
+        const relatedByMyIdHash = relatedModels.reduce((hash, relatedItem) => {
+          const myId = relatedItem[connection.relatedModelAttribute]
+          if (!hash[myId]) {
+            hash[myId] = []
+          }
+          hash[myId].push(relatedItem)
+          return hash
+        }, {})
+
+        for (let model of models) {
+          model[property] = relatedByMyIdHash[model.id] || []
+        }
+        break
+      }
+      default:
+        throw new Error("Invalid connection type")
     }
   }
 
@@ -358,21 +352,21 @@ module.exports = class Adapter {
   _newTable(identity, schema) {
     return this.knex.schema.createTable(identity, table => {
       table.increments("id").primary()
-      _.forEach(schema.properties, (value, key) => {
-        if (key === "id") return
+      _.forEach(schema.properties, (property, key) => {
+        if (key === "id" || property.virtual) return
 
-        const type = ["object", "array"].includes(value.type)
+        const type = ["object", "array"].includes(property.type)
           ? "json"
-          : value.type
+          : property.type
 
         if (!POSTGRES_TYPES.includes(type)) {
-          throw new Error(`Incorrect data type ${value.type} of field ${key} in ${identity}`)
+          throw new Error(`Incorrect data type ${property.type} of field ${key} in ${identity}`)
         }
         const attribute = table[type](key)
         if (Array.isArray(schema.required) && schema.required.includes(key)) {
           attribute.notNullable()
         }
-        if (value.unique) {
+        if (property.unique) {
           table.unique(key)
         }
       })

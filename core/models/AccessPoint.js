@@ -16,12 +16,18 @@ module.exports = {
       door: {
         title: "Door",
         type: "integer",
-        model: "door",
+        connection: {
+          type: "m:1",
+          relatedModel: "Door",
+        },
       },
       zoneTo: {
         title: "Zone to",
         type: "integer",
-        model: "zone",
+        connection: {
+          type: "m:1",
+          relatedModel: "Zone",
+        },
       },
     },
   },

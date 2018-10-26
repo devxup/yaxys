@@ -13,6 +13,16 @@ module.exports = {
         title: "Description",
         type: "string",
       },
+      accessPoints: {
+        title: "Access points",
+        type: "array",
+        virtual: true,
+        connection: {
+          type: "1:m",
+          relatedModel: "AccessPoint",
+          relatedModelAttribute: "door",
+        },
+      },
     },
   },
 

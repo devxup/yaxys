@@ -27,6 +27,17 @@ module.exports = {
         readOnly: true,
         type: "boolean",
       },
+      profiles: {
+        title: "Operator profiles",
+        type: "array",
+        virtual: true,
+        connection: {
+          type: "m:m",
+          linkerModel: "OperatorProfileBinding",
+          linkerMyAttribute: "operator",
+          linkerRelatedAttribute: "operatorProfile",
+        },
+      },
     },
     required: ["email", "passwordHash"],
   },

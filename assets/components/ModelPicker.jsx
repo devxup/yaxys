@@ -64,7 +64,7 @@ export default class ModelPicker extends Component {
         <DialogTitle>{title || `Select ${constants.schemas[identity].title}`}</DialogTitle>
         <ModelTable
           schema={constants.schemas[identity]}
-          data={(models && models.data) || []}
+          data={ models?.data || [] }
           columns={columns}
           onCellClick={this.onCellClick}
         />

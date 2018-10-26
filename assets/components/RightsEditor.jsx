@@ -100,7 +100,7 @@ class RightsEditor extends Component {
         emptyLabel={
           type === "profile"
             ? `${rightTitle}: don't change`
-            : `${rightTitle}: from profile`
+            : `${rightTitle}: untouched`
         }
         classes={{ root: classes.switcherCommon }}
         choices={choices}

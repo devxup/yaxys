@@ -97,12 +97,7 @@ module.exports = {
       if (!ctx.params.id) {
         ctx.throw(400, "id is required")
       }
-      let populateArgs = []
-      if (ctx.query.populate) {
-        for (let arg of ctx.query.populate.split(",")) {
-          populateArgs.push(arg)
-        }
-      }
+      const populateArgs = ctx.query.populate && ctx.query.populate.split(",")
       const instance = await yaxys.db.findOne(identity, { id: ctx.params.id }, { populate: populateArgs })
       if (!instance) {
         ctx.throw(404, `${identity} #${ctx.params.id} not found`)

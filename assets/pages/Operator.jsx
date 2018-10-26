@@ -5,8 +5,9 @@ import { connect } from "react-redux"
 import YaxysClue, { queries } from "../services/YaxysClue"
 import { pick, cloneDeep, pull } from "lodash"
 
-import { Paper, FormControlLabel, Switch } from "@material-ui/core"
 import { withStyles } from "@material-ui/core/styles"
+import { Paper, FormControlLabel, Switch, Button } from "@material-ui/core"
+import AddIcon from "@material-ui/core/SvgIcon/SvgIcon"
 
 import { withConstants } from "../services/Utils"
 
@@ -16,6 +17,7 @@ import Loader from "../components/Loader.jsx"
 import Update from "../components/Update.jsx"
 import ModelForm from "../components/ModelForm.jsx"
 import ModelPicker from "../components/ModelPicker.jsx"
+import Created from "../components/Created.jsx"
 
 const operatorClue = props => ({
   identity: "operator",
@@ -24,8 +26,18 @@ const operatorClue = props => ({
 })
 const operatorSelector = YaxysClue.selectors.byClue(operatorClue)
 
+const CREATED_BINDINGS_MARKER = "operator-page"
+const createdBindingsSelector = YaxysClue.selectors.byClue(
+  props => ({ identity: "operatorprofilebinding", query: queries.CREATE }),
+  { marker: CREATED_BINDINGS_MARKER }
+)
+
 const styles = {
   rights: {
+    padding: "1px 30px 20px",
+    margin: "0 0 30px 0",
+  },
+  profiles: {
     padding: "1px 30px 20px",
     margin: "0 0 30px 0",
   },
@@ -38,9 +50,11 @@ const EDIBLE_PROPERTIES = ["id", "email", "isAdministrator", "rights"]
 @connect(
   (state, props) => ({
     operator: operatorSelector(state, props),
+    createdBindings: createdBindingsSelector(state, props),
   }),
   {
     loadOperator: YaxysClue.actions.byClue,
+    createBinding: YaxysClue.actions.byClue,
   }
 )
 export default class Operator extends Component {
@@ -119,7 +133,21 @@ export default class Operator extends Component {
   }
 
   onProfilePick = (profile) => {
-    alert(JSON.stringify(profile))
+    const { operator } = this.props
+    this.props.createBinding(
+      {
+        identity: "operatorprofilebinding",
+        query: queries.CREATE,
+        data: {
+          operator: operator.data.id,
+          operatorProfile: profile.id,
+        },
+      },
+      { marker: CREATED_BINDINGS_MARKER }
+    )
+    this.setState({
+      profileOpen: false,
+    })
   }
 
   render() {
@@ -170,17 +198,33 @@ export default class Operator extends Component {
 
             {!this.state.operator.isAdministrator && (
               <Fragment>
+                <Paper className={classes.profiles}>
+                  <h5>The operator profiles</h5>
+                  <Button
+                    variant="fab"
+                    color="secondary"
+                    onClick={this.onProfileOpen}
+                    style={{ float: "right" }}
+                    title="Create operator"
+                  >
+                    <AddIcon />
+                  </Button>
+                  <p>Here you can manage profiles of the operator</p>
+                  <Created
+                    items={this.props.createdBindings}
+                    content={binding => binding.operatorProfile}
+                    url={binding => `/settings/operator-profiless/${binding.operatorProfile}`}
+                  />
+                </Paper>
+
                 <Paper className={classes.rights}>
-                  <h5>The operator&#39;s rights:</h5>
+                  <h5>Custom operator&#39;s rights:</h5>
                   <RightsEditor
                     type="operator"
                     values={(this.state.operator && this.state.operator.rights) || {}}
                     onChange={this.onRightsChange}
                   />
                 </Paper>
-                <button className="btn btn-flat blue lighten-1 white-text"
-                        onClick={this.onProfileOpen}
-                >Add profile</button>
               </Fragment>
             )}
             <ModelPicker

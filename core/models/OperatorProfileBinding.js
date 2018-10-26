@@ -1,6 +1,6 @@
 module.exports = {
   schema: {
-    hidden: true,
+    // hidden: true,
     properties: {
       id: {
         type: "integer",
@@ -8,12 +8,18 @@ module.exports = {
       operator: {
         title: "Operator",
         type: "integer",
-        model: "Operator",
+        connection: {
+          type: "m:1",
+          relatedModel: "Operator",
+        },
       },
       operatorProfile: {
         title: "Operator Profile",
         type: "integer",
-        model: "OperatorProfile",
+        connection: {
+          type: "m:1",
+          relatedModel: "OperatorProfile",
+        },
       },
     },
     required: [],
