@@ -5,6 +5,8 @@ import classNames from "classnames"
 import { withStyles } from "@material-ui/core/styles"
 import MuiTable from "mui-table"
 import { omit } from "lodash"
+import Checkbox from "@material-ui/core/Checkbox"
+
 
 const styles = theme => ({
   cell: {
@@ -41,7 +43,26 @@ class ModelTable extends Component {
     data: PropTypes.arrayOf(PropTypes.object).isRequired,
     url: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
     columns: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.object])),
-    onCellClick: PropTypes.func,
+  }
+
+  renderPropertyCellContent(proppertySchema, value) {
+    switch (proppertySchema && proppertySchema.type) {
+      case "boolean" :
+        return <Checkbox checked={value} disabled={true} />
+      default :
+        return value
+    }
+  }
+
+  renderPropertyCell(proppertySchema, value, url) {
+    const { classes } = this.props
+    return url
+      ? <Link className={classes.link} to={url}>
+          {this.renderPropertyCellContent(proppertySchema, value)}
+        </Link>
+      : <div className={classes.link}>
+          {this.renderPropertyCellContent(proppertySchema, value)}
+        </div>
   }
 
   render() {
@@ -63,24 +84,20 @@ class ModelTable extends Component {
         typeof columnOriginal === "string"
           ? { name: columnOriginal }
           : Object.assign({}, columnOriginal)
-
+      let property
       if (typeof columnOriginal === "string" && schema) {
-        const property = schema.properties[column.name]
+        property = schema.properties[column.name]
         column.header =
           column.name === "id" || column.name === "#"
             ? "#"
             : (property && property.title) || column.name
       }
-
-      if (url) {
-        column.cell = rowData => {
-          return (
-            <Link className={classes.link} to={url(rowData)}>
-              {rowData[column.name]}
-            </Link>
-          )
-        }
+      column.cell = rowData => {
+        return (
+          this.renderPropertyCell(property, rowData[column.name], url ? url(rowData) : false)
+        )
       }
+
       return column
     })
 
