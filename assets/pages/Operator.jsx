@@ -7,7 +7,6 @@ import { pick, cloneDeep, pull } from "lodash"
 
 import { withStyles } from "@material-ui/core/styles"
 import { Paper, FormControlLabel, Switch, Button } from "@material-ui/core"
-import AddIcon from "@material-ui/core/SvgIcon/SvgIcon"
 
 import { withConstants } from "../services/Utils"
 
@@ -18,11 +17,13 @@ import Update from "../components/Update.jsx"
 import ModelForm from "../components/ModelForm.jsx"
 import ModelPicker from "../components/ModelPicker.jsx"
 import Created from "../components/Created.jsx"
+import ModelTable from "../components/ModelTable.jsx"
 
 const operatorClue = props => ({
   identity: "operator",
   query: queries.FIND_BY_ID,
   id: props.match.params.id,
+  populate: "profiles",
 })
 const operatorSelector = YaxysClue.selectors.byClue(operatorClue)
 
@@ -142,6 +143,7 @@ export default class Operator extends Component {
           operator: operator.data.id,
           operatorProfile: profile.id,
         },
+        populate: "operatorProfile",
       },
       { marker: CREATED_BINDINGS_MARKER }
     )
@@ -151,7 +153,7 @@ export default class Operator extends Component {
   }
 
   render() {
-    const { operator, match, classes } = this.props
+    const { operator, match, classes, constants } = this.props
     const update = (
       <Update
         clue={operatorClue(this.props)}
@@ -199,22 +201,35 @@ export default class Operator extends Component {
             {!this.state.operator.isAdministrator && (
               <Fragment>
                 <Paper className={classes.profiles}>
+
                   <h5>The operator profiles</h5>
+                  { !(operator?.data?.profiles?.length) && <p>Here you can manage profiles of the operator</p> }
                   <Button
-                    variant="fab"
+                    variant="text"
                     color="secondary"
                     onClick={this.onProfileOpen}
-                    style={{ float: "right" }}
-                    title="Create operator"
+                    style={{ marginBottom:10 }}
                   >
-                    <AddIcon />
+                    Add profile
                   </Button>
-                  <p>Here you can manage profiles of the operator</p>
                   <Created
                     items={this.props.createdBindings}
-                    content={binding => binding.operatorProfile}
-                    url={binding => `/settings/operator-profiless/${binding.operatorProfile}`}
+                    content={
+                      binding =>
+                        binding.operatorProfile.title
+                          ? `Profile #${binding.operatorProfile.id} "${binding.operatorProfile.title}"`
+                          : `Profile #${binding.operatorProfile}`
+                    }
+                    url={binding => `/settings/operator-profiles/${binding.operatorProfile.id}`}
                   />
+                  {
+                    !!(operator?.data?.profiles?.length) && <ModelTable
+                        schema={constants.schemas.operator}
+                        data={operator?.data?.profiles}
+                        url={profile => `/settings/operator-profiles/${profile.id}`}
+                        columns={["id", "title"]}
+                      />
+                  }
                 </Paper>
 
                 <Paper className={classes.rights}>

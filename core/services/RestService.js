@@ -121,7 +121,7 @@ module.exports = {
      * @param {String} [ctx.params.limit] How maany model to query (String containing Integer)
      */
     return async ctx => {
-      const options = { populate: [] }
+      const options = {}
       const filter = {}
       _.each(ctx.query, (v, k) => {
         switch (k) {
@@ -139,9 +139,7 @@ module.exports = {
             options[k] = v
             break
           case "populate":
-            for (let arg of v.split(",")) {
-              options.populate.push(arg)
-            }
+            options.populate = v.split(",")
             break
           default:
             filter[k] = v
@@ -187,7 +185,10 @@ module.exports = {
      * @param {String} ctx.request.body The data to insert
      */
     return async ctx => {
-      ctx.body = await yaxys.db.insert(identity, ctx.request.body)
+      const options = {
+        populate: ctx.query.populate && ctx.query.populate.split(","),
+      }
+      ctx.body = await yaxys.db.insert(identity, ctx.request.body, options)
     }
   },
 }

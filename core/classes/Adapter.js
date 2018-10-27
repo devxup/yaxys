@@ -132,10 +132,11 @@ module.exports = class Adapter {
    * Insert new model into the table
    * @param {String} identity The model's identity
    * @param {Object} data The model blank to insert
+   * @param {Object} [options] The options to find
    * @param {Object} [trx] The transaction context
    * @returns {Promise<Object>} The inserted model containing all of the fields, includeing id
    */
-  async insert(identity, data, trx) {
+  async insert(identity, data, options, trx) {
     const dataToInsert = data.id ? data : _.omit(data, "id")
 
     const fixedData = this._sanitize(identity, dataToInsert)
@@ -149,6 +150,16 @@ module.exports = class Adapter {
     const item = result[0]
 
     await this.emitter.emit(`${identity}:create:after`, trx, result)
+
+    if (options && options.populate) {
+      const propertiesToPopulate = Array.isArray(options.populate)
+        ? options.populate
+        : [options.populate]
+
+      for (let property of propertiesToPopulate) {
+        await this._populate(identity, [item], property, trx)
+      }
+    }
 
     return item
   }
@@ -225,7 +236,6 @@ module.exports = class Adapter {
 
     let result = await (trx ? query.transacting(trx) : query)
     if (options.populate) {
-      // const populateOptions = this._parsePopulateArguments(options.populate)
       const propertiesToPopulate = Array.isArray(options.populate)
         ? options.populate
         : [options.populate]

@@ -109,7 +109,7 @@ describe("RestService", () => {
         ctx: new CTXEmulator({
           query: {},
         }),
-        result: ["find", identity, {}, { populate: [] }],
+        result: ["find", identity, {}, {}],
       },
       {
         title: "Mixed filter and reserved keywords",
@@ -120,7 +120,7 @@ describe("RestService", () => {
             someAttribute: 3,
           },
         }),
-        result: ["find", identity, { someAttribute: 3 }, { limit: 1, skip: 2, populate: [] }],
+        result: ["find", identity, { someAttribute: 3 }, { limit: 1, skip: 2 }],
       },
       {
         title: "Direct sort",
@@ -129,7 +129,7 @@ describe("RestService", () => {
             sort: "someAttribute",
           },
         }),
-        result: ["find", identity, {}, { sort: { someAttribute: 1 }, populate: [] }],
+        result: ["find", identity, {}, { sort: { someAttribute: 1 } }],
       },
       {
         title: "Negative sort",
@@ -138,7 +138,7 @@ describe("RestService", () => {
             sort: "-someAttribute",
           },
         }),
-        result: ["find", identity, {}, { sort: { someAttribute: -1 }, populate: [] }],
+        result: ["find", identity, {}, { sort: { someAttribute: -1 } }],
       },
       {
         title: "Complicated sort",
@@ -147,7 +147,7 @@ describe("RestService", () => {
             sort: '{"a": 1, "b":-1}',
           },
         }),
-        result: ["find", identity, {}, { sort: { a: 1, b: -1 }, populate: [] }],
+        result: ["find", identity, {}, { sort: { a: 1, b: -1 } }],
       },
       {
         title: "Query with 1:m populate",

@@ -257,7 +257,7 @@ describe("Adapter", () => {
           {
             // inserting item under transaction
             method: "insert",
-            args: [tableNames[0], { a1: 10 }, "_trx_"],
+            args: [tableNames[0], { a1: 10 }, {}, "_trx_"],
             result: { id: 3, a1: 10, a2: null, a3: null },
           },
           {
@@ -298,7 +298,7 @@ describe("Adapter", () => {
             // inserting item under transaction
             // id is 4, since even rolled back transaction affects autoincrements
             method: "insert",
-            args: [tableNames[0], { a1: 10 }, "_trx_"],
+            args: [tableNames[0], { a1: 10 }, {}, "_trx_"],
             result: { id: 4, a1: 10, a2: null, a3: null },
           },
           {
@@ -333,6 +333,7 @@ describe("Adapter", () => {
         ],
       },
     ]
+    
     testCases.forEach(testCase =>
       it(testCase.title, async () => {
         const trx = await gAdapter.transaction()

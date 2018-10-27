@@ -16,7 +16,7 @@ import Created from "../components/Created.jsx"
 import ModelTable from "../components/ModelTable.jsx"
 import ModelDialog from "../components/ModelDialog.jsx"
 
-const operatorsClue = props => ({ identity: "operator", query: queries.FIND, sort: { id: 1 } })
+const operatorsClue = props => ({ identity: "operator", query: queries.FIND, sort: { id: 1 }, populate: "profiles" })
 const operatorsSelector = YaxysClue.selectors.byClue(operatorsClue)
 
 const CREATED_OPERATORS_MARKER = "operators-page"
