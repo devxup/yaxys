@@ -107,9 +107,7 @@ describe("AuthService", () => {
         },
         modelKey: "someModel",
         right: "anyRight",
-        dbResponse: {
-          operatorProfile: [],
-        },
+        dbResponse: [],
         expectedResult: true,
       },
       {
@@ -128,9 +126,7 @@ describe("AuthService", () => {
         },
         modelKey: "someModel", //should be lowercase normally, but we are testing if the function still works
         right: "neededRight",
-        dbResponse: {
-          operatorProfile: [],
-        },
+        dbResponse: [],
         expectedResult: true,
       },
       {
@@ -148,9 +144,7 @@ describe("AuthService", () => {
         },
         modelKey: "someModel",
         right: "neededRight",
-        dbResponse: {
-          operatorProfile: [],
-        },
+        dbResponse: [],
         expectedResult: false,
       },
       {
@@ -162,9 +156,7 @@ describe("AuthService", () => {
         },
         modelKey: "someModel",
         right: "read",
-        dbResponse: {
-          operatorProfile: [],
-        },
+        dbResponse: [],
         expectedResult: false,
       },
       {
@@ -176,19 +168,17 @@ describe("AuthService", () => {
         },
         modelKey: "someModel",
         right: "read",
-        dbResponse: {
-          operatorProfile: [
-            {
-              id: 1,
-              title: "someProfile",
-              rights: {
-                somemodel: {
-                  read: true,
-                },
+        dbResponse: [{
+          operatorProfile: {
+            id: 1,
+            title: "someProfile",
+            rights: {
+              somemodel: {
+                read: true,
               },
             },
-          ],
-        },
+          },
+        }],
         expectedResult: true,
       },
       {
@@ -205,19 +195,17 @@ describe("AuthService", () => {
         },
         modelKey: "someModel",
         right: "read",
-        dbResponse: {
-          operatorProfile: [
-            {
-              id: 1,
-              title: "someProfile",
-              rights: {
-                somemodel: {
-                  read: true,
-                },
+        dbResponse: [{
+          operatorProfile: {
+            id: 1,
+            title: "someProfile",
+            rights: {
+              somemodel: {
+                read: true,
               },
             },
-          ],
-        },
+          },
+        }],
         expectedResult: false,
       },
     ]
@@ -226,7 +214,7 @@ describe("AuthService", () => {
       it(testCase.title, () => {
         global.yaxys = {
           db: {
-            findOne: () => testCase.dbResponse,
+            find: () => testCase.dbResponse,
           },
         }
         expect(AuthService.checkRight(testCase.operator, testCase.modelKey, testCase.right)).resolves.toBe(
