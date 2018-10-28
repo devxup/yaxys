@@ -77,4 +77,17 @@ module.exports = {
       data[propertyKey] = AuthService.encryptPassword(data[propertyKey])
     })
   },
+
+  /**
+   * Remove read-only properties from model instance
+   * @param {Object} data Model instance
+   * @param {Object} schema Model schema
+   */
+  removeReadOnlyProperties(data, schema) {
+    _.each(schema.properties, (property, propertyKey) => {
+      if (property.readOnly && data.hasOwnProperty(propertyKey)) {
+        delete data[propertyKey]
+      }
+    })
+  },
 }

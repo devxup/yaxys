@@ -91,7 +91,7 @@ export default class OperatorProfiles extends Component {
         <Loader item={profiles}>
           <Paper>
             <ModelTable
-              schema={constants.schemas.operator}
+              schema={constants.schemas.operatorprofile}
               data={(profiles && profiles.data) || []}
               url={profile => `/settings/operator-profiles/${profile.id}`}
               columns={["id", "title"]}

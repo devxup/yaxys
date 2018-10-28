@@ -1,5 +1,3 @@
-const config = require("config")
-
 module.exports = {
   schema: {
     title: "Operator",
@@ -22,12 +20,24 @@ module.exports = {
         type: "object",
       },
       isAdministrator: {
+        title: "Is administrator",
         type: "boolean",
       },
       hasCustomRights: {
         title: "Has custom rights",
         readOnly: true,
         type: "boolean",
+      },
+      profiles: {
+        title: "Operator profiles",
+        type: "array",
+        virtual: true,
+        connection: {
+          type: "m:m",
+          linkerModel: "OperatorProfileBinding",
+          linkerMyAttribute: "operator",
+          linkerRelatedAttribute: "operatorProfile",
+        },
       },
     },
     required: ["email", "passwordHash"],
@@ -42,40 +52,5 @@ module.exports = {
     },
   },
 
-  api: {
-    "operator/:id": [
-      PolicyService.checkAndInjectOperator,
-      PolicyService.hasRight("operator", "read"),
-      PolicyService.removePasswordsFromResponse("operator"),
-      RestService.findOne("operator"),
-    ],
-    "operator": [
-      PolicyService.checkAndInjectOperator,
-      PolicyService.hasRight("operator", "read"),
-      PolicyService.removePasswordsFromResponse("operator"),
-      RestService.find("operator"),
-    ],
-    "put operator/:id": [
-      PolicyService.checkAndInjectOperator,
-      PolicyService.hasRight("operator", "update"),
-
-      config.get("debug.pauseAndRandomError")
-        ? PolicyService.pauseAndRandomError
-        : true,
-
-      PolicyService.encodePasswords("operator"),
-      PolicyService.removePasswordsFromResponse("operator"),
-      RestService.update("operator"),
-    ],
-    "post operator": [
-      PolicyService.checkAndInjectOperator,
-      PolicyService.hasRight("operator", "create"),
-      config.get("debug.pauseAndRandomError")
-        ? PolicyService.pauseAndRandomError
-        : true,
-      PolicyService.encodePasswords("operator"),
-      PolicyService.removePasswordsFromResponse("operator"),
-      RestService.create("operator"),
-    ],
-  },
+  api: RestService.buildStandardAPI("operator", { hasPasswords: true }),
 }

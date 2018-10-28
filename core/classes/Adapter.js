@@ -125,17 +125,18 @@ module.exports = class Adapter {
    * @param {Object} schema The schema to register
    */
   registerSchema(identity, schema) {
-    this.schemas[identity] = schema
+    this.schemas[identity.toLowerCase()] = schema
   }
 
   /**
    * Insert new model into the table
    * @param {String} identity The model's identity
    * @param {Object} data The model blank to insert
+   * @param {Object} [options] The options to find
    * @param {Object} [trx] The transaction context
    * @returns {Promise<Object>} The inserted model containing all of the fields, includeing id
    */
-  async insert(identity, data, trx) {
+  async insert(identity, data, options = {}, trx) {
     const dataToInsert = data.id ? data : _.omit(data, "id")
 
     const fixedData = this._sanitize(identity, dataToInsert)
@@ -149,6 +150,16 @@ module.exports = class Adapter {
     const item = result[0]
 
     await this.emitter.emit(`${identity}:create:after`, trx, result)
+
+    if (options && options.populate) {
+      const propertiesToPopulate = Array.isArray(options.populate)
+        ? options.populate
+        : [options.populate]
+
+      for (let property of propertiesToPopulate) {
+        await this._populate(identity, [item], property, trx)
+      }
+    }
 
     return item
   }
@@ -187,6 +198,32 @@ module.exports = class Adapter {
   }
 
   /**
+   * Delete the model by it's id
+   * @param {String} identity The model's identity
+   * @param {String|Integer} id  Model's id
+   * @param {Object} [trx] The transaction context
+   * @returns {Promise<Object>} The deleted model instance
+   */
+  async delete(identity, id, trx) {
+    if (!id) {
+      throw new Error("id is required")
+    }
+
+    const old = await this.findOne(identity, { id }, {}, trx)
+    await this.emitter.emit(`${identity}:delete:before`, trx, old)
+
+    const deleteQuery = this.knex(identity)
+      .where({ id })
+      .del()
+
+    await(trx ? deleteQuery.transacting(trx) : deleteQuery)
+
+    await this.emitter.emit(`${identity}:update:after`, trx, old)
+
+    return old
+  }
+
+  /**
    * Find the first model matching the filter
    * @param {String} identity The model's identity
    * @param {Object} filter The filter to match
@@ -194,7 +231,7 @@ module.exports = class Adapter {
    * @param {Object} [trx] The transaction context
    * @returns {Promise<Object|undefined>} The model found or undefined
    */
-  async findOne(identity, filter, options, trx) {
+  async findOne(identity, filter, options = {}, trx) {
     return (await this.find(identity, filter, Object.assign({ limit: 1 }, options), trx))[0]
   }
 
@@ -206,7 +243,7 @@ module.exports = class Adapter {
    * @param {Object} [trx] The transaction context
    * @returns {Promise<Array<Object>>} The array of found models
    */
-  async find(identity, filter, options, trx) {
+  async find(identity, filter, options = {}, trx) {
     let query = this.knex(identity).where(filter)
     _.each(Object.assign({}, this.options, options), (value, key) => {
       switch (key) {
@@ -222,7 +259,20 @@ module.exports = class Adapter {
           break
       }
     })
+    let result = await (trx ? query.transacting(trx) : query)
+    if (options.populate) {
+      const propertiesToPopulate = Array.isArray(options.populate)
+        ? options.populate
+        : [options.populate]
 
+      for (let property of propertiesToPopulate) {
+        await this._populate(identity, result, property, trx)
+      }
+    }
+    return result
+  }
+
+  async _trxWrapper(query, trx) {
     return trx ? query.transacting(trx) : query
   }
 
@@ -236,6 +286,110 @@ module.exports = class Adapter {
     return Number((await this.knex(identity).where(filter).count("*"))[0].count)
   }
 
+  /** Populates the given models with 1:m relation
+   * @param {String} identity The initial model identity
+   * @param {Object[]} models Models to be populated
+   * @param {String} property The property to populate
+   * @param {Object} [trx] The transaction context
+   * @private
+   */
+  async _populate(identity, models, property, trx) {
+    const schema = this.schemas[identity.toLowerCase()]
+    const propertySchema = schema.properties[property]
+    const connection = propertySchema.connection
+
+    switch (connection.type) {
+      case "m:m": {
+        const linkerSchema = this.schemas[connection.linkerModel.toLowerCase()]
+        const relatedIdentity = linkerSchema.properties[connection.linkerRelatedAttribute].connection.relatedModel
+
+        const ids = [...new Set(models.map(model => model.id))]
+        const linkerModels = await this._trxWrapper(
+          this.knex(connection.linkerModel.toLowerCase())
+            .whereIn(connection.linkerMyAttribute, ids)
+            .orderBy("id", "asc"),
+          trx
+        )
+
+        const relatedIds = [...new Set(linkerModels.map(model => model[connection.linkerRelatedAttribute]))]
+        const relatedModels = await this._trxWrapper(
+          this.knex(relatedIdentity.toLowerCase())
+            .whereIn("id", relatedIds),
+          trx
+        )
+        const relatedHash = relatedModels.reduce((hash, relatedItem) => {
+          hash[relatedItem.id] = relatedItem
+          return hash
+        }, {})
+
+        const relatedByMyIdHash = linkerModels.reduce((hash, linkerItem) => {
+          const myId = linkerItem[connection.linkerMyAttribute]
+          if (!hash[myId]) {
+            hash[myId] = []
+          }
+          const relatedItem = {
+            ...relatedHash[linkerItem[connection.linkerRelatedAttribute]],
+            _binding_id: linkerItem.id,
+          }
+          hash[myId].push(relatedItem)
+          return hash
+        }, {})
+
+        for (let model of models) {
+          model[property] = relatedByMyIdHash[model.id] || []
+        }
+
+        break
+      }
+      case "m:1": {
+        const ids = [...new Set(models.map(model => model[property]))]
+
+        const relatedModels = await this._trxWrapper(
+          this.knex(connection.relatedModel.toLowerCase()).whereIn("id", ids),
+          trx
+        )
+
+        const relatedHash = relatedModels.reduce((hash, relatedItem) => {
+          hash[relatedItem.id] = relatedItem
+          return hash
+        }, {})
+
+        for (let model of models) {
+          if (relatedHash[model[property]]) {
+            model[property] = relatedHash[model[property]]
+          }
+        }
+        break
+      }
+      case "1:m": {
+        const ids = [...new Set(models.map(model => model.id))]
+
+        const relatedModels = await this._trxWrapper(
+          this.knex(connection.relatedModel.toLowerCase())
+            .whereIn(connection.relatedModelAttribute, ids)
+            .orderBy("id", "asc"),
+          trx
+        )
+
+        const relatedByMyIdHash = relatedModels.reduce((hash, relatedItem) => {
+          const myId = relatedItem[connection.relatedModelAttribute]
+          if (!hash[myId]) {
+            hash[myId] = []
+          }
+          hash[myId].push(relatedItem)
+          return hash
+        }, {})
+
+        for (let model of models) {
+          model[property] = relatedByMyIdHash[model.id] || []
+        }
+        break
+      }
+      default:
+        throw new Error("Invalid connection type")
+    }
+  }
+
   /**
    * Create the knex promise which, when called then(), will create the table for given model
    * @param {String} identity The model's identity
@@ -246,16 +400,21 @@ module.exports = class Adapter {
   _newTable(identity, schema) {
     return this.knex.schema.createTable(identity, table => {
       table.increments("id").primary()
-      _.forEach(schema.properties, (value, key) => {
-        if (key === "id") return
-        if (!POSTGRES_TYPES.includes(value.type)) {
-          throw new Error(`Incorrect data type ${value.type} of field ${key} in ${identity}`)
+      _.forEach(schema.properties, (property, key) => {
+        if (key === "id" || property.virtual) return
+
+        const type = ["object", "array"].includes(property.type)
+          ? "json"
+          : property.type
+
+        if (!POSTGRES_TYPES.includes(type)) {
+          throw new Error(`Incorrect data type ${property.type} of field ${key} in ${identity}`)
         }
-        const attribute = table[value.type](key)
+        const attribute = table[type](key)
         if (Array.isArray(schema.required) && schema.required.includes(key)) {
           attribute.notNullable()
         }
-        if (value.unique) {
+        if (property.unique) {
           table.unique(key)
         }
       })

@@ -16,7 +16,7 @@ import Created from "../components/Created.jsx"
 import ModelTable from "../components/ModelTable.jsx"
 import ModelDialog from "../components/ModelDialog.jsx"
 
-const operatorsClue = props => ({ identity: "operator", query: queries.FIND, sort: { id: 1 } })
+const operatorsClue = props => ({ identity: "operator", query: queries.FIND, sort: { id: 1 }, populate: "profiles" })
 const operatorsSelector = YaxysClue.selectors.byClue(operatorsClue)
 
 const CREATED_OPERATORS_MARKER = "operators-page"
@@ -25,7 +25,6 @@ const createdOperatorsSelector = YaxysClue.selectors.byClue(
   { marker: CREATED_OPERATORS_MARKER }
 )
 
-export default
 @withConstants
 @connect(
   (state, props) => ({
@@ -37,7 +36,7 @@ export default
     createOperator: YaxysClue.actions.byClue,
   }
 )
-class Operators extends Component {
+export default class Operators extends Component {
   state = {
     addOpen: false,
   }
@@ -70,7 +69,7 @@ class Operators extends Component {
   render() {
     const { constants, operators } = this.props
     return (
-      <Wrapper breadcrumbs={[ "Operators" ]}>
+      <Wrapper breadcrumbs={["Operators"]}>
         <Button
           variant="fab"
           color="secondary"
@@ -82,8 +81,8 @@ class Operators extends Component {
         </Button>
         <h1 style={{ marginTop: 0 }}>Operators</h1>
         <p>
-          Also, you can control operators&#39; rights
-          by <Link to={"/settings/operator-profiles"}>managing their profiles</Link>
+          Also, you can control operators&#39; rights by{" "}
+          <Link to={"/settings/operator-profiles"}>managing their profiles</Link>
         </p>
         <Created
           items={this.props.createdOperators}
@@ -96,7 +95,7 @@ class Operators extends Component {
               schema={constants.schemas.operator}
               data={(operators && operators.data) || []}
               url={operator => `/operators/${operator.id}`}
-              columns={["id", "email"]}
+              columns={["id", "email", "isAdministrator", "hasCustomRights"]}
             />
           </Paper>
         </Loader>

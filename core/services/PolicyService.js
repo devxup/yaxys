@@ -18,22 +18,24 @@ module.exports = {
   },
 
   /**
-   * Make the 1s delay and throw the error with 70% probability
-   * Used for debugging pending and error states on the client-side
+   * Make the 1s delay
+   * Used for debugging pending states on the client-side
    * @param {Object} ctx Koa context
    * @param {Function} next Koa next function
    */
-  async pauseAndRandomError(ctx, next) {
-    try {
-      await new Promise((resolve, reject) => {
-        setTimeout(() => {
-          Math.random() > 0.7 ? resolve() : reject()
-        }, 1000)
-      })
-    } catch (err) {
-      ctx.throw("Test exception", { expose: true })
-    }
-    next()
+  async pause(ctx, next) {
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    await next()
+  },
+
+  /**
+   * Throw the error with 70% probability
+   * Used for debugging error states on the client-side
+   * @param {Object} ctx Koa context
+   * @param {Function} next Koa next function
+   */
+  async randomError(ctx, next) {
+    await (Math.random() > 0.7 ? next() : ctx.throw("Test exception", { expose: true }))
   },
 
   /**
@@ -41,7 +43,7 @@ module.exports = {
    * @param {String} identity The model's identity
    * @returns {Function} The policy
    */
-  encodePasswords(identity) {
+  sanitizeRequest(identity) {
     /**
      * If request has body, encode all the password properties using schema for specified identity
      * @param {Object} ctx Koa context
@@ -54,6 +56,7 @@ module.exports = {
 
       const schema = yaxys.models[identity].schema
       ModelService.encryptPasswordProperties(ctx.request.body, schema)
+      ModelService.removeReadOnlyProperties(ctx.request.body, schema)
 
       await next()
     }
@@ -86,8 +89,22 @@ module.exports = {
     }
   },
 
-  hasRight: (modelKey, right) => async (ctx, next) =>
-    AuthService.checkRight(ctx.operator, modelKey, right)
-      ? await next()
-      : ctx.throw(403, "You don't have rights to perform this action"),
+  /**
+   * Create the policy which checks if the operator has rights to perform some action
+   * @param {String} modelKey The name of the model for which we are checking rights
+   * @param {String} right The name of the right
+   * @returns {Function} The policy
+   */
+  hasRight: (modelKey, right) =>
+    /**
+     * If access is granted, call next middleware or throw 403 exception otherwise
+     * @param {Object} ctx Koa context
+     * @param {Function} next Koa next function
+     */
+    async (ctx, next) => {
+      const accessGranted = await AuthService.checkRight(ctx.operator, modelKey, right)
+      accessGranted
+        ? await next()
+        : ctx.throw(403, "You don't have rights to perform this action")
+    },
 }

@@ -1,31 +1,103 @@
 const Adapter = require("../core/classes/Adapter")
 const config = require("config")
 const Promise = require("bluebird")
+const _ = require("lodash")
 
 describe("Adapter", () => {
   let gAdapter
 
-  const tableName = "fake_item"
+  const tableNames = ["fake_item", "fake_linker", "fake_initial", "fake_to_link"]
   const getDropQueryForTable = tableName => `DROP TABLE IF EXISTS ${tableName}`
-  const createQuery = `CREATE TABLE ${tableName} (
-    "id" serial not null,
-    "a1" integer,
-    "a2" text,
-    "a3" json DEFAULT NULL,
-    constraint "${tableName}_pkey" primary key ("id")
-  );`
+  const createQueries = [
+    `CREATE TABLE ${tableNames[0]} (
+      "id" serial not null,
+      "a1" integer,
+      "a2" text,
+      "a3" json DEFAULT NULL,
+      constraint "${tableNames[0]}_pkey" primary key ("id")
+    );`,
+    `CREATE TABLE ${tableNames[1]} (
+      "id" serial not null,
+      "fake_initial_field" integer,
+      "fake_to_link_field" integer,
+      constraint "${tableNames[1]}_pkey" primary key ("id")
+    );`,
+    `CREATE TABLE ${tableNames[2]} (
+      "id" serial not null,
+      "x1" text,
+      "x2" text,
+      constraint "${tableNames[2]}_pkey" primary key ("id")
+    );`,
+    `CREATE TABLE ${tableNames[3]} (
+      "id" serial not null,
+      "y1" text,
+      "y2" text,
+      constraint "${tableNames[3]}_pkey" primary key ("id")
+    );`,
+  ]
+  const insertQueries = [
+    `INSERT INTO ${tableNames[1]} VALUES (1, 1, 1), (2, 2, 2), (3, 1, 2)`,
+    `INSERT INTO ${tableNames[2]} VALUES (1, 'one', 'hey'), (2, 'two', 'ho'), (3, 'no', 'noooo')`,
+    `INSERT INTO ${tableNames[3]} VALUES (1, 'three', 'lets'), (2, 'four', 'go')`,
+  ]
 
   beforeAll(async () => {
     gAdapter = new Adapter(config.get("db"))
     await gAdapter.init()
-    await gAdapter.knex.raw(getDropQueryForTable(tableName))
-    await gAdapter.knex.raw(createQuery)
+    for (let tableName of tableNames) {
+      await gAdapter.knex.raw(getDropQueryForTable(tableName))
+    }
+    for (let createQuery of createQueries) {
+      await gAdapter.knex.raw(createQuery)
+    }
+    for (let insertQuery of insertQueries) {
+      await gAdapter.knex.raw(insertQuery)
+    }
 
-    gAdapter.registerSchema("fake_item", {
+    gAdapter.registerSchema(tableNames[0], {
       properties: {
         a1: { type: "integer" },
         a2: { type: "string" },
         a3: { type: "json" },
+      },
+    })
+    gAdapter.registerSchema(tableNames[1], {
+      properties: {
+        fake_initial_field: {
+          type: "integer",
+          connection: {
+            type: "m:1",
+            relatedModel: "fake_initial",
+          },
+        },
+        fake_to_link_field: {
+          type: "integer",
+          connection: {
+            type: "m:1",
+            relatedModel: "fake_to_link",
+          },
+        },
+      },
+    })
+    gAdapter.registerSchema(tableNames[2], {
+      properties: {
+        x1: { type: "string" },
+        x2: { type: "string" },
+        relatedList: {
+          type: "integer",
+          virtual: true, connection: {
+            type: "m:m",
+            linkerModel: tableNames[1],
+            linkerMyAttribute: "fake_initial_field",
+            linkerRelatedAttribute: "fake_to_link_field",
+          },
+        },
+      },
+    })
+    gAdapter.registerSchema(tableNames[3], {
+      properties: {
+        y1: { type: "string" },
+        y2: { type: "string" },
       },
     })
   })
@@ -35,56 +107,135 @@ describe("Adapter", () => {
       {
         title: "simple insert",
         method: "insert",
-        args: [tableName, { a1: 1, a2: "v1" }],
+        args: [tableNames[0], { a1: 1, a2: "v1" }],
         result: { id: 1, a1: 1, a2: "v1", a3: null },
       },
       {
         title: "simple update",
         method: "update",
-        args: [tableName, 1, { a1: 3, a3: { k: 1 } }],
+        args: [tableNames[0], 1, { a1: 3, a3: { k: 1 } }],
         result: { id: 1, a1: 3, a2: "v1", a3: { k: 1 } },
       },
       {
         title: "update unexisting item",
         method: "update",
-        args: [tableName, 1000, { a1: 2, a3: { k: 1 } }],
+        args: [tableNames[0], 1000, { a1: 2, a3: { k: 1 } }],
         error: "Update failed – record with id 1000 not found",
       },
       {
         title: "insert another item",
         method: "insert",
-        args: [tableName, { a1: 4 }],
+        args: [tableNames[0], { a1: 4 }],
         result: { id: 2, a2: null, a1: 4, a3: null },
       },
       {
         title: "findOne with back sort",
         method: "findOne",
-        args: [tableName, {}, { limit: 2, sort: { id: -1 } }],
+        args: [tableNames[0], {}, { limit: 2, sort: { id: -1 } }],
         result: { id: 2, a2: null, a1: 4, a3: null },
       },
       {
         title: "find with direct sort",
         method: "find",
-        args: [tableName, {}, { sort: { id: 1 } }],
+        args: [tableNames[0], {}, { sort: { id: 1 } }],
         result: [{ id: 1, a1: 3, a2: "v1", a3: { k: 1 } }, { id: 2, a2: null, a1: 4, a3: null }],
       },
       {
         title: "find with back sort",
         method: "find",
-        args: [tableName, {}, { sort: { id: -1 } }],
+        args: [tableNames[0], {}, { sort: { id: -1 } }],
         result: [{ id: 2, a2: null, a1: 4, a3: null }, { id: 1, a1: 3, a2: "v1", a3: { k: 1 } }],
       },
       {
         title: "find with back sort and limit",
         method: "find",
-        args: [tableName, {}, { sort: { id: -1 }, limit: 1 }],
+        args: [tableNames[0], {}, { sort: { id: -1 }, limit: 1 }],
         result: [{ id: 2, a2: null, a1: 4, a3: null }],
       },
       {
         title: "find with filter",
         method: "find",
-        args: [tableName, { a1: 3 }, { sort: { id: -1 }, limit: 1 }],
+        args: [tableNames[0], { a1: 3 }, { sort: { id: -1 }, limit: 1 }],
         result: [{ id: 1, a1: 3, a2: "v1", a3: { k: 1 } }],
+      },
+      {
+        title: "find with 1:m populate",
+        method: "find",
+        args: [tableNames[1], {}, { populate: "fake_initial_field" }],
+        result: [
+          {
+            id: 1,
+            fake_initial_field: {
+              id: 1,
+              x1: "one",
+              x2: "hey",
+            },
+            fake_to_link_field: 1,
+          },
+          {
+            id: 2,
+            fake_initial_field: {
+              id: 2,
+              x1: "two",
+              x2: "ho",
+            },
+            fake_to_link_field: 2,
+          },
+          {
+            id: 3,
+            fake_initial_field: {
+              id: 1,
+              x1: "one",
+              x2: "hey",
+            },
+            fake_to_link_field: 2,
+          },
+        ],
+      },
+      {
+        title: "find with m:m populate",
+        method: "find",
+        args: [tableNames[2], {}, { populate: "relatedList" }],
+        result: [
+          {
+            id: 1,
+            x1: "one",
+            x2: "hey",
+            relatedList: [
+              {
+                id: 1,
+                y1: "three",
+                y2: "lets",
+                _binding_id: 1,
+              },
+              {
+                id: 2,
+                y1: "four",
+                y2: "go",
+                _binding_id: 3,
+              },
+            ],
+          },
+          {
+            id: 2,
+            x1: "two",
+            x2: "ho",
+            relatedList: [
+              {
+                id: 2,
+                y1: "four",
+                y2: "go",
+                _binding_id: 2,
+              },
+            ],
+          },
+          {
+            id: 3,
+            x1: "no",
+            x2: "noooo",
+            relatedList: [],
+          },
+        ],
       },
     ]
 
@@ -101,6 +252,19 @@ describe("Adapter", () => {
     )
   })
 
+  describe("Delete", () => {
+    it("Insert and then delete", async () => {
+      const inserted = await gAdapter.insert(tableNames[0], { "a1": 1, a2: "v1" })
+      const found = await gAdapter.findOne(tableNames[0], { id: inserted.id })
+      expect(found).toStrictEqual(inserted)
+      const deleted = await gAdapter.delete(tableNames[0], inserted.id)
+      expect(deleted).toStrictEqual(inserted)
+
+      const foundItems = await gAdapter.find(tableNames[0], { id: inserted.id })
+      expect(foundItems).toStrictEqual([])
+    })
+  })
+
   describe("transactions", () => {
     const testCases = [
       {
@@ -109,19 +273,19 @@ describe("Adapter", () => {
           {
             // inserting item under transaction
             method: "insert",
-            args: [tableName, { a1: 10 }, "_trx_"],
-            result: { id: 3, a1: 10, a2: null, a3: null },
+            args: [tableNames[0], { a1: 10 }, {}, "_trx_"],
+            result: { id: 4, a1: 10, a2: null, a3: null },
           },
           {
             // finding item under transaction – should get result
             method: "findOne",
-            args: [tableName, { a1: 10 }, null, "_trx_"],
-            result: { id: 3, a1: 10, a2: null, a3: null },
+            args: [tableNames[0], { a1: 10 }, null, "_trx_"],
+            result: { id: 4, a1: 10, a2: null, a3: null },
           },
           {
             // finding item without transaction – should be empty
             method: "findOne",
-            args: [tableName, { a1: 10 }],
+            args: [tableNames[0], { a1: 10 }],
             result: undefined,
           },
           {
@@ -132,13 +296,13 @@ describe("Adapter", () => {
           {
             // ensuring there is an error after transaction rollback
             method: "findOne",
-            args: [tableName, { a1: 10 }, null, "_trx_"],
+            args: [tableNames[0], { a1: 10 }, null, "_trx_"],
             error: "Transaction query already complete",
           },
           {
             // ensuring there is no item without transaction
             method: "findOne",
-            args: [tableName, { a1: 10 }],
+            args: [tableNames[0], { a1: 10 }],
             result: undefined,
           },
         ],
@@ -150,19 +314,19 @@ describe("Adapter", () => {
             // inserting item under transaction
             // id is 4, since even rolled back transaction affects autoincrements
             method: "insert",
-            args: [tableName, { a1: 10 }, "_trx_"],
-            result: { id: 4, a1: 10, a2: null, a3: null },
+            args: [tableNames[0], { a1: 10 }, {}, "_trx_"],
+            result: { id: 5, a1: 10, a2: null, a3: null },
           },
           {
             // finding item under transaction – should get result
             method: "findOne",
-            args: [tableName, { a1: 10 }, null, "_trx_"],
-            result: { id: 4, a1: 10, a2: null, a3: null },
+            args: [tableNames[0], { a1: 10 }, null, "_trx_"],
+            result: { id: 5, a1: 10, a2: null, a3: null },
           },
           {
             // finding item without transaction – should be empty
             method: "findOne",
-            args: [tableName, { a1: 10 }],
+            args: [tableNames[0], { a1: 10 }],
             result: undefined,
           },
           {
@@ -173,18 +337,19 @@ describe("Adapter", () => {
           {
             // ensuring there is an error after transaction commit
             method: "findOne",
-            args: [tableName, { a1: 10 }, null, "_trx_"],
+            args: [tableNames[0], { a1: 10 }, null, "_trx_"],
             error: "Transaction query already complete",
           },
           {
             // ensuring there is an item after transaction committed
             method: "findOne",
-            args: [tableName, { a1: 10 }],
-            result: { id: 4, a1: 10, a2: null, a3: null },
+            args: [tableNames[0], { a1: 10 }],
+            result: { id: 5, a1: 10, a2: null, a3: null },
           },
         ],
       },
     ]
+
     testCases.forEach(testCase =>
       it(testCase.title, async () => {
         const trx = await gAdapter.transaction()
@@ -207,7 +372,7 @@ describe("Adapter", () => {
   describe("getSQL", () => {
     const testCases = [
       {
-        title: "get sql for create table with all possible data types",
+        title: "get sql for create table with all possible data types and 1 virtaul field",
         args: [
           "testtable",
           {
@@ -253,6 +418,10 @@ describe("Adapter", () => {
               },
               p14: {
                 type: "integer",
+              },
+              p15: {
+                type: "integer",
+                virtual: true,
               },
             },
             required: ["p1", "p2"],
@@ -317,7 +486,7 @@ describe("Adapter", () => {
   describe("createTable", () => {
     const testCases = [
       {
-        title: "create table with all possible data types",
+        title: "create table with all possible data types and 1 virtual field",
         args: [
           "testtable",
           {
@@ -363,6 +532,10 @@ describe("Adapter", () => {
               },
               p14: {
                 type: "integer",
+              },
+              p15: {
+                type: "integer",
+                virtual: true,
               },
             },
             required: ["p1", "p2"],
@@ -428,6 +601,13 @@ describe("Adapter", () => {
             .knex(testCase.args[0])
             .columnInfo()
             .then(info => {
+              expect(
+                Object.keys(_.omit(info, "id")).length
+              ).toStrictEqual(
+                Object.keys(
+                  _.omitBy(testCase.args[1].properties, (property, key) => property.virtual || key === "id")
+                ).length
+              )
               for (let property in testCase.args[1].properties) {
                 switch (testCase.args[1].properties[property].type) {
                   case "string":
@@ -452,9 +632,11 @@ describe("Adapter", () => {
                     expect(info[property].type).toStrictEqual("bytea")
                     break
                   default:
-                    expect(
-                      testCase.args[1].properties[property].type === info[property].type
-                    ).toBeTruthy()
+                    if (!testCase.args[1].properties[property].virtual) {
+                      expect(
+                        testCase.args[1].properties[property].type === info[property].type
+                      ).toBeTruthy()
+                    }
                 }
                 if (testCase.args[1].required && testCase.args[1].required.includes(property)) {
                   expect(info[property].nullable).toBeFalsy()

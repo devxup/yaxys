@@ -6,6 +6,12 @@ const jwt = require("jsonwebtoken")
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 describe("AuthService", () => {
+  let yaxysBuffer
+
+  beforeAll(() => {
+    yaxysBuffer = global.yaxys
+  })
+
   it("Password encrypt and check", () => {
     const passwords = ["rrr", "fdgfdg", 1234, { a: "b" }]
     for (let password of passwords) {
@@ -39,12 +45,6 @@ describe("AuthService", () => {
   })
 
   describe("Get operator by credentials", () => {
-    let yaxysBuffer
-
-    beforeAll(() => {
-      yaxysBuffer = global.yaxys
-    })
-
     const testCases = [
       {
         title: "successful search",
@@ -92,10 +92,6 @@ describe("AuthService", () => {
         }
       })
     )
-
-    afterAll(() => {
-      global.yaxys = yaxysBuffer
-    })
   })
 
   describe("Check rights", () => {
@@ -111,6 +107,7 @@ describe("AuthService", () => {
         },
         modelKey: "someModel",
         right: "anyRight",
+        dbResponse: [],
         expectedResult: true,
       },
       {
@@ -120,11 +117,16 @@ describe("AuthService", () => {
           email: "test@test.test",
           passwordHash: "someHash",
           rights: {
-            somemodel: { read: true, update: true, neededright: true },
+            somemodel: {
+              read: true,
+              update:true,
+              neededright: true,
+            },
           },
         },
         modelKey: "someModel", //should be lowercase normally, but we are testing if the function still works
         right: "neededRight",
+        dbResponse: [],
         expectedResult: true,
       },
       {
@@ -134,32 +136,88 @@ describe("AuthService", () => {
           email: "test@test.test",
           passwordHash: "someHash",
           rights: {
-            somemodel: { read: true, update: true },
+            somemodel: {
+              read: true,
+              update: true,
+            },
           },
         },
         modelKey: "someModel",
         right: "neededRight",
+        dbResponse: [],
         expectedResult: false,
       },
       {
-        title: "Operator without rights for this model",
+        title: "Operator without rights",
+        operator: {
+          id: 111,
+          email: "test@test.test",
+          passwordHash: "someHash",
+        },
+        modelKey: "someModel",
+        right: "read",
+        dbResponse: [],
+        expectedResult: false,
+      },
+      {
+        title: "Operator with profile containing needed rights",
+        operator: {
+          id: 111,
+          email: "test@test.test",
+          passwordHash: "someHash",
+        },
+        modelKey: "someModel",
+        right: "read",
+        dbResponse: [{
+          operatorProfile: {
+            id: 1,
+            title: "someProfile",
+            rights: {
+              somemodel: {
+                read: true,
+              },
+            },
+          },
+        }],
+        expectedResult: true,
+      },
+      {
+        title: "Operator with rights restriction overriding profile",
         operator: {
           id: 111,
           email: "test@test.test",
           passwordHash: "someHash",
           rights: {
-            anothermodel: { read: true, update: true },
+            somemodel: {
+              read: false,
+            },
           },
         },
         modelKey: "someModel",
         right: "read",
+        dbResponse: [{
+          operatorProfile: {
+            id: 1,
+            title: "someProfile",
+            rights: {
+              somemodel: {
+                read: true,
+              },
+            },
+          },
+        }],
         expectedResult: false,
       },
     ]
 
     testCases.forEach(testCase =>
       it(testCase.title, () => {
-        expect(AuthService.checkRight(testCase.operator, testCase.modelKey, testCase.right)).toBe(
+        global.yaxys = {
+          db: {
+            find: () => testCase.dbResponse,
+          },
+        }
+        expect(AuthService.checkRight(testCase.operator, testCase.modelKey, testCase.right)).resolves.toBe(
           testCase.expectedResult
         )
       })
@@ -266,5 +324,9 @@ describe("AuthService", () => {
         )
       })
     })
+  })
+
+  afterAll(() => {
+    global.yaxys = yaxysBuffer
   })
 })

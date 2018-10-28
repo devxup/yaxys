@@ -16,30 +16,20 @@ module.exports = {
       rights: {
         type: "object",
       },
+      operators: {
+        title: "Operators",
+        type: "array",
+        virtual: true,
+        connection: {
+          type: "m:m",
+          linkerModel: "OperatorProfileBinding",
+          linkerMyAttribute: "operatorProfile",
+          linkerRelatedAttribute: "operator",
+        },
+      },
     },
     required: ["title"],
   },
 
-  api: {
-    "operatorprofile/:id": [
-      PolicyService.checkAndInjectOperator,
-      PolicyService.hasRight("operatorprofile", "read"),
-      RestService.findOne("operatorprofile"),
-    ],
-    "operatorprofile": [
-      PolicyService.checkAndInjectOperator,
-      PolicyService.hasRight("operatorprofile", "read"),
-      RestService.find("operatorprofile"),
-    ],
-    "put operatorprofile/:id": [
-      PolicyService.checkAndInjectOperator,
-      PolicyService.hasRight("operatorprofile", "update"),
-      RestService.update("operatorprofile"),
-    ],
-    "post operatorprofile": [
-      PolicyService.checkAndInjectOperator,
-      PolicyService.hasRight("operatorprofile", "create"),
-      RestService.create("operatorprofile"),
-    ],
-  },
+  api: RestService.buildStandardAPI("operatorprofile"),
 }

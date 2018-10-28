@@ -41,7 +41,7 @@ export default
 @withStyles(styles)
 class RightsEditor extends Component {
   static propTypes = {
-    type: PropTypes.arrayOf(),
+    type: PropTypes.oneOf(["operator", "profile"]),
     values: PropTypes.object,
     constants: PropTypes.object,
     onChange: PropTypes.func,
@@ -100,7 +100,7 @@ class RightsEditor extends Component {
         emptyLabel={
           type === "profile"
             ? `${rightTitle}: don't change`
-            : `${rightTitle}: from profile`
+            : `${rightTitle}: untouched`
         }
         classes={{ root: classes.switcherCommon }}
         choices={choices}
@@ -143,6 +143,7 @@ class RightsEditor extends Component {
         {this.renderRight(identity, "read", "Read")}
         {this.renderRight(identity, "create", "Create")}
         {this.renderRight(identity, "update", "Update")}
+        {this.renderRight(identity, "delete", "Delete")}
       </div>
     )
   }

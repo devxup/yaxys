@@ -5,8 +5,8 @@ import { connect } from "react-redux"
 import YaxysClue, { queries } from "../services/YaxysClue"
 import { pick, cloneDeep, pull } from "lodash"
 
-import { Paper, FormControlLabel, Switch } from "@material-ui/core"
 import { withStyles } from "@material-ui/core/styles"
+import { Paper, FormControlLabel, Switch, Button } from "@material-ui/core"
 
 import { withConstants } from "../services/Utils"
 
@@ -14,30 +14,50 @@ import RightsEditor from "../components/RightsEditor.jsx"
 import Wrapper from "../components/Wrapper.jsx"
 import Loader from "../components/Loader.jsx"
 import Update from "../components/Update.jsx"
+import Delete from "../components/Delete.jsx"
 import ModelForm from "../components/ModelForm.jsx"
+import ModelPicker from "../components/ModelPicker.jsx"
+import Created from "../components/Created.jsx"
+import ModelTable from "../components/ModelTable.jsx"
 
 const operatorClue = props => ({
   identity: "operator",
   query: queries.FIND_BY_ID,
   id: props.match.params.id,
+  populate: "profiles",
 })
 const operatorSelector = YaxysClue.selectors.byClue(operatorClue)
+
+const CREATED_BINDINGS_MARKER = "operator-page"
+const createdBindingsSelector = YaxysClue.selectors.byClue(
+  props => ({ identity: "operatorprofilebinding", query: queries.CREATE }),
+  { marker: CREATED_BINDINGS_MARKER }
+)
 
 const styles = {
   rights: {
     padding: "1px 30px 20px",
     margin: "0 0 30px 0",
   },
+  profiles: {
+    padding: "1px 30px 20px",
+    margin: "0 0 30px 0",
+  },
 }
+
+const EDIBLE_PROPERTIES = ["id", "email", "isAdministrator", "rights"]
 
 @withStyles(styles)
 @withConstants
 @connect(
   (state, props) => ({
     operator: operatorSelector(state, props),
+    createdBindings: createdBindingsSelector(state, props),
   }),
   {
     loadOperator: YaxysClue.actions.byClue,
+    createBinding: YaxysClue.actions.byClue,
+    deleteBinding: YaxysClue.actions.byClue,
   }
 )
 export default class Operator extends Component {
@@ -47,6 +67,10 @@ export default class Operator extends Component {
       operator: this.props2OperatorState(props),
       forceValidation: false,
       schema: this.buildPseudoSchema(),
+      profileOpen: false,
+      deletedBindingId: null,
+      deletedHash: {},
+      deleteAttemptAt: null,
     }
   }
 
@@ -72,9 +96,7 @@ export default class Operator extends Component {
   props2OperatorState(propsArg) {
     const props = propsArg || this.props
     const operator =
-      props.operator && props.operator.success
-        ? pick(props.operator.data, "id", "email", "isAdministrator", "rights")
-        : {}
+      props.operator && props.operator.success ? pick(props.operator.data, EDIBLE_PROPERTIES) : {}
 
     operator.passwordHash = ""
     operator.rights = cloneDeep(operator.rights)
@@ -102,25 +124,90 @@ export default class Operator extends Component {
     this.forceUpdate()
   }
 
+  onProfileOpen = () => {
+    this.setState({
+      profileOpen: true,
+    })
+  }
+
+  onProfileClose = () => {
+    this.setState({
+      profileOpen: false,
+    })
+  }
+
+  onProfilePick = profile => {
+    const { operator } = this.props
+    this.props.createBinding(
+      {
+        identity: "operatorprofilebinding",
+        query: queries.CREATE,
+        data: {
+          operator: operator.data.id,
+          operatorProfile: profile.id,
+        },
+        populate: "operatorProfile",
+      },
+      { marker: CREATED_BINDINGS_MARKER }
+    )
+    this.setState({
+      profileOpen: false,
+    })
+  }
+
+  _deleteProfile(id) {
+    this.props.deleteBinding({
+      identity: "operatorprofilebinding",
+      query: queries.DELETE,
+      id,
+    })
+
+    this.setState({
+      deletedBindingId: id,
+      deleteAttemptAt: new Date().getTime(),
+    })
+  }
+
+  onDeleteProfile(profile) {
+    if (this.state.deletedHash[profile._binding_id]) {
+      return
+    }
+    if (!confirm(`Are you sure to detach profile #${profile.id} from the operator?`)) {
+      return
+    }
+    this._deleteProfile(profile._binding_id)
+  }
+
+  onProfileDeleted = (id) => {
+    this.state.deletedHash[id] = true
+    this.forceUpdate()
+  }
+
+  onProfileDeleteRepeat = () => {
+    if (this.state.deletedBindingId) {
+      this._deleteProfile(this.state.deletedBindingId)
+    }
+  }
+
+  onTableCellClick = data => {
+    this.onDeleteProfile(data.rowData)
+  }
+
   render() {
-    const { operator, match, classes } = this.props
+    const { operator, match, classes, constants } = this.props
     const update = (
       <Update
         clue={operatorClue(this.props)}
         current={this.state.operator}
         schema={this.state.schema}
         modifiedAt={this.state.modifiedAt}
+        watchProperties={EDIBLE_PROPERTIES}
       />
     )
     return (
       <Wrapper
         bottom={update}
-        breadcrumbs={
-          [
-            { title: "Operators", url: "/operators" },
-            `Operator #${match.params.id}`,
-          ]
-        }
+        breadcrumbs={[{ title: "Operators", url: "/operators" }, `Operator #${match.params.id}`]}
       >
         <h1 style={{ marginTop: 0 }}>Operator #{match.params.id}</h1>
         <Loader item={operator}>
@@ -148,15 +235,70 @@ export default class Operator extends Component {
             />
 
             {!this.state.operator.isAdministrator && (
-              <Paper className={classes.rights}>
-                <h5>The operator&#39;s rights:</h5>
-                <RightsEditor
-                  type="operator"
-                  values={(this.state.operator && this.state.operator.rights) || {}}
-                  onChange={this.onRightsChange}
-                />
-              </Paper>
+              <Fragment>
+                <Paper className={classes.profiles}>
+                  <h5>The operator profiles</h5>
+                  {!operator?.data?.profiles?.length && (
+                    <p>Here you can manage profiles of the operator</p>
+                  )}
+                  <Button
+                    variant="text"
+                    color="secondary"
+                    onClick={this.onProfileOpen}
+                    style={{ marginBottom: 10 }}
+                  >
+                    Add profile
+                  </Button>
+                  <Created
+                    items={this.props.createdBindings}
+                    content={binding =>
+                      binding.operatorProfile.title
+                        ? `Profile #${binding.operatorProfile.id} "${
+                            binding.operatorProfile.title
+                          }"`
+                        : `Profile #${binding.operatorProfile}`
+                    }
+                    url={binding => `/settings/operator-profiles/${binding.operatorProfile.id}`}
+                  />
+                  {!!operator?.data?.profiles?.length && (
+                    <ModelTable
+                      schema={constants.schemas.operatorprofile}
+                      data={operator?.data?.profiles}
+                      // url={profile => `/settings/operator-profiles/${profile.id}`}
+                      onCellClick={this.onTableCellClick}
+                      columns={ ["id", "title"] }
+                      deletedHash={ this.state.deletedHash }
+                      deletedKey="_binding_id"
+                    />
+                  )}
+                </Paper>
+                <Paper className={classes.rights}>
+                  <h5>Custom operator&#39;s rights:</h5>
+                  <RightsEditor
+                    type="operator"
+                    values={(this.state.operator && this.state.operator.rights) || {}}
+                    onChange={this.onRightsChange}
+                  />
+                </Paper>
+              </Fragment>
             )}
+            <ModelPicker
+              open={this.state.profileOpen}
+              identity="operatorprofile"
+              onClose={this.onProfileClose}
+              onPick={this.onProfilePick}
+              columns={["id", "title", "description"]}
+            />
+            {
+              <Delete
+                identity="operatorprofilebinding"
+                id={this.state.deletedBindingId}
+                message={"Detaching profile"}
+                attemptAt={ this.state.deleteAttemptAt }
+                onSuccess={ this.onProfileDeleted }
+                onRepeat={ this.onProfileDeleteRepeat }
+              />
+            }
           </Fragment>
         </Loader>
       </Wrapper>
