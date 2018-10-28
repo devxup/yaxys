@@ -136,7 +136,7 @@ module.exports = class Adapter {
    * @param {Object} [trx] The transaction context
    * @returns {Promise<Object>} The inserted model containing all of the fields, includeing id
    */
-  async insert(identity, data, options, trx) {
+  async insert(identity, data, options = {}, trx) {
     const dataToInsert = data.id ? data : _.omit(data, "id")
 
     const fixedData = this._sanitize(identity, dataToInsert)
@@ -198,6 +198,32 @@ module.exports = class Adapter {
   }
 
   /**
+   * Delete the model by it's id
+   * @param {String} identity The model's identity
+   * @param {String|Integer} id  Model's id
+   * @param {Object} [trx] The transaction context
+   * @returns {Promise<Object>} The deleted model instance
+   */
+  async delete(identity, id, trx) {
+    if (!id) {
+      throw new Error("id is required")
+    }
+
+    const old = await this.findOne(identity, { id }, {}, trx)
+    await this.emitter.emit(`${identity}:delete:before`, trx, old)
+
+    const deleteQuery = this.knex(identity)
+      .where({ id })
+      .del()
+
+    await(trx ? deleteQuery.transacting(trx) : deleteQuery)
+
+    await this.emitter.emit(`${identity}:update:after`, trx, old)
+
+    return old
+  }
+
+  /**
    * Find the first model matching the filter
    * @param {String} identity The model's identity
    * @param {Object} filter The filter to match
@@ -205,7 +231,7 @@ module.exports = class Adapter {
    * @param {Object} [trx] The transaction context
    * @returns {Promise<Object|undefined>} The model found or undefined
    */
-  async findOne(identity, filter, options, trx) {
+  async findOne(identity, filter, options = {}, trx) {
     return (await this.find(identity, filter, Object.assign({ limit: 1 }, options), trx))[0]
   }
 
@@ -217,7 +243,7 @@ module.exports = class Adapter {
    * @param {Object} [trx] The transaction context
    * @returns {Promise<Array<Object>>} The array of found models
    */
-  async find(identity, filter, options, trx) {
+  async find(identity, filter, options = {}, trx) {
     let query = this.knex(identity).where(filter)
     _.each(Object.assign({}, this.options, options), (value, key) => {
       switch (key) {
@@ -233,7 +259,6 @@ module.exports = class Adapter {
           break
       }
     })
-
     let result = await (trx ? query.transacting(trx) : query)
     if (options.populate) {
       const propertiesToPopulate = Array.isArray(options.populate)
@@ -293,7 +318,11 @@ module.exports = class Adapter {
           if (!hash[myId]) {
             hash[myId] = []
           }
-          hash[myId].push(relatedHash[linkerItem[connection.linkerRelatedAttribute]])
+          const relatedItem = {
+            ...relatedHash[linkerItem[connection.linkerRelatedAttribute]],
+            _binding_id: linkerItem.id,
+          }
+          hash[myId].push(relatedItem)
           return hash
         }, {})
 

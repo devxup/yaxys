@@ -14,6 +14,7 @@ import RightsEditor from "../components/RightsEditor.jsx"
 import Wrapper from "../components/Wrapper.jsx"
 import Loader from "../components/Loader.jsx"
 import Update from "../components/Update.jsx"
+import Delete from "../components/Delete.jsx"
 import ModelForm from "../components/ModelForm.jsx"
 import ModelPicker from "../components/ModelPicker.jsx"
 import Created from "../components/Created.jsx"
@@ -56,6 +57,7 @@ const EDIBLE_PROPERTIES = ["id", "email", "isAdministrator", "rights"]
   {
     loadOperator: YaxysClue.actions.byClue,
     createBinding: YaxysClue.actions.byClue,
+    deleteBinding: YaxysClue.actions.byClue,
   }
 )
 export default class Operator extends Component {
@@ -66,6 +68,9 @@ export default class Operator extends Component {
       forceValidation: false,
       schema: this.buildPseudoSchema(),
       profileOpen: false,
+      deletedBindingId: null,
+      deletedHash: {},
+      deleteAttemptAt: null,
     }
   }
 
@@ -91,9 +96,7 @@ export default class Operator extends Component {
   props2OperatorState(propsArg) {
     const props = propsArg || this.props
     const operator =
-      props.operator && props.operator.success
-        ? pick(props.operator.data, EDIBLE_PROPERTIES)
-        : {}
+      props.operator && props.operator.success ? pick(props.operator.data, EDIBLE_PROPERTIES) : {}
 
     operator.passwordHash = ""
     operator.rights = cloneDeep(operator.rights)
@@ -133,7 +136,7 @@ export default class Operator extends Component {
     })
   }
 
-  onProfilePick = (profile) => {
+  onProfilePick = profile => {
     const { operator } = this.props
     this.props.createBinding(
       {
@@ -152,6 +155,44 @@ export default class Operator extends Component {
     })
   }
 
+  _deleteProfile(id) {
+    this.props.deleteBinding({
+      identity: "operatorprofilebinding",
+      query: queries.DELETE,
+      id,
+    })
+
+    this.setState({
+      deletedBindingId: id,
+      deleteAttemptAt: new Date().getTime(),
+    })
+  }
+
+  onDeleteProfile(profile) {
+    if (this.state.deletedHash[profile._binding_id]) {
+      return
+    }
+    if (!confirm(`Are you sure to detach profile #${profile.id} from the operator?`)) {
+      return
+    }
+    this._deleteProfile(profile._binding_id)
+  }
+
+  onProfileDeleted = (id) => {
+    this.state.deletedHash[id] = true
+    this.forceUpdate()
+  }
+
+  onProfileDeleteRepeat = () => {
+    if (this.state.deletedBindingId) {
+      this._deleteProfile(this.state.deletedBindingId)
+    }
+  }
+
+  onTableCellClick = data => {
+    this.onDeleteProfile(data.rowData)
+  }
+
   render() {
     const { operator, match, classes, constants } = this.props
     const update = (
@@ -160,18 +201,13 @@ export default class Operator extends Component {
         current={this.state.operator}
         schema={this.state.schema}
         modifiedAt={this.state.modifiedAt}
-        watchProperties={ EDIBLE_PROPERTIES }
+        watchProperties={EDIBLE_PROPERTIES}
       />
     )
     return (
       <Wrapper
         bottom={update}
-        breadcrumbs={
-          [
-            { title: "Operators", url: "/operators" },
-            `Operator #${match.params.id}`,
-          ]
-        }
+        breadcrumbs={[{ title: "Operators", url: "/operators" }, `Operator #${match.params.id}`]}
       >
         <h1 style={{ marginTop: 0 }}>Operator #{match.params.id}</h1>
         <Loader item={operator}>
@@ -201,37 +237,41 @@ export default class Operator extends Component {
             {!this.state.operator.isAdministrator && (
               <Fragment>
                 <Paper className={classes.profiles}>
-
                   <h5>The operator profiles</h5>
-                  { !(operator?.data?.profiles?.length) && <p>Here you can manage profiles of the operator</p> }
+                  {!operator?.data?.profiles?.length && (
+                    <p>Here you can manage profiles of the operator</p>
+                  )}
                   <Button
                     variant="text"
                     color="secondary"
                     onClick={this.onProfileOpen}
-                    style={{ marginBottom:10 }}
+                    style={{ marginBottom: 10 }}
                   >
                     Add profile
                   </Button>
                   <Created
                     items={this.props.createdBindings}
-                    content={
-                      binding =>
-                        binding.operatorProfile.title
-                          ? `Profile #${binding.operatorProfile.id} "${binding.operatorProfile.title}"`
-                          : `Profile #${binding.operatorProfile}`
+                    content={binding =>
+                      binding.operatorProfile.title
+                        ? `Profile #${binding.operatorProfile.id} "${
+                            binding.operatorProfile.title
+                          }"`
+                        : `Profile #${binding.operatorProfile}`
                     }
                     url={binding => `/settings/operator-profiles/${binding.operatorProfile.id}`}
                   />
-                  {
-                    !!(operator?.data?.profiles?.length) && <ModelTable
-                        schema={constants.schemas.operator}
-                        data={operator?.data?.profiles}
-                        url={profile => `/settings/operator-profiles/${profile.id}`}
-                        columns={["id", "title"]}
-                      />
-                  }
+                  {!!operator?.data?.profiles?.length && (
+                    <ModelTable
+                      schema={constants.schemas.operatorprofile}
+                      data={operator?.data?.profiles}
+                      // url={profile => `/settings/operator-profiles/${profile.id}`}
+                      onCellClick={this.onTableCellClick}
+                      columns={ ["id", "title"] }
+                      deletedHash={ this.state.deletedHash }
+                      deletedKey="_binding_id"
+                    />
+                  )}
                 </Paper>
-
                 <Paper className={classes.rights}>
                   <h5>Custom operator&#39;s rights:</h5>
                   <RightsEditor
@@ -249,6 +289,16 @@ export default class Operator extends Component {
               onPick={this.onProfilePick}
               columns={["id", "title", "description"]}
             />
+            {
+              <Delete
+                identity="operatorprofilebinding"
+                id={this.state.deletedBindingId}
+                message={"Detaching profile"}
+                attemptAt={ this.state.deleteAttemptAt }
+                onSuccess={ this.onProfileDeleted }
+                onRepeat={ this.onProfileDeleteRepeat }
+              />
+            }
           </Fragment>
         </Loader>
       </Wrapper>

@@ -20,6 +20,7 @@ module.exports = {
         type: "object",
       },
       isAdministrator: {
+        title: "Is administrator",
         type: "boolean",
       },
       hasCustomRights: {

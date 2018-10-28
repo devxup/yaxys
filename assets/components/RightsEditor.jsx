@@ -143,6 +143,7 @@ class RightsEditor extends Component {
         {this.renderRight(identity, "read", "Read")}
         {this.renderRight(identity, "create", "Create")}
         {this.renderRight(identity, "update", "Update")}
+        {this.renderRight(identity, "delete", "Delete")}
       </div>
     )
   }

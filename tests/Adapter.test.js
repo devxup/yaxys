@@ -206,11 +206,13 @@ describe("Adapter", () => {
                 id: 1,
                 y1: "three",
                 y2: "lets",
+                _binding_id: 1,
               },
               {
                 id: 2,
                 y1: "four",
                 y2: "go",
+                _binding_id: 3,
               },
             ],
           },
@@ -223,6 +225,7 @@ describe("Adapter", () => {
                 id: 2,
                 y1: "four",
                 y2: "go",
+                _binding_id: 2,
               },
             ],
           },
@@ -249,6 +252,19 @@ describe("Adapter", () => {
     )
   })
 
+  describe("Delete", () => {
+    it("Insert and then delete", async () => {
+      const inserted = await gAdapter.insert(tableNames[0], { "a1": 1, a2: "v1" })
+      const found = await gAdapter.findOne(tableNames[0], { id: inserted.id })
+      expect(found).toStrictEqual(inserted)
+      const deleted = await gAdapter.delete(tableNames[0], inserted.id)
+      expect(deleted).toStrictEqual(inserted)
+
+      const foundItems = await gAdapter.find(tableNames[0], { id: inserted.id })
+      expect(foundItems).toStrictEqual([])
+    })
+  })
+
   describe("transactions", () => {
     const testCases = [
       {
@@ -258,13 +274,13 @@ describe("Adapter", () => {
             // inserting item under transaction
             method: "insert",
             args: [tableNames[0], { a1: 10 }, {}, "_trx_"],
-            result: { id: 3, a1: 10, a2: null, a3: null },
+            result: { id: 4, a1: 10, a2: null, a3: null },
           },
           {
             // finding item under transaction – should get result
             method: "findOne",
             args: [tableNames[0], { a1: 10 }, null, "_trx_"],
-            result: { id: 3, a1: 10, a2: null, a3: null },
+            result: { id: 4, a1: 10, a2: null, a3: null },
           },
           {
             // finding item without transaction – should be empty
@@ -299,13 +315,13 @@ describe("Adapter", () => {
             // id is 4, since even rolled back transaction affects autoincrements
             method: "insert",
             args: [tableNames[0], { a1: 10 }, {}, "_trx_"],
-            result: { id: 4, a1: 10, a2: null, a3: null },
+            result: { id: 5, a1: 10, a2: null, a3: null },
           },
           {
             // finding item under transaction – should get result
             method: "findOne",
             args: [tableNames[0], { a1: 10 }, null, "_trx_"],
-            result: { id: 4, a1: 10, a2: null, a3: null },
+            result: { id: 5, a1: 10, a2: null, a3: null },
           },
           {
             // finding item without transaction – should be empty
@@ -328,12 +344,12 @@ describe("Adapter", () => {
             // ensuring there is an item after transaction committed
             method: "findOne",
             args: [tableNames[0], { a1: 10 }],
-            result: { id: 4, a1: 10, a2: null, a3: null },
+            result: { id: 5, a1: 10, a2: null, a3: null },
           },
         ],
       },
     ]
-    
+
     testCases.forEach(testCase =>
       it(testCase.title, async () => {
         const trx = await gAdapter.transaction()

@@ -262,12 +262,14 @@ describe("RestService", () => {
             "m1": "find",
             "put m1/:id": "update",
             "post m1": "create",
+            "delete m1/:id": "delete",
           },
           expectedCalls: [
             ["m1", "findOne", { op: 1 }],
             ["m1", "find", { op: 1 }],
             ["m1", "update", { op: 1 }],
             ["m1", "create", { op: 1 }],
+            ["m1", "delete", { op: 1 }],
           ],
         },
         {
@@ -277,11 +279,13 @@ describe("RestService", () => {
             "m1/:id": "findOne",
             "m1": "find",
             "post m1": "create",
+            "delete m1/:id": "delete",
           },
           expectedCalls: [
             ["m1", "findOne", { exclude: "update" }],
             ["m1", "find", { exclude: "update" }],
             ["m1", "create", { exclude: "update" }],
+            ["m1", "delete", { exclude: "update" }],
           ],
         },
         {
@@ -290,10 +294,12 @@ describe("RestService", () => {
           expectedResult: {
             "m1/:id": "findOne",
             "m1": "find",
+            "delete m1/:id": "delete",
           },
           expectedCalls: [
             ["m1", "findOne", { exclude: ["update", "create"] }],
             ["m1", "find", { exclude: ["update", "create"] }],
+            ["m1", "delete", { exclude: ["update", "create"] }],
           ],
         },
       ]

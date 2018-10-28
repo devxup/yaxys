@@ -18,22 +18,24 @@ module.exports = {
   },
 
   /**
-   * Make the 1s delay and throw the error with 70% probability
-   * Used for debugging pending and error states on the client-side
+   * Make the 1s delay
+   * Used for debugging pending states on the client-side
    * @param {Object} ctx Koa context
    * @param {Function} next Koa next function
    */
-  async pauseAndRandomError(ctx, next) {
-    try {
-      await new Promise((resolve, reject) => {
-        setTimeout(() => {
-          Math.random() > 0.7 ? resolve() : reject()
-        }, 1000)
-      })
-    } catch (err) {
-      ctx.throw("Test exception", { expose: true })
-    }
-    next()
+  async pause(ctx, next) {
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    await next()
+  },
+
+  /**
+   * Throw the error with 70% probability
+   * Used for debugging error states on the client-side
+   * @param {Object} ctx Koa context
+   * @param {Function} next Koa next function
+   */
+  async randomError(ctx, next) {
+    await (Math.random() > 0.7 ? next() : ctx.throw("Test exception", { expose: true }))
   },
 
   /**

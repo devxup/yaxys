@@ -19,7 +19,7 @@ module.exports = {
    * @returns {Object} API object
    */
   buildStandardAPI(identity, options = {}) {
-    return ["findOne", "find", "update", "create"].reduce((template, method) => {
+    return ["findOne", "find", "update", "create", "delete"].reduce((template, method) => {
       const isRemoved =
         options.exclude === method ||
         (Array.isArray(options.exclude) && options.exclude.includes(method))
@@ -50,6 +50,8 @@ module.exports = {
         return `put ${identity}/:id`
       case "create":
         return `post ${identity}`
+      case "delete":
+        return `delete ${identity}/:id`
     }
     throw new Error(`Unknown API method "${method}" detected`)
   },
@@ -70,10 +72,15 @@ module.exports = {
       middleware.push(PolicyService.removePasswordsFromResponse(identity))
     }
 
-    if (["create", "update"].includes(method)) {
-      middleware.push(PolicyService.sanitizeRequest(identity))
-      if (config.get("debug.pauseAndRandomError")) {
-        middleware.push(PolicyService.pauseAndRandomError)
+    if (["create", "update", "delete"].includes(method)) {
+      if (method !== "delete") {
+        middleware.push(PolicyService.sanitizeRequest(identity))
+      }
+      if (config.get("debug.pause")) {
+        middleware.push(PolicyService.pause)
+      }
+      if (config.get("debug.randomError")) {
+        middleware.push(PolicyService.randomError)
       }
     }
     middleware.push(RestService[method](identity))
@@ -170,6 +177,28 @@ module.exports = {
       }
 
       ctx.body = await yaxys.db.update(identity, ctx.params.id, ctx.request.body)
+    }
+  },
+
+  /**
+   * Create the model-specific request handler which deletes the model by specified id
+   * id should be bind by router into ctx.params.id
+   * @param {String} identity The model's identity
+   * @returns {Function} The handler
+   */
+  delete(identity) {
+    /**
+     * Update the model of given identity by ctx.params.id
+     * @param {Object} ctx Koa context
+     * @param {String} ctx.params.id The id parameter
+     * @param {String} ctx.request.body The data for updating
+     */
+    return async ctx => {
+      if (!ctx.params.id) {
+        ctx.throw(400, "id is required")
+      }
+
+      ctx.body = await yaxys.db.delete(identity, ctx.params.id)
     }
   },
 
