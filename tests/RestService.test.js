@@ -7,7 +7,7 @@ describe("RestService", () => {
   beforeAll(async () => {
     yaxysBuffer = global.yaxys
 
-    const adapterMethodsToEmulate = ["find", "findOne", "insert", "update"]
+    const adapterMethodsToEmulate = ["find", "findOne", "insert", "update", "count"]
     global.yaxys = {
       db: _.reduce(
         adapterMethodsToEmulate,
@@ -26,6 +26,9 @@ describe("RestService", () => {
     constructor(data) {
       Object.assign(this, data)
       this.body = null
+      this.set = (...args) => {
+        this.fakeHeader = [...args]
+      }
     }
 
     throw() {
@@ -76,6 +79,7 @@ describe("RestService", () => {
       {
         title: "Empty case",
         ctx: new CTXEmulator(),
+        header: ["meta", `{"total":["count","${identity}",{}]}`],
         result: ["find", identity, {}, {}],
       },
       {
@@ -87,6 +91,7 @@ describe("RestService", () => {
             someAttribute: 3,
           },
         }),
+        header: ["meta", `{"total":["count","${identity}",{"someAttribute":3}]}`],
         result: ["find", identity, { someAttribute: 3 }, { limit: 1, skip: 2 }],
       },
       {
@@ -96,6 +101,7 @@ describe("RestService", () => {
             sort: "someAttribute",
           },
         }),
+        header: ["meta", `{"total":["count","${identity}",{}]}`],
         result: ["find", identity, {}, { sort: { someAttribute: 1 } }],
       },
       {
@@ -105,6 +111,7 @@ describe("RestService", () => {
             sort: "-someAttribute",
           },
         }),
+        header: ["meta", `{"total":["count","${identity}",{}]}`],
         result: ["find", identity, {}, { sort: { someAttribute: -1 } }],
       },
       {
@@ -114,6 +121,7 @@ describe("RestService", () => {
             sort: '{"a": 1, "b":-1}',
           },
         }),
+        header: ["meta", `{"total":["count","${identity}",{}]}`],
         result: ["find", identity, {}, { sort: { a: 1, b: -1 } }],
       },
     ],
@@ -138,7 +146,10 @@ describe("RestService", () => {
           if (testCase.dbPatch) {
             yaxys.db = dbBuffer
           }
-
+          if (setKey === "find")
+          {
+            expect(testCase.ctx.fakeHeader).toStrictEqual(testCase.header)
+          }
           expect(testCase.ctx.body).toStrictEqual(testCase.result)
         })
       )

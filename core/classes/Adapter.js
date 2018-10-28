@@ -227,6 +227,16 @@ module.exports = class Adapter {
   }
 
   /**
+   * Count the number of models of some identity
+   * @param {String} identity The identity of model
+   * @param {Object} filter The filter to match
+   * @returns {Promise<number>} The number of models
+   */
+  async count(identity, filter) {
+    return Number((await this.knex(identity).where(filter).count("*"))[0].count)
+  }
+
+  /**
    * Create the knex promise which, when called then(), will create the table for given model
    * @param {String} identity The model's identity
    * @param {Object} schema The model's schema

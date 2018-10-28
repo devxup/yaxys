@@ -61,6 +61,7 @@ module.exports = {
         }
       })
 
+      ctx.set("meta", JSON.stringify({ total: await yaxys.db.count(identity, filter) }))
       ctx.body = await yaxys.db.find(identity, filter, options)
     }
   },
