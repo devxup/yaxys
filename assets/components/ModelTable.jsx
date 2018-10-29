@@ -1,4 +1,4 @@
-import React, { Component } from "react"
+import React, { Component, Fragment } from "react"
 import { Link } from "react-router-dom"
 import PropTypes from "prop-types"
 import classNames from "classnames"
@@ -7,7 +7,8 @@ import MuiTable from "mui-table"
 import { omit } from "lodash"
 import { deepOrange } from "@material-ui/core/colors"
 import Checkbox from "@material-ui/core/Checkbox"
-
+import Chip from "@material-ui/core/Chip"
+import Avatar from "@material-ui/core/Avatar"
 
 const styles = theme => ({
   cell: {
@@ -57,6 +58,18 @@ class ModelTable extends Component {
     switch (proppertySchema && proppertySchema.type) {
       case "boolean" :
         return <Checkbox checked={value} />
+      case "array" :
+        return value.map((item, index) => (
+          <Fragment key={index}>
+            <Chip
+              avatar={<Avatar>{item.id && item.id}</Avatar>}
+              label={item.title && item.title}
+              color="primary"
+              variant="outlined"
+            />
+            <span>{" "}</span>
+          </Fragment>
+      ))
       default :
         return value
     }
