@@ -107,12 +107,20 @@ module.exports = class Adapter {
     }
 
     return _.mapValues(data, (value, key) => {
-      const attribute = schema.properties[key]
-      switch (attribute && attribute.type) {
+      const property = schema.properties[key]
+      switch (property && property.type) {
         case "object":
           return typeof value === "string" ? value : JSON.stringify(value)
         case "number":
         case "integer":
+          if (
+            property.connection &&
+            property.connection.type === "m:1" &&
+            typeof value === "object" &&
+            value
+          ) {
+            return value.id
+          }
           return typeof value === "string" ? Number(value) : value
       }
       return value
@@ -216,7 +224,7 @@ module.exports = class Adapter {
       .where({ id })
       .del()
 
-    await(trx ? deleteQuery.transacting(trx) : deleteQuery)
+    await (trx ? deleteQuery.transacting(trx) : deleteQuery)
 
     await this.emitter.emit(`${identity}:update:after`, trx, old)
 
@@ -292,20 +300,22 @@ module.exports = class Adapter {
     switch (connection.type) {
       case "m:m": {
         const linkerSchema = this.schemas[connection.linkerModel.toLowerCase()]
-        const relatedIdentity = linkerSchema.properties[connection.linkerRelatedAttribute].connection.relatedModel
+        const relatedIdentity =
+          linkerSchema.properties[connection.linkerRelatedAttribute].connection.relatedModel
 
-        const ids = [ ...new Set(models.map(model => model.id))]
+        const ids = [...new Set(models.map(model => model.id))]
         const linkerModels = await this._trxWrapper(
           this.knex(connection.linkerModel.toLowerCase())
-          .whereIn(connection.linkerMyAttribute, ids)
-          .orderBy("id", "asc"),
+            .whereIn(connection.linkerMyAttribute, ids)
+            .orderBy("id", "asc"),
           trx
         )
 
-        const relatedIds = [ ...new Set(linkerModels.map(model => model[connection.linkerRelatedAttribute]))]
+        const relatedIds = [
+          ...new Set(linkerModels.map(model => model[connection.linkerRelatedAttribute])),
+        ]
         const relatedModels = await this._trxWrapper(
-          this.knex(relatedIdentity.toLowerCase())
-          .whereIn("id", relatedIds),
+          this.knex(relatedIdentity.toLowerCase()).whereIn("id", relatedIds),
           trx
         )
         const relatedHash = relatedModels.reduce((hash, relatedItem) => {
@@ -333,7 +343,7 @@ module.exports = class Adapter {
         break
       }
       case "m:1": {
-        const ids = [ ...new Set(models.map(model => model[property]))]
+        const ids = [...new Set(models.map(model => model[property]))]
 
         const relatedModels = await this._trxWrapper(
           this.knex(connection.relatedModel.toLowerCase()).whereIn("id", ids),
@@ -353,12 +363,12 @@ module.exports = class Adapter {
         break
       }
       case "1:m": {
-        const ids = [ ...new Set(models.map(model => model.id))]
+        const ids = [...new Set(models.map(model => model.id))]
 
         const relatedModels = await this._trxWrapper(
           this.knex(connection.relatedModel.toLowerCase())
-          .whereIn(connection.relatedModelAttribute, ids)
-          .orderBy("id", "asc"),
+            .whereIn(connection.relatedModelAttribute, ids)
+            .orderBy("id", "asc"),
           trx
         )
 
@@ -394,9 +404,7 @@ module.exports = class Adapter {
       _.forEach(schema.properties, (property, key) => {
         if (key === "id" || property.virtual) return
 
-        const type = ["object", "array"].includes(property.type)
-          ? "json"
-          : property.type
+        const type = ["object", "array"].includes(property.type) ? "json" : property.type
 
         if (!POSTGRES_TYPES.includes(type)) {
           throw new Error(`Incorrect data type ${property.type} of field ${key} in ${identity}`)

@@ -1,13 +1,17 @@
 import React, { Component, Fragment } from "react"
 import PropTypes from "prop-types"
-import TextField from "@material-ui/core/TextField"
+import { withConstants } from "../services/Utils"
+import { TextField, Chip, Button } from "@material-ui/core"
+import ModelPicker from "./ModelPicker.jsx"
 
 const Ajv = require("ajv")
 const ajv = new Ajv({ allErrors: true })
 
+@withConstants
 export default class ModelForm extends Component {
   static propTypes = {
     schema: PropTypes.object.isRequired,
+    constants: PropTypes.object,
     attributes: PropTypes.arrayOf(PropTypes.string),
     values: PropTypes.object,
     onEnter: PropTypes.func,
@@ -40,26 +44,40 @@ export default class ModelForm extends Component {
       values: (props || this.props).values || {},
       valuesMeta: {},
       valid: undefined,
+      pickerOpen: false,
+      pickerIdentity: null,
+      pickerAttribute: null,
+      creatorOpen: false,
+      creatorIdentity: null,
+      creatorAttribute: null,
     }
   }
 
-  onChange = event => {
-    this.state.values[event.target.name] =
-      event.target.value === "" ? undefined : event.target.value
+  onPickerClose = event => {
+    this.setState({ pickerOpen: false })
+  }
 
+  onPick = item => {
+    this.state.pickerOpen = false
+    this._setValue(this.state.pickerAttribute, item)
+  }
+
+  _setValue(key, value) {
+    this.state.values[key] = value
     if (this.props.forceValidation) {
       this.validateAll()
     } else {
-      if (
-        this.state.valuesMeta[event.target.name] &&
-        this.state.valuesMeta[event.target.name].dirty
-      ) {
-        this.validateAttribute(event.target.name)
+      if (this.state.valuesMeta[key] && this.state.valuesMeta[key].dirty) {
+        this.validateAttribute(key)
       }
     }
 
     this.notify()
     this.forceUpdate()
+  }
+
+  onChange = event => {
+    this._setValue(event.target.name, event.target.value === "" ? undefined : event.target.value)
   }
 
   ensureAttributeMeta(name) {
@@ -149,11 +167,53 @@ export default class ModelForm extends Component {
     return "text"
   }
 
+  onPickerOpen = (pickerAttribute, pickerIdentity) => event => {
+    this.setState({
+      pickerOpen: true,
+      pickerAttribute,
+      pickerIdentity,
+    })
+  }
+
+  renderM1Connection(attribute, index) {
+    const { schema, constants } = this.props
+    const property = schema.properties[attribute]
+    const connection = property.connection
+    if (connection.type !== "m:1") {
+      return false
+    }
+
+    const value = this.state.values[attribute]
+    const relatedSchema = constants.schemas[connection.relatedModel.toLowerCase()]
+
+    const chipLabel = value
+      ? `${relatedSchema.title} #${typeof value === "object" ? value.id : value} ${(value &&
+          value.title) ||
+          ""}`
+      : "Not selected"
+    const current = <Chip label={chipLabel} />
+
+    return (
+      <div key={index}>
+        <label>{property.title || attribute}: </label>
+        {current}
+        <Button variant="text" onClick={this.onPickerOpen(attribute, connection.relatedModel)}>
+          Select existing {relatedSchema.title}
+        </Button>
+        <Button variant="text">Create new {relatedSchema.title}</Button>
+      </div>
+    )
+  }
+
   renderAttribute = (attribute, index) => {
     const { schema, autoFocus, margin } = this.props
     const property = schema.properties[attribute]
     if (!property) {
       return false
+    }
+
+    if (property.connection) {
+      return this.renderM1Connection(attribute, index)
     }
 
     const error = this.state.valuesMeta[attribute] && this.state.valuesMeta[attribute].error
@@ -178,6 +238,18 @@ export default class ModelForm extends Component {
   }
 
   render() {
-    return <Fragment>{this.props.attributes.map(this.renderAttribute)}</Fragment>
+    return (
+      <Fragment>
+        {this.props.attributes.map(this.renderAttribute)}
+        {this.state.pickerOpen && (
+          <ModelPicker
+            onClose={this.onPickerClose}
+            onPick={this.onPick}
+            open={this.state.pickerOpen}
+            identity={this.state.pickerIdentity}
+          />
+        )}
+      </Fragment>
+    )
   }
 }

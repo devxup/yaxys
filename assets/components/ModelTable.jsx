@@ -94,7 +94,7 @@ class ModelTable extends Component {
       },
       ...omit(this.props, "url", "schema", "classes", "deletedHash", "deletedKey"),
     }
-    const patchedColumns = columns.map(columnOriginal => {
+    const patchedColumns = (columns || schema?.defaultProperties || ["id", "title"]).map(columnOriginal => {
       let column =
         typeof columnOriginal === "string"
           ? { name: columnOriginal }

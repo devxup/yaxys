@@ -14,7 +14,7 @@ import ModelTable from "./ModelTable.jsx"
 import Button from "@material-ui/core/Button/Button"
 
 const modelClue = props => ({
-  identity: props.identity,
+  identity: props.identity.toLowerCase(),
   query: queries.FIND,
   sort: { id: 1 },
   ...props.queryOptions,

@@ -16,8 +16,11 @@ const accessPointClue = props => ({
   identity: "accesspoint",
   query: queries.FIND_BY_ID,
   id: props.match.params.id,
+  populate: "door,zoneTo",
 })
 const accessPointSelector = YaxysClue.selectors.byClue(accessPointClue)
+
+const PROPS_2_WATCH = ["id", "title", "description", "door", "zoneTo"]
 
 @withConstants
 @connect(
@@ -54,7 +57,7 @@ export default class AccessPoint extends Component {
     const props = propsArg || this.props
     const accessPoint =
       props.accessPoint && props.accessPoint.success
-        ? pick(props.accessPoint.data, "id", "title", "description")
+        ? pick(props.accessPoint.data, PROPS_2_WATCH)
         : {}
 
     return accessPoint
@@ -88,6 +91,7 @@ export default class AccessPoint extends Component {
         current={this.state.accessPoint}
         schema={constants.schemas.accesspoint}
         modifiedAt={this.state.modifiedAt}
+        watchProperties={PROPS_2_WATCH}
       />
     )
     return (
@@ -108,7 +112,7 @@ export default class AccessPoint extends Component {
               forceValidation={this.state.forceValidation}
               schema={constants.schemas.accesspoint}
               margin="dense"
-              attributes={["title", "description"]}
+              attributes={["title", "description", "door", "zoneTo"]}
             />
             <br />
           </Fragment>

@@ -15,6 +15,7 @@ import Wrapper from "../components/Wrapper.jsx"
 import Loader from "../components/Loader.jsx"
 import Update from "../components/Update.jsx"
 import Delete from "../components/Delete.jsx"
+import Request from "../components/Request.jsx"
 import ModelForm from "../components/ModelForm.jsx"
 import ModelPicker from "../components/ModelPicker.jsx"
 import Created from "../components/Created.jsx"
@@ -163,6 +164,9 @@ export default class Operator extends Component {
     })
 
     this.setState({
+      deletedSelector: YaxysClue.selectors.byClue(
+        props => ({ identity: "operatorprofilebinding", query: queries.DELETE, id })
+      ),
       deletedBindingId: id,
       deleteAttemptAt: new Date().getTime(),
     })
@@ -178,8 +182,8 @@ export default class Operator extends Component {
     this._deleteProfile(profile._binding_id)
   }
 
-  onProfileDeleted = (id) => {
-    this.state.deletedHash[id] = true
+  onProfileDeleted = (item) => {
+    this.state.deletedHash[item?.meta?.clue?.id] = true
     this.forceUpdate()
   }
 
@@ -290,7 +294,15 @@ export default class Operator extends Component {
               columns={["id", "title", "description"]}
             />
             {
-              <Delete
+              <Request
+                selector={this.state.deletedSelector}
+                message={"Detaching profile"}
+                attemptAt={ this.state.deleteAttemptAt }
+                onSuccess={ this.onProfileDeleted }
+              />
+            }
+            {
+              false && <Delete
                 identity="operatorprofilebinding"
                 id={this.state.deletedBindingId}
                 message={"Detaching profile"}

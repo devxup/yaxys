@@ -1,6 +1,7 @@
 module.exports = {
   schema: {
     title: "Door",
+    defaultProperties: ["id", "title", "description"],
     properties: {
       id: {
         type: "integer",

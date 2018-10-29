@@ -18,7 +18,7 @@ module.exports = {
         type: "integer",
         connection: {
           type: "m:1",
-          relatedModel: "Door",
+          relatedModel: "door",
         },
       },
       zoneTo: {
@@ -26,7 +26,7 @@ module.exports = {
         type: "integer",
         connection: {
           type: "m:1",
-          relatedModel: "Zone",
+          relatedModel: "zone",
         },
       },
     },
