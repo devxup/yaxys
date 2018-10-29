@@ -6,7 +6,7 @@ import { withStyles } from "@material-ui/core/styles"
 import CircularProgress from "@material-ui/core/CircularProgress"
 import Button from "@material-ui/core/Button"
 
-import { isEqual, omit, pick, pickBy, identity } from "lodash"
+import { isEqual, omit } from "lodash"
 import YaxysClue from "../services/YaxysClue"
 import { green, yellow } from "@material-ui/core/colors"
 import classNames from "classnames"
@@ -110,18 +110,32 @@ class Update extends Component {
     return props.item && props.item.updates && props.item.updates[state.requestId]
   }
 
+  _getComparableValue(rawValue, propertySchema) {
+    if (propertySchema.connection?.type === "m:1") {
+      return rawValue?.id || rawValue
+    }
+    switch (propertySchema.type) {
+      case "integer":
+      case "number":
+        return Number(rawValue)
+    }
+    return rawValue
+  }
+
   _isChanged(propsArg) {
     const props = propsArg || this.props
+    const { schema, watchProperties } = props
 
-    const itemSnippet = props.watchProperties
-      ? pick(props?.item.data, props.watchProperties)
-      : pickBy(props?.item.data, identity)
+    const properties = watchProperties || Object.keys(schema.properties)
 
-    const currentSnippet = props.watchProperties
-      ? pick(props.current, props.watchProperties)
-      : pickBy(props.current, identity)
+    return properties.some(propertyKey => {
+      const propertySchema = schema.properties[propertyKey]
+      const itemValue = this._getComparableValue(props?.item?.data?.[propertyKey], propertySchema)
+      const currentValue = this._getComparableValue(props?.current?.[propertyKey], propertySchema)
 
-    return !isEqual(itemSnippet, currentSnippet)
+      return !isEqual(itemValue, currentValue)
+    })
+
   }
 
   onSave = event => {

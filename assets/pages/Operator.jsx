@@ -14,7 +14,6 @@ import RightsEditor from "../components/RightsEditor.jsx"
 import Wrapper from "../components/Wrapper.jsx"
 import Loader from "../components/Loader.jsx"
 import Update from "../components/Update.jsx"
-import Delete from "../components/Delete.jsx"
 import Request from "../components/Request.jsx"
 import ModelForm from "../components/ModelForm.jsx"
 import ModelPicker from "../components/ModelPicker.jsx"
@@ -293,24 +292,12 @@ export default class Operator extends Component {
               onPick={this.onProfilePick}
               columns={["id", "title", "description"]}
             />
-            {
-              <Request
-                selector={this.state.deletedSelector}
-                message={"Detaching profile"}
-                attemptAt={ this.state.deleteAttemptAt }
-                onSuccess={ this.onProfileDeleted }
-              />
-            }
-            {
-              false && <Delete
-                identity="operatorprofilebinding"
-                id={this.state.deletedBindingId}
-                message={"Detaching profile"}
-                attemptAt={ this.state.deleteAttemptAt }
-                onSuccess={ this.onProfileDeleted }
-                onRepeat={ this.onProfileDeleteRepeat }
-              />
-            }
+            <Request
+              selector={this.state.deletedSelector}
+              message={"Detaching profile"}
+              attemptAt={ this.state.deleteAttemptAt }
+              onSuccess={ this.onProfileDeleted }
+            />
           </Fragment>
         </Loader>
       </Wrapper>

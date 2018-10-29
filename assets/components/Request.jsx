@@ -68,8 +68,10 @@ export default class Request extends Component {
         autoHideDuration: null,
       })
     }
-    if (!prevProps?.item?.success && this.props?.item?.success) {
-      this.props.onSuccess?.(this.props?.item, this.props.custom)
+    const prevItem = this._processedItem(prevProps)
+    const item = this._processedItem()
+    if (!prevItem?.success && item?.success) {
+      this.props.onSuccess?.(item, this.props.custom)
       /*
        Snackbar sets its autoHide timer only when open state changes
        so we set it to false and then back to true
@@ -95,14 +97,22 @@ export default class Request extends Component {
   }
 
   handleRepeat = event => {
-    const { repeat, item } = this.props
-    repeat(item?.meta?.clue, item?.meta?.options)
-    // this.props.onRepeat?.(this.props.id)
+    const { repeat } = this.props
+    const item = this._processedItem()
+    repeat(item?.meta?.clue, { ...item?.meta?.options, index: 0 })
+  }
+
+  _processedItem(propsArg) {
+    const props = propsArg || this.props
+    const jsonItem = props.item?.toJSON?.()
+    return Array.isArray(jsonItem) ? jsonItem[0] : jsonItem
   }
 
   render() {
-    const { item, classes, message } = this.props
+    const { classes, message } = this.props
     const { autoHideDuration, open } = this.state
+
+    const item = this._processedItem()
 
     return (
       <Snackbar
@@ -122,12 +132,7 @@ export default class Request extends Component {
           item?.pending && <CircularProgress size={25} />,
           item?.success && <Done />,
           item?.error && (
-            <Button
-              key="undo"
-              className={classes.button}
-              size="small"
-              onClick={this.handleRepeat}
-            >
+            <Button key="undo" className={classes.button} size="small" onClick={this.handleRepeat}>
               REPEAT
             </Button>
           ),

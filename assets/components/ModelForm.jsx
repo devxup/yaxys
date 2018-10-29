@@ -3,6 +3,7 @@ import PropTypes from "prop-types"
 import { withConstants } from "../services/Utils"
 import { TextField, Chip, Button } from "@material-ui/core"
 import ModelPicker from "./ModelPicker.jsx"
+import ModelCreator from "./ModelCreator.jsx"
 
 const Ajv = require("ajv")
 const ajv = new Ajv({ allErrors: true })
@@ -62,6 +63,15 @@ export default class ModelForm extends Component {
     this._setValue(this.state.pickerAttribute, item)
   }
 
+  onCreatorClose = event => {
+    this.setState({ creatorOpen: false })
+  }
+
+  onCreate = item => {
+    this.state.creatorOpen = false
+    this._setValue(this.state.creatorAttribute, item)
+  }
+
   _setValue(key, value) {
     this.state.values[key] = value
     if (this.props.forceValidation) {
@@ -110,9 +120,11 @@ export default class ModelForm extends Component {
   }
 
   validateAll() {
+    const { attributes, schema } = this.props
+
     this.state.valid = this.validator(this.state.values)
 
-    for (let attribute of this.props.attributes) {
+    for (let attribute of attributes || schema.defaultProperties) {
       this.ensureAttributeMeta(attribute)
       delete this.state.valuesMeta[attribute].error
     }
@@ -175,6 +187,18 @@ export default class ModelForm extends Component {
     })
   }
 
+  onCreatorOpen = (creatorAttribute, creatorIdentity) => event => {
+    this.setState({
+      creatorOpen: true,
+      creatorAttribute,
+      creatorIdentity,
+    })
+  }
+
+  onDelete = attribute => event => {
+    this._setValue(attribute, null)
+  }
+
   renderM1Connection(attribute, index) {
     const { schema, constants } = this.props
     const property = schema.properties[attribute]
@@ -191,7 +215,7 @@ export default class ModelForm extends Component {
           value.title) ||
           ""}`
       : "Not selected"
-    const current = <Chip label={chipLabel} />
+    const current = <Chip label={chipLabel} onDelete={ value && this.onDelete(attribute) } />
 
     return (
       <div key={index}>
@@ -200,7 +224,9 @@ export default class ModelForm extends Component {
         <Button variant="text" onClick={this.onPickerOpen(attribute, connection.relatedModel)}>
           Select existing {relatedSchema.title}
         </Button>
-        <Button variant="text">Create new {relatedSchema.title}</Button>
+        <Button variant="text" onClick={this.onCreatorOpen(attribute, connection.relatedModel)}>
+          Create new {relatedSchema.title}
+        </Button>
       </div>
     )
   }
@@ -238,15 +264,24 @@ export default class ModelForm extends Component {
   }
 
   render() {
+    const { attributes, schema } = this.props
     return (
       <Fragment>
-        {this.props.attributes.map(this.renderAttribute)}
+        { (attributes || schema.defaultProperties).map(this.renderAttribute)}
         {this.state.pickerOpen && (
           <ModelPicker
             onClose={this.onPickerClose}
             onPick={this.onPick}
             open={this.state.pickerOpen}
             identity={this.state.pickerIdentity}
+          />
+        )}
+        {this.state.creatorOpen && (
+          <ModelCreator
+            onClose={this.onCreatorClose}
+            onCreate={this.onCreate}
+            open={this.state.creatorOpen}
+            identity={this.state.creatorIdentity}
           />
         )}
       </Fragment>
