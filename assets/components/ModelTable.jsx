@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from "react"
+import React, { Component } from "react"
 import { Link } from "react-router-dom"
 import PropTypes from "prop-types"
 import classNames from "classnames"
@@ -30,6 +30,10 @@ const styles = theme => ({
     lineHeight: "48px",
     color: "#333",
   },
+  chip: {
+    marginLeft: theme.spacing.unit/2,
+    cursor: "inherit",
+  },
   row: {
     "&:hover": {
       background: theme.palette.grey[100],
@@ -55,20 +59,20 @@ class ModelTable extends Component {
   }
 
   renderPropertyCellContent(proppertySchema, value) {
+    const { classes } = this.props
     switch (proppertySchema && proppertySchema.type) {
       case "boolean" :
         return <Checkbox checked={value} />
       case "array" :
         return value.map((item, index) => (
-          <Fragment key={index}>
-            <Chip
+            <Chip key={index}
+              className={classes.chip}
               avatar={<Avatar>{item.id && item.id}</Avatar>}
               label={item.title && item.title}
               color="primary"
               variant="outlined"
+              cursor="pointer"
             />
-            <span>{" "}</span>
-          </Fragment>
       ))
       default :
         return value
