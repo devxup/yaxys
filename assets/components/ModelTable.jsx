@@ -65,13 +65,12 @@ class ModelTable extends Component {
         return <Checkbox checked={value} />
       case "array" :
         return value.map((item, index) => (
-            <Chip key={index}
+            item.id && <Chip key={index}
               className={classes.chip}
-              avatar={<Avatar>{item.id && item.id}</Avatar>}
-              label={item.title && item.title}
+              avatar={<Avatar>#{item.id}</Avatar>}
+              label={item.title || ""}
               color="primary"
               variant="outlined"
-              cursor="pointer"
             />
       ))
       default :

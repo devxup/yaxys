@@ -15,7 +15,7 @@ import Created from "../components/Created.jsx"
 import ModelTable from "../components/ModelTable.jsx"
 import ModelDialog from "../components/ModelDialog.jsx"
 
-const doorsClue = props => ({ identity: "door", query: queries.FIND, sort: { id: 1 } })
+const doorsClue = props => ({ identity: "door", query: queries.FIND, sort: { id: 1 }, populate: "accessPoints,zones" })
 const doorsSelector = YaxysClue.selectors.byClue(doorsClue)
 
 const CREATED_DOORS_MARKER = "doors-page"
@@ -94,7 +94,7 @@ export default class Doors extends Component {
               schema={constants.schemas.door}
               data={(doors && doors.data) || []}
               url={door => `/doors/${door.id}`}
-              columns={["id", "title", "description"]}
+              columns={["id", "title", "description", "accessPoints", "zones"]}
             />
           </Paper>
         </Loader>

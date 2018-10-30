@@ -24,6 +24,17 @@ module.exports = {
           relatedModelAttribute: "door",
         },
       },
+      zones: {
+        title: "Zones",
+        type: "array",
+        virtual: true,
+        connection: {
+          type: "m:m",
+          linkerModel: "AccessPoint",
+          linkerMyAttribute: "door",
+          linkerRelatedAttribute: "zoneTo",
+        },
+      },
     },
   },
 
