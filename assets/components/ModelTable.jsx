@@ -7,7 +7,8 @@ import MuiTable from "mui-table"
 import { omit } from "lodash"
 import { deepOrange } from "@material-ui/core/colors"
 import Checkbox from "@material-ui/core/Checkbox"
-
+import Chip from "@material-ui/core/Chip"
+import Avatar from "@material-ui/core/Avatar"
 
 const styles = theme => ({
   cell: {
@@ -28,6 +29,10 @@ const styles = theme => ({
     height: 48,
     lineHeight: "48px",
     color: "#333",
+  },
+  chip: {
+    marginLeft: theme.spacing.unit/2,
+    cursor: "inherit",
   },
   row: {
     "&:hover": {
@@ -54,9 +59,21 @@ class ModelTable extends Component {
   }
 
   renderPropertyCellContent(proppertySchema, value) {
+    const { classes } = this.props
     switch (proppertySchema && proppertySchema.type) {
       case "boolean" :
         return <Checkbox checked={value} />
+      case "array" :
+        return value.map((item, index) => (
+            <Chip key={index}
+              className={classes.chip}
+              avatar={<Avatar>{item.id && item.id}</Avatar>}
+              label={item.title && item.title}
+              color="primary"
+              variant="outlined"
+              cursor="pointer"
+            />
+      ))
       default :
         return value
     }
