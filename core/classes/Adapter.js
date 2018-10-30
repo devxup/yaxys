@@ -88,7 +88,7 @@ module.exports = class Adapter {
    * Sanitize the data using model's schema before updating or inserting
    * @param {String} identity The models' identity
    * @param {Object} data The data to sanitize
-   * @returns {void}
+   * @returns {Object} The sanitized data
    * @private
    */
   _sanitize(identity, data) {
@@ -285,7 +285,20 @@ module.exports = class Adapter {
   }
 
   /**
-   * Populates the given models with 1:m relation
+   * Count the number of models of some identity
+   * @param {String} identity The identity of model
+   * @param {Object} filter The filter to match
+   * @returns {Promise<number>} The number of models
+   */
+  async count(identity, filter) {
+    return Number(
+      (await this.knex(identity)
+        .where(filter)
+        .count("*"))[0].count
+    )
+  }
+
+  /** Populates the given models with 1:m relation
    * @param {String} identity The initial model identity
    * @param {Object[]} models Models to be populated
    * @param {String} property The property to populate

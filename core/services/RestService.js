@@ -105,7 +105,11 @@ module.exports = {
         ctx.throw(400, "id is required")
       }
       const populateArgs = ctx.query.populate && ctx.query.populate.split(",")
-      const instance = await yaxys.db.findOne(identity, { id: ctx.params.id }, { populate: populateArgs })
+      const instance = await yaxys.db.findOne(
+        identity,
+        { id: ctx.params.id },
+        { populate: populateArgs }
+      )
       if (!instance) {
         ctx.throw(404, `${identity} #${ctx.params.id} not found`)
       }
@@ -154,6 +158,7 @@ module.exports = {
         }
       })
 
+      ctx.set("meta", JSON.stringify({ total: await yaxys.db.count(identity, filter) }))
       ctx.body = await yaxys.db.find(identity, filter, options)
     }
   },
