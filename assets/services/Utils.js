@@ -1,5 +1,12 @@
 import React, { createContext } from "react"
 
+export const commonClasses = theme => ({
+  block: {
+    padding: `1px ${theme.spacing.unit * 3}px ${theme.spacing.unit * 2}px`,
+    marginBottom: theme.spacing.unit * 2,
+  },
+})
+
 // Some props coming from selector may be an Immutable Map,
 // so we convert them into JSON using this HOC
 export const withImmutablePropsFixed = propName => {

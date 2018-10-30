@@ -5,7 +5,10 @@ import { connect } from "react-redux"
 import YaxysClue, { queries } from "../services/YaxysClue"
 import { pick } from "lodash"
 
-import { withConstants } from "../services/Utils"
+import { withStyles } from "@material-ui/core/styles"
+import { withConstants, commonClasses } from "../services/Utils"
+
+import { Paper } from "@material-ui/core"
 
 import Wrapper from "../components/Wrapper.jsx"
 import Loader from "../components/Loader.jsx"
@@ -22,6 +25,9 @@ const accessPointSelector = YaxysClue.selectors.byClue(accessPointClue)
 
 const PROPS_2_WATCH = ["id", "title", "description", "door", "zoneTo"]
 
+@withStyles(theme => ({
+  ...commonClasses(theme),
+}))
 @withConstants
 @connect(
   (state, props) => ({
@@ -84,7 +90,7 @@ export default class AccessPoint extends Component {
   }
 
   render() {
-    const { constants, accessPoint, match } = this.props
+    const { constants, accessPoint, match, classes } = this.props
     const update = (
       <Update
         clue={accessPointClue(this.props)}
@@ -105,16 +111,30 @@ export default class AccessPoint extends Component {
         <h1 style={{ marginTop: 0 }}>Access point #{match.params.id}</h1>
         <Loader item={accessPoint}>
           <Fragment>
-            <ModelForm
-              autoFocus={true}
-              values={this.state.accessPoint}
-              onChange={this.onFormChange}
-              forceValidation={this.state.forceValidation}
-              schema={constants.schemas.accesspoint}
-              margin="dense"
-              attributes={["title", "description", "door", "zoneTo"]}
-            />
-            <br />
+            <Paper className={classes.block}>
+              <h5>Properties</h5>
+              <ModelForm
+                autoFocus={true}
+                values={this.state.accessPoint}
+                onChange={this.onFormChange}
+                forceValidation={this.state.forceValidation}
+                schema={constants.schemas.accesspoint}
+                margin="dense"
+                attributes={["title", "description"]}
+              />
+            </Paper>
+            <Paper className={classes.block}>
+              <h5>Door and Zone</h5>
+              <ModelForm
+                autoFocus={true}
+                values={this.state.accessPoint}
+                onChange={this.onFormChange}
+                forceValidation={this.state.forceValidation}
+                schema={constants.schemas.accesspoint}
+                margin="dense"
+                attributes={["door", "zoneTo"]}
+              />
+            </Paper>
           </Fragment>
         </Loader>
       </Wrapper>

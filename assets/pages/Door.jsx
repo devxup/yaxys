@@ -1,16 +1,20 @@
 /* eslint-disable react/prop-types */
-import React, { Component, Fragment } from "react"
+import React, { Component } from "react"
 import { connect } from "react-redux"
 
 import YaxysClue, { queries } from "../services/YaxysClue"
-import { pick  } from "lodash"
+import { pick } from "lodash"
 
-import { withConstants } from "../services/Utils"
+import { withStyles } from "@material-ui/core/styles"
+import { commonClasses, withConstants } from "../services/Utils"
+
+import { Paper } from "@material-ui/core"
 
 import Wrapper from "../components/Wrapper.jsx"
 import Loader from "../components/Loader.jsx"
 import Update from "../components/Update.jsx"
 import ModelForm from "../components/ModelForm.jsx"
+import Connection from "../components/Connection.jsx"
 
 const doorClue = props => ({
   identity: "door",
@@ -19,6 +23,12 @@ const doorClue = props => ({
 })
 const doorSelector = YaxysClue.selectors.byClue(doorClue)
 
+@withStyles(theme => ({
+  ...commonClasses(theme),
+  button: {
+    margin: "0 10px 10px",
+  },
+}))
 @withConstants
 @connect(
   (state, props) => ({
@@ -34,6 +44,10 @@ export default class Door extends Component {
     this.state = {
       door: this.props2DoorState(props),
       forceValidation: false,
+      pickerOpen: false,
+      pickerIdentity: null,
+      creatorOpen: false,
+      creatorIdentity: null,
     }
   }
 
@@ -53,9 +67,7 @@ export default class Door extends Component {
   props2DoorState(propsArg) {
     const props = propsArg || this.props
     const door =
-      props.door && props.door.success
-        ? pick(props.door.data, "id", "title", "description")
-        : {}
+      props.door && props.door.success ? pick(props.door.data, "id", "title", "description") : {}
 
     return door
   }
@@ -81,7 +93,7 @@ export default class Door extends Component {
   }
 
   render() {
-    const { constants, door, match } = this.props
+    const { constants, door, match, classes } = this.props
     const update = (
       <Update
         clue={doorClue(this.props)}
@@ -93,14 +105,12 @@ export default class Door extends Component {
     return (
       <Wrapper
         bottom={update}
-        breadcrumbs={[
-          { title: "Doors", url: "/doors" },
-          `Door #${match.params.id}`,
-        ]}
+        breadcrumbs={[{ title: "Doors", url: "/doors" }, `Door #${match.params.id}`]}
       >
         <h1 style={{ marginTop: 0 }}>Door #{match.params.id}</h1>
         <Loader item={door}>
-          <Fragment>
+          <Paper className={classes.block}>
+            <h5>Properties</h5>
             <ModelForm
               autoFocus={true}
               values={this.state.door}
@@ -110,9 +120,17 @@ export default class Door extends Component {
               margin="dense"
               attributes={["title", "description"]}
             />
-            <br />
-          </Fragment>
+          </Paper>
         </Loader>
+        <Paper className={classes.block}>
+          <h5>Access points</h5>
+          <Connection
+            relatedIdentity="accesspoint"
+            relatedProperty="door"
+            parentId={match.params.id}
+            additionalCluePropertiea={{ populate: "zoneTo" }}
+          />
+        </Paper>
       </Wrapper>
     )
   }

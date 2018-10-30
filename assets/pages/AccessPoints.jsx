@@ -2,9 +2,8 @@
 import React, { Component } from "react"
 import { connect } from "react-redux"
 
-import Paper from "@material-ui/core/Paper"
+import { Paper, Button } from "@material-ui/core"
 import AddIcon from "@material-ui/icons/Add"
-import Button from "@material-ui/core/Button"
 
 import YaxysClue, { queries } from "../services/YaxysClue"
 import { withConstants } from "../services/Utils"
