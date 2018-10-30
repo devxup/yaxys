@@ -11,6 +11,7 @@ import YaxysClue, { queries } from "../services/YaxysClue.js"
 import { withConstants } from "../services/Utils.js"
 
 import ModelTable from "./ModelTable.jsx"
+import Loader from "./Loader.jsx"
 import Button from "@material-ui/core/Button/Button"
 
 const modelClue = props => ({
@@ -61,18 +62,20 @@ export default class ModelPicker extends Component {
     const { open, identity, onClose, columns, title, constants, models } = this.props
     return (
       <Dialog open={open} onClose={onClose}>
-        <DialogTitle>{title || `Select ${constants.schemas[identity].title}`}</DialogTitle>
-        <ModelTable
-          schema={constants.schemas[identity]}
-          data={ models?.data || [] }
-          columns={columns}
-          onCellClick={this.onCellClick}
-        />
-        <DialogActions>
-          <Button onClick={onClose} color="primary">
-            {"Cancel"}
-          </Button>
-        </DialogActions>
+        <Loader item={models}>
+          <DialogTitle>{title || `Select ${constants.schemas[identity].title}`}</DialogTitle>
+          <ModelTable
+            schema={constants.schemas[identity]}
+            data={ models?.data || [] }
+            columns={columns}
+            onCellClick={this.onCellClick}
+          />
+          <DialogActions>
+            <Button onClick={onClose} color="primary">
+              {"Cancel"}
+            </Button>
+          </DialogActions>
+        </Loader>
       </Dialog>
     )
   }
