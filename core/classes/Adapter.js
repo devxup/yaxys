@@ -426,10 +426,20 @@ module.exports = class Adapter {
         if (Array.isArray(schema.required) && schema.required.includes(key)) {
           attribute.notNullable()
         }
+        if (property.hasOwnProperty("default")) {
+          attribute.defaultTo(property.default)
+        }
         if (property.unique) {
           table.unique(key)
         }
       })
+      if (schema.uniqueKeys && typeof schema.uniqueKeys === "object") {
+        _.forEach(schema.uniqueKeys, (value) => {
+          if (Array.isArray(value)) {
+            table.unique(value)
+          }
+        })
+      }
     })
   }
 

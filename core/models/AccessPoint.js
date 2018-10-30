@@ -31,6 +31,7 @@ module.exports = {
         },
       },
     },
+    required: ["title"],
   },
 
   api: RestService.buildStandardAPI("accesspoint"),

@@ -36,6 +36,7 @@ module.exports = {
         },
       },
     },
+    required: ["title"],
   },
 
   api: RestService.buildStandardAPI("door"),
