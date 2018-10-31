@@ -1,6 +1,5 @@
 module.exports = {
   schema: {
-    // hidden: true,
     properties: {
       id: {
         type: "integer",
