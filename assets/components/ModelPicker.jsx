@@ -62,8 +62,8 @@ export default class ModelPicker extends Component {
     const { open, identity, onClose, columns, title, constants, models } = this.props
     return (
       <Dialog open={open} onClose={onClose}>
+        <DialogTitle>{title || `Select ${constants.schemas[identity].title}`}</DialogTitle>
         <Loader item={models}>
-          <DialogTitle>{title || `Select ${constants.schemas[identity].title}`}</DialogTitle>
           <ModelTable
             schema={constants.schemas[identity]}
             data={ models?.data || [] }
