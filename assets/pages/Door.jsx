@@ -36,6 +36,7 @@ const doorSelector = YaxysClue.selectors.byClue(doorClue)
   }),
   {
     loadDoor: YaxysClue.actions.byClue,
+    updateAccessPoint: YaxysClue.actions.byClue,
   }
 )
 export default class Door extends Component {
@@ -48,6 +49,8 @@ export default class Door extends Component {
       pickerIdentity: null,
       creatorOpen: false,
       creatorIdentity: null,
+      accessPointUpdateSelector: null,
+      accessPointUpdateAttemptAt: null,
     }
   }
 
@@ -75,13 +78,6 @@ export default class Door extends Component {
   onFormChange = data => {
     this.setState({
       door: { ...this.state.door, ...data.values },
-      modifiedAt: new Date().getTime(),
-    })
-  }
-
-  onRightsChange = rights => {
-    this.setState({
-      door: { ...this.state.door, rights: Object.assign({}, rights) },
       modifiedAt: new Date().getTime(),
     })
   }
@@ -129,8 +125,11 @@ export default class Door extends Component {
             relatedProperty="door"
             parentId={match.params.id}
             additionalCluePropertiea={{ populate: "zoneTo" }}
+            columns={["id", "title", "description", "zoneTo"]}
+            onAttach={this.onAttach}
           />
         </Paper>
+
       </Wrapper>
     )
   }

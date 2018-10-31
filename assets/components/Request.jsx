@@ -47,6 +47,7 @@ export default class Request extends Component {
     message: PropTypes.string,
     onSuccess: PropTypes.func,
     onError: PropTypes.func,
+    onRepeat: PropTypes.func,
 
     /* eslint-disable-next-line react/forbid-prop-types */
     custom: PropTypes.any,
@@ -97,9 +98,11 @@ export default class Request extends Component {
   }
 
   handleRepeat = event => {
-    const { repeat } = this.props
+    const { repeat, onRepeat } = this.props
     const item = this._processedItem()
-    repeat(item?.meta?.clue, { ...item?.meta?.options, index: 0 })
+    const action = repeat(item?.meta?.clue, { ...item?.meta?.options, index: 0 })
+
+    onRepeat?.(action.payload.requestId)
   }
 
   _processedItem(propsArg) {

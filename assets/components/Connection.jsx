@@ -14,11 +14,14 @@ import ModelTable from "./ModelTable.jsx"
 import ModelPicker from "./ModelPicker.jsx"
 import ModelCreator from "./ModelCreator.jsx"
 
+import Request from "../components/Request.jsx"
+
+
 const relatedClue = props => ({
   identity: props.relatedIdentity,
   query: queries.FIND,
   where: {
-    [props.relatedProperty]: props.pasrentId,
+    [props.relatedProperty]: props.parentId,
   },
   ...props.additionalCluePropertiea,
 })
@@ -36,6 +39,7 @@ const relatedSelector = YaxysClue.selectors.byClue(relatedClue)
   }),
   {
     loadRelated: YaxysClue.actions.byClue,
+    updateRelated: YaxysClue.actions.byClue,
   }
 )
 export default class Door extends Component {
@@ -44,6 +48,7 @@ export default class Door extends Component {
     constants: PropTypes.object,
     related: PropTypes.object,
     loadRelated: PropTypes.func,
+    updateRelated: PropTypes.func,
 
     relatedIdentity: PropTypes.string,
     relatedProperty: PropTypes.string,
@@ -52,6 +57,7 @@ export default class Door extends Component {
     columns: PropTypes.array,
     url: PropTypes.func,
   }
+  
   constructor(props) {
     super(props)
     this.state = {
@@ -77,8 +83,9 @@ export default class Door extends Component {
   }
 
   onPick = item => {
+    this.updateRelated(item)
     this.setState({
-      creatorOpen: false,
+      pickerOpen: false,
     })
   }
 
@@ -95,9 +102,39 @@ export default class Door extends Component {
   }
 
   onCreate = item => {
+    this.updateRelated(item)
     this.setState({
       creatorOpen: false,
     })
+  }
+
+  updateRelated(model) {
+    const { relatedIdentity, relatedProperty, parentId } = this.props
+
+    const clue = {
+      identity: relatedIdentity,
+      query: queries.UPDATE,
+      id: model.id,
+      data: {
+        [relatedProperty]: parentId,
+      },
+    }
+    const action = this.props.updateRelated(clue)
+    this.setState({
+      relatedUpdateSelector: YaxysClue.selectors.byRequestId(action.payload.requestId, { resultOnly: true }),
+      relatedUpdateAttemptAt: new Date().getTime(),
+    })
+  }
+
+  onRelatedUpdateRepeat = (requestId) => {
+    this.setState({
+      relatedUpdateSelector: YaxysClue.selectors.byRequestId(requestId, { resultOnly: true }),
+      relatedUpdateAttemptAt: new Date().getTime(),
+    })
+  }
+
+  onRelatedUpdated = () => {
+    this.props.loadRelated(relatedClue(this.props), { force: true })
   }
 
   render() {
@@ -139,6 +176,13 @@ export default class Door extends Component {
             identity={relatedIdentity}
           />
         )}
+        <Request
+          selector={this.state.relatedUpdateSelector}
+          message={`Updating ${relatedSchema.title && relatedIdentity}`}
+          attemptAt={ this.state.relatedUpdateAttemptAt }
+          onSuccess={ this.onRelatedUpdated }
+          onRepeat={ this.onRelatedUpdateRepeat }
+        />
       </Loader>
     )
   }

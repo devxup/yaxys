@@ -31,7 +31,7 @@ const styles = theme => ({
     color: "#333",
   },
   chip: {
-    marginLeft: theme.spacing.unit/2,
+    marginLeft: theme.spacing.unit / 2,
     cursor: "inherit",
   },
   row: {
@@ -45,9 +45,8 @@ const styles = theme => ({
   },
 })
 
-export default
 @withStyles(styles)
-class ModelTable extends Component {
+export default class ModelTable extends Component {
   static propTypes = {
     schema: PropTypes.object.isRequired,
     data: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -58,35 +57,52 @@ class ModelTable extends Component {
     deletedKey: PropTypes.string,
   }
 
-  renderPropertyCellContent(proppertySchema, value) {
+  _renderRelatedModel(model, props) {
     const { classes } = this.props
-    switch (proppertySchema && proppertySchema.type) {
-      case "boolean" :
+
+    // it might be empty containing just _binding_id in case of m:m
+    if (!model.id) { return true }
+
+    return (
+      <Chip
+        className={classes.chip}
+        avatar={<Avatar>#{model.id}</Avatar>}
+        label={model.title || ""}
+        color="primary"
+        variant="outlined"
+        { ...props }
+      />
+    )
+  }
+
+  renderPropertyCellContent(propertySchema, value) {
+    switch (propertySchema?.type) {
+      case "boolean":
         return <Checkbox checked={value} />
-      case "array" :
-        return value.map((item, index) => (
-            item.id && <Chip key={index}
-              className={classes.chip}
-              avatar={<Avatar>#{item.id}</Avatar>}
-              label={item.title || ""}
-              color="primary"
-              variant="outlined"
-            />
-      ))
-      default :
+      default:
+        if (propertySchema.connection) {
+          if (Array.isArray(value)) {
+            return value.map(
+              (item, index) => this._renderRelatedModel(item, { key: index })
+            )
+          }
+          if (value && typeof value === "object") {
+            return this._renderRelatedModel(value)
+          }
+        }
         return value
     }
   }
 
   renderPropertyCell(proppertySchema, value, url) {
     const { classes } = this.props
-    return url
-      ? <Link className={classes.link} to={url}>
+    return url ? (
+      <Link className={classes.link} to={url}>
         {this.renderPropertyCellContent(proppertySchema, value)}
       </Link>
-      : <div className={classes.link}>
-        {this.renderPropertyCellContent(proppertySchema, value)}
-      </div>
+    ) : (
+      <div className={classes.link}>{this.renderPropertyCellContent(proppertySchema, value)}</div>
+    )
   }
 
   render() {
@@ -98,39 +114,39 @@ class ModelTable extends Component {
       headerCellProps: {
         className: classNames(classes.cell, classes.headerCell),
       },
-      bodyCellProps: (data) => {
+      bodyCellProps: data => {
         const { rowData } = data
         return {
           className: classNames(
             classes.cell,
             { [classes.linkCell]: !!url },
-            { [classes.deletedCell]: deletedHash?.[rowData[deletedKey || "id"]] },
+            { [classes.deletedCell]: deletedHash?.[rowData[deletedKey || "id"]] }
           ),
         }
       },
       ...omit(this.props, "url", "schema", "classes", "deletedHash", "deletedKey"),
     }
-    const patchedColumns = (columns || schema?.defaultProperties || ["id", "title"]).map(columnOriginal => {
-      let column =
-        typeof columnOriginal === "string"
-          ? { name: columnOriginal }
-          : Object.assign({}, columnOriginal)
-      let property
-      if (typeof columnOriginal === "string" && schema) {
-        property = schema.properties[column.name]
-        column.header =
-          column.name === "id" || column.name === "#"
-            ? "#"
-            : (property && property.title) || column.name
-      }
-      column.cell = rowData => {
-        return (
-          this.renderPropertyCell(property, rowData[column.name], url ? url(rowData) : false)
-        )
-      }
+    const patchedColumns = (columns || schema?.defaultProperties || ["id", "title"]).map(
+      columnOriginal => {
+        let column =
+          typeof columnOriginal === "string"
+            ? { name: columnOriginal }
+            : Object.assign({}, columnOriginal)
+        let property
+        if (typeof columnOriginal === "string" && schema) {
+          property = schema.properties[column.name]
+          column.header =
+            column.name === "id" || column.name === "#"
+              ? "#"
+              : (property && property.title) || column.name
+        }
+        column.cell = rowData => {
+          return this.renderPropertyCell(property, rowData[column.name], url ? url(rowData) : false)
+        }
 
-      return column
-    })
+        return column
+      }
+    )
 
     return <MuiTable includeHeaders={true} {...tableProps} columns={patchedColumns} />
   }
