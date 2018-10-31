@@ -434,11 +434,7 @@ module.exports = class Adapter {
         }
       })
       if (schema.uniqueKeys && typeof schema.uniqueKeys === "object") {
-        _.forEach(schema.uniqueKeys, (value) => {
-          if (Array.isArray(value)) {
-            table.unique(value)
-          }
-        })
+        _.forEach(schema.uniqueKeys, (value) => table.unique(value))
       }
     })
   }

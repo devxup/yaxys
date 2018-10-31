@@ -15,7 +15,6 @@ module.exports = {
         type: "string",
       },
     },
-    required: ["title"],
   },
 
   api: RestService.buildStandardAPI("zone"),
