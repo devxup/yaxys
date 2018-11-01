@@ -3,6 +3,7 @@ const config = require("config")
 module.exports = {
   constants: {
     timezone: config.get("timezone"),
+    tableRowsNumber: config.get("tableRowsNumber"),
   },
 
   /**

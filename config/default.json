@@ -19,6 +19,7 @@
     "secret": "some_unique_string",
     "lifetime": 86400
   },
+  "tableRowsNumber": 20,
   "debug": {
     "pause": false,
     "randomError": false
