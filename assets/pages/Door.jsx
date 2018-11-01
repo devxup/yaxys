@@ -88,6 +88,13 @@ export default class Door extends Component {
     this.forceUpdate()
   }
 
+  canAddAccessPoint(accessPoints) {
+    if (accessPoints?.data?.length >= 2) {
+      alert("The door can't have more than 2 access points!")
+      return false
+    }
+  }
+
   render() {
     const { constants, door, match, classes } = this.props
     const update = (
@@ -127,6 +134,8 @@ export default class Door extends Component {
             additionalCluePropertiea={{ populate: "zoneTo" }}
             columns={["id", "title", "description", "zoneTo"]}
             onAttach={this.onAttach}
+            canAddExisting={this.canAddAccessPoint}
+            canCreateNew={this.canAddAccessPoint}
           />
         </Paper>
 

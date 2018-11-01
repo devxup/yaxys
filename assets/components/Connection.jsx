@@ -16,7 +16,6 @@ import ModelCreator from "./ModelCreator.jsx"
 
 import Request from "../components/Request.jsx"
 
-
 const relatedClue = props => ({
   identity: props.relatedIdentity,
   query: queries.FIND,
@@ -56,6 +55,10 @@ export default class Door extends Component {
     additionalCluePropertiea: PropTypes.object,
     columns: PropTypes.array,
     url: PropTypes.func,
+
+    canAddExisting: PropTypes.func,
+    canCreateNew: PropTypes.func,
+    canRemove: PropTypes.func,
   }
   
   constructor(props) {
@@ -71,6 +74,9 @@ export default class Door extends Component {
   }
 
   onPickerOpen = event => {
+    const { canAddExisting, related } = this.props
+    if (canAddExisting?.(related) === false) { return }
+
     this.setState({
       pickerOpen: true,
     })
@@ -83,13 +89,16 @@ export default class Door extends Component {
   }
 
   onPick = item => {
-    this.updateRelated(item)
+    this.updateRelated(item, this.props.parentId)
     this.setState({
       pickerOpen: false,
     })
   }
 
   onCreatorOpen = event => {
+    const { canCreateNew, related } = this.props
+    if (canCreateNew?.(related) === false) { return }
+
     this.setState({
       creatorOpen: true,
     })
@@ -102,21 +111,21 @@ export default class Door extends Component {
   }
 
   onCreate = item => {
-    this.updateRelated(item)
+    this.updateRelated(item, this.props.parentId)
     this.setState({
       creatorOpen: false,
     })
   }
 
-  updateRelated(model) {
-    const { relatedIdentity, relatedProperty, parentId } = this.props
+  updateRelated(model, value) {
+    const { relatedIdentity, relatedProperty } = this.props
 
     const clue = {
       identity: relatedIdentity,
       query: queries.UPDATE,
       id: model.id,
       data: {
-        [relatedProperty]: parentId,
+        [relatedProperty]: value,
       },
     }
     const action = this.props.updateRelated(clue)
@@ -135,6 +144,14 @@ export default class Door extends Component {
 
   onRelatedUpdated = () => {
     this.props.loadRelated(relatedClue(this.props), { force: true })
+  }
+
+  onTableCellClick = data => {
+    const { constants, relatedIdentity } = this.props
+    const relatedSchema = constants.schemas[relatedIdentity?.toLowerCase()]
+
+    if (!confirm(`Are you sure you want to detach this ${relatedSchema.title}?`)) { return }
+    this.updateRelated(data.rowData, null)
   }
 
   render() {
@@ -159,7 +176,13 @@ export default class Door extends Component {
         >
           Create new
         </Button>
-        <ModelTable schema={relatedSchema} data={related?.data || []} url={url} columns={columns} />
+        <ModelTable
+          schema={relatedSchema}
+          data={related?.data || []}
+          url={url}
+          columns={columns}
+          onCellClick={this.onTableCellClick}
+      />
         {this.state.pickerOpen && (
           <ModelPicker
             onClose={this.onPickerClose}
