@@ -11,6 +11,7 @@ import ProtectedZone from "./components/ProtectedZone.jsx"
 
 import Index from "./pages/Index.jsx"
 import Login from "./pages/Login.jsx"
+import Me from "./pages/Me.jsx"
 import Operators from "./pages/Operators.jsx"
 import Operator from "./pages/Operator.jsx"
 import AccessPoints from "./pages/AccessPoints.jsx"
@@ -32,6 +33,7 @@ export default (store, constants) => (
           <Route exact path="/login" component={Login} />
           <ProtectedZone>
             <Route exact path="/" component={Index} />
+            <Route exact path="/me" component={Me} />
             <Route exact path="/operators" component={Operators} />
             <Route exact path="/operators/:id" component={Operator} />
             <Route exact path="/access-points" component={AccessPoints} />

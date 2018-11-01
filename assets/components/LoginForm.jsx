@@ -3,10 +3,10 @@ import PropTypes from "prop-types"
 import { connect } from "react-redux"
 
 import { withStyles } from "@material-ui/core/styles"
+
 import Button from "@material-ui/core/Button"
 import TextField from "@material-ui/core/TextField"
 
-import { meSelector, meRefresh } from "../services/Me"
 import YaxysClue, { queries } from "../services/YaxysClue"
 
 const FORM_SCHEMA = {
@@ -27,24 +27,16 @@ export default
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.primary.contrastText,
   },
-  logoutButton: {
-    backgroundColor: theme.palette.primary.main,
-    color: theme.palette.secondary.contrastText,
-  },
 }))
 @connect(
   (state, props) => ({
-    me: meSelector(state),
   }),
   {
-    meRefresh,
     authenticate: YaxysClue.actions.byClue,
   }
 )
 class LoginForm extends Component {
   static propTypes = {
-    me: PropTypes.object,
-    meRefresh: PropTypes.func.isRequired,
     authenticate: PropTypes.func.isRequired,
   }
 
@@ -65,15 +57,6 @@ class LoginForm extends Component {
       query: queries.CREATE,
       data: this.state.form,
     })
-  }
-
-  onLogout = () => {
-    const d = new Date()
-    d.setTime(d.getTime() - 1000 * 60 * 60 * 24)
-    const expires = "expires=" + d.toGMTString()
-    window.document.cookie = `jwt=; ${expires};path=/`
-
-    this.props.meRefresh()
   }
 
   onChange = event => {
@@ -118,22 +101,7 @@ class LoginForm extends Component {
   render() {
     const { classes } = this.props
     const propertyKeys = Object.keys(FORM_SCHEMA.properties)
-    if (this.props.me) {
-      return (
-        <Fragment>
-          <p>
-            You are logged in as <b>{this.props.me.email}</b>
-          </p>
-          <Button
-            onClick={this.onLogout}
-            variant="text"
-            className={classes.logoutButton}
-          >
-            Logout
-          </Button>
-        </Fragment>
-      )
-    }
+
     return (
       <Fragment>
         {propertyKeys.map(this.renderProperty)}
