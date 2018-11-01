@@ -18,7 +18,7 @@ const accessPointsClue = props => ({
   identity: "accesspoint",
   query: queries.FIND,
   sort: { id: 1 },
-  populate: "zoneTo",
+  populate: "zoneTo,door",
 })
 const accessPointsSelector = YaxysClue.selectors.byClue(accessPointsClue)
 
@@ -98,7 +98,7 @@ export default class AccessPoints extends Component {
               schema={constants.schemas.accesspoint}
               data={(accessPoints && accessPoints.data) || []}
               url={accessPoint => `/access-points/${accessPoint.id}`}
-              columns={["id", "title", "description", "zoneTo"]}
+              columns={["id", "title", "description", "door", "zoneTo"]}
             />
           </Paper>
         </Loader>

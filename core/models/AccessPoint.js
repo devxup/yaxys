@@ -34,4 +34,17 @@ module.exports = {
   },
 
   api: RestService.buildStandardAPI("accesspoint"),
+
+  hooks: {
+    "create:after": async (trx, item) => {
+      if (item.door) {
+        await ZoneService.checkDoorAccessPointsCount(item.door, trx)
+      }
+    },
+    "update:after": async (trx, old, patch) => {
+      if (patch.door) {
+        await ZoneService.checkDoorAccessPointsCount(patch.door, trx)
+      }
+    },
+  },
 }

@@ -50,8 +50,8 @@ module.exports = class Adapter {
    * @param {String} event The event to listen
    * @param {Function} listener The listener
    */
-  on(event, listener) {
-    this.emitter.on(event, listener)
+  async on(event, listener) {
+    await this.emitter.on(event, listener)
   }
 
   /**
@@ -200,7 +200,7 @@ module.exports = class Adapter {
     }
 
     const item = result[0]
-    await this.emitter.emit(`${identity}:update:after`, trx, item)
+    await this.emitter.emit(`${identity}:update:after`, trx, old, item)
 
     return item
   }
@@ -226,7 +226,7 @@ module.exports = class Adapter {
 
     await (trx ? deleteQuery.transacting(trx) : deleteQuery)
 
-    await this.emitter.emit(`${identity}:update:after`, trx, old)
+    await this.emitter.emit(`${identity}:delete:after`, trx, old)
 
     return old
   }
@@ -280,6 +280,14 @@ module.exports = class Adapter {
     return result
   }
 
+  /**
+   * Start query execution and return its promise.
+   * Wrap query into existing transaction if needed
+   * @param {Object} query The query
+   * @param {Object} [trx] The transaction context
+   * @returns {Promise<*>} The query result
+   * @private
+   */
   async _trxWrapper(query, trx) {
     return trx ? query.transacting(trx) : query
   }
@@ -288,14 +296,17 @@ module.exports = class Adapter {
    * Count the number of models of some identity
    * @param {String} identity The identity of model
    * @param {Object} filter The filter to match
+   * @param {Object} [trx] The transaction context
    * @returns {Promise<number>} The number of models
    */
-  async count(identity, filter) {
-    return Number(
-      (await this.knex(identity)
+  async count(identity, filter, trx) {
+    const rz = await this._trxWrapper(
+      this.knex(identity)
         .where(filter)
-        .count("*"))[0].count
+        .count("*"),
+      trx
     )
+    return Number(rz[0].count)
   }
 
   /** Populates the given models with 1:m relation

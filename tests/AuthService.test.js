@@ -82,11 +82,11 @@ describe("AuthService", () => {
           },
         }
         if (testCase.error) {
-          expect(AuthService.getOperatorByCredentials(...testCase.args)).rejects.toThrow(
+          await expect(AuthService.getOperatorByCredentials(...testCase.args)).rejects.toThrow(
             testCase.error
           )
         } else {
-          expect(AuthService.getOperatorByCredentials(...testCase.args)).resolves.toEqual(
+          await expect(AuthService.getOperatorByCredentials(...testCase.args)).resolves.toEqual(
             testCase.dbResponse
           )
         }
