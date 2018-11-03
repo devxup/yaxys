@@ -11,8 +11,12 @@ import Chip from "@material-ui/core/Chip"
 import Avatar from "@material-ui/core/Avatar"
 
 const styles = theme => ({
+  tableWrapper: {
+    overflow: "hidden",
+  },
   cell: {
     fontSize: 16,
+    whiteSpace: "nowrap",
   },
   headerCell: {
     background: theme.palette.grey[200],
@@ -148,6 +152,8 @@ export default class ModelTable extends Component {
       }
     )
 
-    return <MuiTable includeHeaders={true} {...tableProps} columns={patchedColumns} />
+    return <div className={classes.tableWrapper}>
+      <MuiTable  includeHeaders={true} {...tableProps} columns={patchedColumns} />
+    </div>
   }
 }
