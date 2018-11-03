@@ -6,6 +6,9 @@ import { withStyles } from "@material-ui/core/styles"
 import { Link } from "react-router-dom"
 import { withRouter } from "react-router"
 
+import LoginDialog from "./LoginDialog.jsx"
+import Breadcrumbs from "../components/Breadcrumbs.jsx"
+
 import classNames from "classnames"
 import Drawer from "@material-ui/core/Drawer"
 import AppBar from "@material-ui/core/AppBar"
@@ -15,7 +18,6 @@ import Divider from "@material-ui/core/Divider"
 import IconButton from "@material-ui/core/IconButton"
 import MenuIcon from "@material-ui/icons/Menu"
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft"
-
 import ListItem from "@material-ui/core/ListItem"
 import ListItemIcon from "@material-ui/core/ListItemIcon"
 import ListItemText from "@material-ui/core/ListItemText"
@@ -28,7 +30,6 @@ import PictureInPictureIcon from "@material-ui/icons/PictureInPicture"
 import SettingsIcon from "@material-ui/icons/Settings"
 import Avatar from "@material-ui/core/Avatar"
 import PersonIcon from "@material-ui/icons/Person"
-import Breadcrumbs from "../components/Breadcrumbs.jsx"
 
 import { meSelector } from "../services/Me"
 
@@ -216,7 +217,9 @@ export default class Wrapper extends Component {
 
   state = {
     open: !localStorage.getItem("isDrawerClosed"),
+    loginOpen: false,
   }
+
 
   handleDrawerOpen = () => {
     localStorage.removeItem("isDrawerClosed")
@@ -228,22 +231,30 @@ export default class Wrapper extends Component {
     this.setState({ open: false })
   }
 
+  onCloseLoginDialog = () => {
+    this.setState({ loginOpen: false })
+  }
+
+  openLoginDialog = () => {
+    this.setState({ loginOpen: true })
+  }
+
   renderAuth() {
     const { classes } = this.props
     if (this.props.me) {
       return (
-        <Link to="/login" className={classes.authMe}>
+        <Link to="/me" className={classes.authMe}>
           {this.props.me.email}
         </Link>
       )
     }
     return (
-      <div className={classes.authLogin}>
-        <span className={classes.authLoginSpan}>Log in</span>
-        <Avatar className={classes.avatar}>
-          <PersonIcon />
-        </Avatar>
-      </div>
+        <div className={classes.authLogin} onClick={this.openLoginDialog}>
+          <span className={classes.authLoginSpan}>Log in</span>
+          <Avatar className={classes.avatar}>
+            <PersonIcon />
+          </Avatar>
+        </div>
     )
   }
 
@@ -315,6 +326,7 @@ export default class Wrapper extends Component {
                 items={ this.props.breadcrumbs }
               />
             {this.renderAuth()}
+            <LoginDialog open={this.state.loginOpen} onClose={this.onCloseLoginDialog} />
           </Toolbar>
         </AppBar>
         <Drawer
