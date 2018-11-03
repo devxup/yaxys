@@ -152,8 +152,10 @@ export default class ModelTable extends Component {
       }
     )
 
-    return <div className={classes.tableWrapper}>
-      <MuiTable  includeHeaders={true} {...tableProps} columns={patchedColumns} />
-    </div>
+    return (
+      <div className={classes.tableWrapper}>
+        <MuiTable  includeHeaders={true} {...tableProps} columns={patchedColumns} />
+      </div>
+    )
   }
 }
