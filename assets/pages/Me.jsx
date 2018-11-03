@@ -10,7 +10,7 @@ import PropTypes from "prop-types"
 
 import Button from "@material-ui/core/Button/Button"
 
-import {meRefresh, meSelector} from "../services/Me"
+import { meRefresh, meSelector } from "../services/Me"
 
 export default
 @withStyles(theme => ({
@@ -44,25 +44,14 @@ class Me extends Component {
     this.props.meRefresh()
   }
 
-  convertTokenTimeExpirationToString = (date) => {
-    if (typeof(date) !== "number") {
-      return ""
-    }
-
-    let d = moment(date)
-    return d.tz(this.props.constants.timezone).format('MMMM DD HH:mm')
-  }
-
   render() {
     const { classes } = this.props
 
     return (
       <Wrapper>
-        <h1>User page</h1>
-        <p>You are authorised until {this.convertTokenTimeExpirationToString(this.props.me.exp * 1000)}</p>
-        <p>Email: {!!this.props.me.email && this.props.me.email}</p>
-        <p>Id: {!!this.props.me.id && this.props.me.id}</p>
-        <p></p>
+        <h1>Account</h1>
+        <p>You are authenticated until {moment.tz(this.props.me.exp * 1000).format("MMMM DD HH:mm")}</p>
+        <p>Email: {this.props.me?.email}</p>
         <Button
           onClick={this.onLogout}
           variant="text"

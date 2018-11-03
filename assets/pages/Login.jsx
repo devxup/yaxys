@@ -6,7 +6,7 @@ import connect from "react-redux/es/connect/connect"
 import Wrapper from "../components/Wrapper.jsx"
 import LoginForm from "../components/LoginForm.jsx"
 
-import {meSelector} from "../services/Me"
+import { meSelector } from "../services/Me"
 
 export default
 @connect(
