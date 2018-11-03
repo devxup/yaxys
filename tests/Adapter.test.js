@@ -372,13 +372,14 @@ describe("Adapter", () => {
   describe("getSQL", () => {
     const testCases = [
       {
-        title: "get sql for create table with all possible data types and 1 virtaul field",
+        title: "get sql for create table with all possible data types and 1 virtual field",
         args: [
           "testtable",
           {
             properties: {
               p1: {
                 type: "string",
+                default: "defVal",
               },
               p2: {
                 type: "boolean",
@@ -418,6 +419,7 @@ describe("Adapter", () => {
               },
               p14: {
                 type: "integer",
+                default: 10,
               },
               p15: {
                 type: "integer",
@@ -428,7 +430,7 @@ describe("Adapter", () => {
           },
         ],
         result:
-          'create table "testtable" ("id" serial primary key, "p1" varchar(255) not null, "p2" boolean not null, "p3" bigint, "p4" text, "p5" real, "p6" decimal(8, 2), "p7" date, "p8" timestamptz, "p9" time, "p10" bytea, "p11" json, "p12" jsonb, "p13" uuid, "p14" integer)',
+          'create table "testtable" ("id" serial primary key, "p1" varchar(255) not null default \'defVal\', "p2" boolean not null, "p3" bigint, "p4" text, "p5" real, "p6" decimal(8, 2), "p7" date, "p8" timestamptz, "p9" time, "p10" bytea, "p11" json, "p12" jsonb, "p13" uuid, "p14" integer default \'10\')',
       },
       {
         title: "get sql for create table with incorrect data type",
@@ -493,6 +495,7 @@ describe("Adapter", () => {
             properties: {
               p1: {
                 type: "string",
+                default: "defVal",
               },
               p2: {
                 type: "boolean",
@@ -532,6 +535,7 @@ describe("Adapter", () => {
               },
               p14: {
                 type: "integer",
+                default: 10,
               },
               p15: {
                 type: "integer",
@@ -541,8 +545,6 @@ describe("Adapter", () => {
             required: ["p1", "p2"],
           },
         ],
-        result:
-          'create table "testtable" ("id" serial primary key, "p1" varchar(255) not null, "p2" boolean not null, "p3" bigint, "p4" text, "p5" real, "p6" decimal(8, 2), "p7" date, "p8" timestamptz, "p9" time, "p10" bytea, "p11" json, "p12" jsonb, "p13" uuid, "p14" integer)',
       },
       {
         title: "create table with incorrect data type",
@@ -563,10 +565,13 @@ describe("Adapter", () => {
         error: "Incorrect data type wrongtype of field p2 in testtable1",
       },
       {
-        title: "create table with id field and without required array",
+        title: "create table with id field, without required array and with uniqueKeys constraint",
         args: [
           "testtable2",
           {
+            uniqueKeys: {
+              someKeysSet: ["p1", "p3"],
+            },
             properties: {
               id: {
                 type: "integer",
@@ -577,11 +582,12 @@ describe("Adapter", () => {
               p2: {
                 type: "string",
               },
+              p3: {
+                type: "integer",
+              },
             },
           },
         ],
-        result:
-          'create table "testtable2" ("id" serial primary key, "p1" integer, "p2" varchar(255))',
       },
     ]
 
@@ -640,6 +646,10 @@ describe("Adapter", () => {
                 }
                 if (testCase.args[1].required && testCase.args[1].required.includes(property)) {
                   expect(info[property].nullable).toBeFalsy()
+                }
+                if (testCase.args[1].properties[property].hasOwnProperty("default")) {
+                  expect(info[property].defaultValue)
+                    .toEqual(expect.stringContaining(String(testCase.args[1].properties[property].default)))
                 }
               }
             })

@@ -22,6 +22,7 @@ module.exports = {
       isAdministrator: {
         title: "Is administrator",
         type: "boolean",
+        default: false,
       },
       hasCustomRights: {
         title: "Has custom rights",

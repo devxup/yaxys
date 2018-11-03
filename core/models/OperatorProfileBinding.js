@@ -1,5 +1,8 @@
 module.exports = {
   schema: {
+    uniqueKeys: {
+      operatorAndProfile: ["operator", "operatorProfile"],
+    },
     properties: {
       id: {
         type: "integer",
@@ -21,7 +24,7 @@ module.exports = {
         },
       },
     },
-    required: [],
+    required: ["operator", "operatorProfile"],
   },
 
   api: RestService.buildStandardAPI("operatorprofilebinding", {

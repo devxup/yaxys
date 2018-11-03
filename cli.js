@@ -49,6 +49,7 @@ yaxys
       )
     }
     await commandsHash[command]()
+    return Promise.resolve()
   })
   .then(() => {
     process.exit()
