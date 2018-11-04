@@ -10,14 +10,10 @@ import Button from "@material-ui/core/Button"
 import YaxysClue, { queries } from "../services/YaxysClue"
 import { withConstants } from "../services/Utils"
 
-import Loader from "../components/Loader.jsx"
 import Wrapper from "../components/Wrapper.jsx"
 import Created from "../components/Created.jsx"
-import ModelTable from "../components/ModelTable.jsx"
+import ModelTableLoader from "../components/ModelTableLoader.jsx"
 import ModelDialog from "../components/ModelDialog.jsx"
-
-const operatorsClue = props => ({ identity: "operator", query: queries.FIND, sort: { id: 1 }, populate: "profiles" })
-const operatorsSelector = YaxysClue.selectors.byClue(operatorsClue)
 
 const CREATED_OPERATORS_MARKER = "operators-page"
 const createdOperatorsSelector = YaxysClue.selectors.byClue(
@@ -28,21 +24,15 @@ const createdOperatorsSelector = YaxysClue.selectors.byClue(
 @withConstants
 @connect(
   (state, props) => ({
-    operators: operatorsSelector(state, props),
     createdOperators: createdOperatorsSelector(state, props),
   }),
   {
-    loadOperators: YaxysClue.actions.byClue,
     createOperator: YaxysClue.actions.byClue,
   }
 )
 export default class Operators extends Component {
   state = {
     addOpen: false,
-  }
-
-  componentDidMount() {
-    this.props.loadOperators(operatorsClue(this.props))
   }
 
   onAdd = event => {
@@ -67,7 +57,7 @@ export default class Operators extends Component {
   }
 
   render() {
-    const { constants, operators } = this.props
+    const { constants } = this.props
     return (
       <Wrapper breadcrumbs={["Operators"]}>
         <Button
@@ -89,16 +79,14 @@ export default class Operators extends Component {
           content={operator => operator.email}
           url={operator => `/operators/${operator.id}`}
         />
-        <Loader item={operators}>
-          <Paper>
-            <ModelTable
-              schema={constants.schemas.operator}
-              data={(operators && operators.data) || []}
-              url={operator => `/operators/${operator.id}`}
-              columns={["id", "email", "isAdministrator", "hasCustomRights", "profiles"]}
-            />
-          </Paper>
-        </Loader>
+        <Paper>
+          <ModelTableLoader
+            identity="operator"
+            url={operator => `/operators/${operator.id}`}
+            columns={["id", "email", "isAdministrator", "hasCustomRights", "profiles"]}
+            additionalClueProperties={{ populate: "profiles" }}
+          />
+        </Paper>
         <br />
         <ModelDialog
           title="Create new operator"

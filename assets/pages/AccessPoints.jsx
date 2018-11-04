@@ -8,19 +8,10 @@ import AddIcon from "@material-ui/icons/Add"
 import YaxysClue, { queries } from "../services/YaxysClue"
 import { withConstants } from "../services/Utils"
 
-import Loader from "../components/Loader.jsx"
 import Wrapper from "../components/Wrapper.jsx"
 import Created from "../components/Created.jsx"
-import ModelTable from "../components/ModelTable.jsx"
+import ModelTableLoader from "../components/ModelTableLoader.jsx"
 import ModelDialog from "../components/ModelDialog.jsx"
-
-const accessPointsClue = props => ({
-  identity: "accesspoint",
-  query: queries.FIND,
-  sort: { id: 1 },
-  populate: "zoneTo,door",
-})
-const accessPointsSelector = YaxysClue.selectors.byClue(accessPointsClue)
 
 const CREATED_ACCESS_POINTS_MARKER = "accessPoints-page"
 const createdAccessPointsSelector = YaxysClue.selectors.byClue(
@@ -31,21 +22,15 @@ const createdAccessPointsSelector = YaxysClue.selectors.byClue(
 @withConstants
 @connect(
   (state, props) => ({
-    accessPoints: accessPointsSelector(state, props),
     createdAccessPoints: createdAccessPointsSelector(state, props),
   }),
   {
-    loadAccessPoints: YaxysClue.actions.byClue,
     createAccessPoint: YaxysClue.actions.byClue,
   }
 )
 export default class AccessPoints extends Component {
   state = {
     addOpen: false,
-  }
-
-  componentDidMount() {
-    this.props.loadAccessPoints(accessPointsClue(this.props))
   }
 
   onAdd = event => {
@@ -70,7 +55,7 @@ export default class AccessPoints extends Component {
   }
 
   render() {
-    const { constants, accessPoints } = this.props
+    const { constants } = this.props
     return (
       <Wrapper breadcrumbs={["Access points"]}>
         <Button
@@ -92,16 +77,14 @@ export default class AccessPoints extends Component {
           }
           url={accessPoint => `/access-points/${accessPoint.id}`}
         />
-        <Loader item={accessPoints}>
-          <Paper>
-            <ModelTable
-              schema={constants.schemas.accesspoint}
-              data={(accessPoints && accessPoints.data) || []}
-              url={accessPoint => `/access-points/${accessPoint.id}`}
-              columns={["id", "title", "description", "door", "zoneTo"]}
-            />
-          </Paper>
-        </Loader>
+        <Paper>
+          <ModelTableLoader
+            identity="accesspoint"
+            url={accessPoint => `/access-points/${accessPoint.id}`}
+            columns={["id", "title", "description", "door", "zoneTo"]}
+            additionalClueProperties={{ populate: "zoneTo,door" }}
+          />
+        </Paper>
         <br />
         <ModelDialog
           title="Create new Access point"

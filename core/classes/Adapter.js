@@ -256,9 +256,12 @@ module.exports = class Adapter {
     _.each(Object.assign({}, this.options, options), (value, key) => {
       switch (key) {
         case "limit":
-        case "skip":
         case "select":
           query = query[key](value)
+          break
+        case "offset":
+        case "skip":
+          query = query.offset(value)
           break
         case "sort":
           _.each(value, (v, k) => {

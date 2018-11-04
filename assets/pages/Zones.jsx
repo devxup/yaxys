@@ -9,14 +9,10 @@ import Button from "@material-ui/core/Button"
 import YaxysClue, { queries } from "../services/YaxysClue"
 import { withConstants } from "../services/Utils"
 
-import Loader from "../components/Loader.jsx"
 import Wrapper from "../components/Wrapper.jsx"
 import Created from "../components/Created.jsx"
-import ModelTable from "../components/ModelTable.jsx"
+import ModelTableLoader from "../components/ModelTableLoader.jsx"
 import ModelDialog from "../components/ModelDialog.jsx"
-
-const zonesClue = props => ({ identity: "zone", query: queries.FIND, sort: { id: 1 }, populate: "accessPoints,doors" })
-const zonesSelector = YaxysClue.selectors.byClue(zonesClue)
 
 const CREATED_ZONES_MARKER = "zones-page"
 const createdZonesSelector = YaxysClue.selectors.byClue(
@@ -27,21 +23,15 @@ const createdZonesSelector = YaxysClue.selectors.byClue(
 @withConstants
 @connect(
   (state, props) => ({
-    zones: zonesSelector(state, props),
     createdZones: createdZonesSelector(state, props),
   }),
   {
-    loadZones: YaxysClue.actions.byClue,
     createZone: YaxysClue.actions.byClue,
   }
 )
 export default class Zones extends Component {
   state = {
     addOpen: false,
-  }
-
-  componentDidMount() {
-    this.props.loadZones(zonesClue(this.props))
   }
 
   onAdd = event => {
@@ -66,7 +56,7 @@ export default class Zones extends Component {
   }
 
   render() {
-    const { constants, zones } = this.props
+    const { constants } = this.props
     return (
       <Wrapper breadcrumbs={["Zones"]}>
         <Button
@@ -88,16 +78,13 @@ export default class Zones extends Component {
           }
           url={zone => `/zones/${zone.id}`}
         />
-        <Loader item={zones}>
-          <Paper>
-            <ModelTable
-              schema={constants.schemas.zone}
-              data={(zones && zones.data) || []}
-              url={zone => `/zones/${zone.id}`}
-              columns={["id", "title", "description", "accessPoints", "doors"]}
-            />
-          </Paper>
-        </Loader>
+        <Paper>
+          <ModelTableLoader
+            identity="zone"
+            url={zone => `/zones/${zone.id}`}
+            columns={["id", "title", "description"]}
+          />
+        </Paper>
         <br />
         <ModelDialog
           title="Create new zone"

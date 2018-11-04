@@ -9,18 +9,10 @@ import Button from "@material-ui/core/Button"
 import YaxysClue, { queries } from "../services/YaxysClue"
 import { withConstants } from "../services/Utils"
 
-import Loader from "../components/Loader.jsx"
 import Wrapper from "../components/Wrapper.jsx"
 import Created from "../components/Created.jsx"
-import ModelTable from "../components/ModelTable.jsx"
+import ModelTableLoader from "../components/ModelTableLoader.jsx"
 import ModelDialog from "../components/ModelDialog.jsx"
-
-const profilesClue = props => ({
-  identity: "operatorprofile",
-  query: queries.FIND,
-  sort: { id: 1 },
-})
-const profilesSelector = YaxysClue.selectors.byClue(profilesClue)
 
 const CREATED_PROFILES_MARKER = "profiles-page"
 const createdProfilesSelector = YaxysClue.selectors.byClue(
@@ -31,21 +23,15 @@ const createdProfilesSelector = YaxysClue.selectors.byClue(
 @withConstants
 @connect(
   (state, props) => ({
-    profiles: profilesSelector(state, props),
     createdProfiles: createdProfilesSelector(state, props),
   }),
   {
-    loadProfiles: YaxysClue.actions.byClue,
     createProfile: YaxysClue.actions.byClue,
   }
 )
 export default class OperatorProfiles extends Component {
   state = {
     addOpen: false,
-  }
-
-  componentDidMount() {
-    this.props.loadProfiles(profilesClue(this.props))
   }
 
   onAdd = event => {
@@ -70,7 +56,7 @@ export default class OperatorProfiles extends Component {
   }
 
   render() {
-    const { constants, profiles } = this.props
+    const { constants } = this.props
     return (
       <Wrapper breadcrumbs={[{ title: "Settings", url: "/settings" }, "Operator profiles"]}>
         <Button
@@ -88,16 +74,13 @@ export default class OperatorProfiles extends Component {
           content={profile => profile.title}
           url={profile => `/settings/operator-profiles/${profile.id}`}
         />
-        <Loader item={profiles}>
-          <Paper>
-            <ModelTable
-              schema={constants.schemas.operatorprofile}
-              data={(profiles && profiles.data) || []}
-              url={profile => `/settings/operator-profiles/${profile.id}`}
-              columns={["id", "title"]}
-            />
-          </Paper>
-        </Loader>
+        <Paper>
+          <ModelTableLoader
+            identity="operatorprofile"
+            url={profile => `/settings/operator-profiles/${profile.id}`}
+            columns={["id", "title"]}
+          />
+        </Paper>
         <br />
         <ModelDialog
           title="Create new operator profile"

@@ -3,7 +3,7 @@ import React, { Component } from "react"
 import { connect } from "react-redux"
 
 import YaxysClue, { queries } from "../services/YaxysClue"
-import { pick, cloneDeep, pull } from "lodash"
+import { pick } from "lodash"
 
 import { withStyles } from "@material-ui/core/styles"
 import { Paper, Button } from "@material-ui/core"
@@ -55,7 +55,6 @@ export default class User extends Component {
     this.state = {
       user: this.props2UserState(props),
       forceValidation: false,
-      schema: this.buildPseudoSchema(),
       profileOpen: false,
       deletedBindingId: null,
       deletedHash: {},
@@ -76,18 +75,11 @@ export default class User extends Component {
     }
   }
 
-  buildPseudoSchema() {
-    const schema = cloneDeep(this.props.constants.schemas.user)
-    pull(schema.required, "passwordHash")
-    return schema
-  }
-
   props2UserState(propsArg) {
     const props = propsArg || this.props
     const user =
       props.user && props.user.success ? pick(props.user.data, EDIBLE_PROPERTIES) : {}
 
-    user.passwordHash = ""
 
     return user
   }
@@ -179,11 +171,12 @@ export default class User extends Component {
 
   render() {
     const { user, match, classes, constants } = this.props
+    const schema = constants.schemas.user
     const update = (
       <Update
         clue={userClue(this.props)}
         current={this.state.user}
-        schema={this.state.schema}
+        schema={schema}
         modifiedAt={this.state.modifiedAt}
         watchProperties={EDIBLE_PROPERTIES}
       />
@@ -201,7 +194,7 @@ export default class User extends Component {
               values={this.state.user}
               onChange={this.onFormChange}
               forceValidation={this.state.forceValidation}
-              schema={this.state.schema}
+              schema={schema}
               margin="dense"
               attributes={["name"]}
             />
