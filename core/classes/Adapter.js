@@ -156,8 +156,7 @@ module.exports = class Adapter {
       .returning("*")
     const result = trx ? await insert.transacting(trx) : await insert
     const item = result[0]
-
-    await this.emitter.emit(`${identity}:create:after`, trx, result)
+    await this.emitter.emit(`${identity}:create:after`, trx, item)
 
     if (options && options.populate) {
       const propertiesToPopulate = Array.isArray(options.populate)

@@ -1,4 +1,4 @@
-import React, { Component } from "react"
+import React, { Component, Fragment } from "react"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
 
@@ -11,6 +11,14 @@ import { Button } from "@material-ui/core"
 
 import Loader from "./Loader.jsx"
 import ModelTable from "./ModelTable.jsx"
+import ModelPicker from "./ModelPicker.jsx"
+import Created from "../components/Created.jsx"
+
+const CREATED_ACCESS_RIGHT_MARKER = "user-or-profile"
+const createdAccessRightSelector = YaxysClue.selectors.byClue(
+  props => ({ identity: "accessright", query: queries.CREATE }),
+  { marker: CREATED_ACCESS_RIGHT_MARKER }
+)
 
 const accessRightsClue = props => ({
   identity: "accessright",
@@ -30,10 +38,12 @@ const accessRightsSelector = YaxysClue.selectors.byClue(accessRightsClue)
 @withConstants
 @connect(
   (state, props) => ({
+    createdAccessRights: createdAccessRightSelector(state, props),
     accessRights: accessRightsSelector(state, props),
   }),
   {
     loadAccessRights: YaxysClue.actions.byClue,
+    createAccessRight: YaxysClue.actions.byClue,
   }
 )
 export default class AccessRights extends Component {
@@ -41,8 +51,10 @@ export default class AccessRights extends Component {
     // from HOCs
     constants: PropTypes.object,
     classes: PropTypes.object,
+    createdAccessRights: PropTypes.func,
     accessRights: PropTypes.func,
     loadAccessRights: PropTypes.func,
+    createAccessRight: PropTypes.func,
 
     userProperty: PropTypes.string,
     userPropertyValue: PropTypes.string,
@@ -51,125 +63,106 @@ export default class AccessRights extends Component {
   constructor(props) {
     super(props)
     this.state = {
+      pickerProperty: null,
       pickerOpen: false,
-      creatorOpen: false,
+      pickerProps: null,
     }
   }
 
   componentDidMount() {
     this.props.loadAccessRights(accessRightsClue(this.props))
   }
-  //
-  // onPickerOpen = event => {
-  //   const { canAddExisting, related } = this.props
-  //   if (canAddExisting?.(related) === false) { return }
-  //
-  //   this.setState({
-  //     pickerOpen: true,
-  //   })
-  // }
-  //
-  // onPickerClose = event => {
-  //   this.setState({
-  //     pickerOpen: false,
-  //   })
-  // }
-  //
-  // onPick = item => {
-  //   this.updateRelated(item, this.props.parentId)
-  //   this.setState({
-  //     pickerOpen: false,
-  //   })
-  // }
-  //
-  // onCreatorOpen = event => {
-  //   const { canCreateNew, related } = this.props
-  //   if (canCreateNew?.(related) === false) { return }
-  //
-  //   this.setState({
-  //     creatorOpen: true,
-  //   })
-  // }
-  //
-  // onCreatorClose = event => {
-  //   this.setState({
-  //     creatorOpen: false,
-  //   })
-  // }
-  //
-  // onCreate = item => {
-  //   this.updateRelated(item, this.props.parentId)
-  //   this.setState({
-  //     creatorOpen: false,
-  //   })
-  // }
-  //
-  // updateRelated(model, value) {
-  //   const { relatedIdentity, relatedProperty } = this.props
-  //
-  //   const clue = {
-  //     identity: relatedIdentity,
-  //     query: queries.UPDATE,
-  //     id: model.id,
-  //     data: {
-  //       [relatedProperty]: value,
-  //     },
-  //   }
-  //   const action = this.props.updateRelated(clue)
-  //   this.setState({
-  //     relatedUpdateSelector: YaxysClue.selectors.byRequestId(action.payload.requestId, { resultOnly: true }),
-  //     relatedUpdateAttemptAt: new Date().getTime(),
-  //   })
-  // }
-  //
-  // onRelatedUpdateRepeat = (requestId) => {
-  //   this.setState({
-  //     relatedUpdateSelector: YaxysClue.selectors.byRequestId(requestId, { resultOnly: true }),
-  //     relatedUpdateAttemptAt: new Date().getTime(),
-  //   })
-  // }
-  //
-  // onRelatedUpdated = () => {
-  //   this.props.loadRelated(relatedClue(this.props), { force: true })
-  // }
-  //
-  // onTableCellClick = data => {
-  //   const { constants, relatedIdentity } = this.props
-  //   const relatedSchema = constants.schemas[relatedIdentity?.toLowerCase()]
-  //
-  //   if (!confirm(`Are you sure you want to detach this ${relatedSchema.title}?`)) { return }
-  //   this.updateRelated(data.rowData, null)
-  // }
+
+  onAdd = property => event => {
+    const { constants } = this.props
+    const pickerIdentity = constants.schemas.accessright.properties[
+      property
+    ].connection.relatedModel.toLowerCase()
+    this.setState({
+      pickerOpen: true,
+      pickerIdentity,
+      pickerProperty: property,
+    })
+  }
+
+  onPickerClose = event => {
+    this.setState({
+      pickerOpen: false,
+    })
+  }
+
+  onPick = item => {
+    const { userProperty, userPropertyValue, createAccessRight } = this.props
+
+    createAccessRight(
+      {
+        query: queries.CREATE,
+        identity: "accessright",
+        data: {
+          [this.state.pickerProperty]: item.id,
+          [userProperty]: userPropertyValue,
+        },
+      },
+      { marker: CREATED_ACCESS_RIGHT_MARKER }
+    )
+
+    this.setState({
+      pickerOpen: false,
+    })
+  }
 
   render() {
-    const { constants, accessRights, classes } = this.props
+    const { constants, accessRights, createdAccessRights, classes } = this.props
     const schema = constants.schemas.accessright
 
     return (
-      <Loader item={accessRights}>
-        <Button
-          variant="text"
-          color="secondary"
-          onClick={this.onPickerOpen}
-          className={classes.button}
-        >
-          Add existing
-        </Button>
-        <Button
-          variant="text"
-          color="secondary"
-          onClick={this.onCreatorOpen}
-          className={classes.button}
-        >
-          Create new
-        </Button>
-        <ModelTable
-          schema={schema}
-          data={accessRights?.data || []}
-          columns={["accessPoint", "door", "zoneTo"]}
-          onCellClick={this.onTableCellClick}
+      <Fragment>
+        <Created
+          items={createdAccessRights}
+          content={accessRight => JSON.stringify(accessRight)}
+          url={accessRight => `/access-points/${accessRight.id}`}
         />
-      </Loader>
+        <Loader item={accessRights}>
+          <Button
+            variant="text"
+            color="secondary"
+            onClick={this.onAdd("accessPoint")}
+            className={classes.button}
+          >
+            Add access point
+          </Button>
+          <Button
+            variant="text"
+            color="secondary"
+            onClick={this.onAdd("door")}
+            className={classes.button}
+          >
+            Add door
+          </Button>
+          <Button
+            variant="text"
+            color="secondary"
+            onClick={this.onAdd("zoneTo")}
+            className={classes.button}
+          >
+            Add zone
+          </Button>
+          <ModelTable
+            schema={schema}
+            data={accessRights?.data || []}
+            columns={["accessPoint", "door", "zoneTo"]}
+            onCellClick={this.onTableCellClick}
+          />
+        </Loader>
+        {this.state.pickerOpen && (
+          <ModelPicker
+            onClose={this.onPickerClose}
+            onPick={this.onPick}
+            open={this.state.pickerOpen}
+            identity={this.state.pickerIdentity}
+          />
+        )}
+      </Fragment>
     )
   }
 }

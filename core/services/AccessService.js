@@ -1,6 +1,6 @@
 module.exports = {
 
-  checkAccessRightIntegrity(trx, accessRight) {
+  checkAccessRightIntegrity(accessRight) {
     if (!accessRight.user && !accessRight.userProfile) {
       throw new Error("AccessRight should have user or userProfile")
     }
