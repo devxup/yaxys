@@ -11,12 +11,11 @@ import Chip from "@material-ui/core/Chip"
 import Avatar from "@material-ui/core/Avatar"
 
 const styles = theme => ({
-  tableWrapper: {
-    overflow: "hidden",
+  checkboxRoot: {
+    padding: 0,
   },
   cell: {
     fontSize: 16,
-    whiteSpace: "nowrap",
   },
   headerCell: {
     background: theme.palette.grey[200],
@@ -29,9 +28,9 @@ const styles = theme => ({
   },
   link: {
     display: "block",
-    padding: "0px 56px 0px 24px",
-    height: 48,
-    lineHeight: "48px",
+    padding: "12px 56px 12px 24px",
+    // height: 48,
+    // lineHeight: "48px",
     color: "#333",
   },
   chip: {
@@ -80,9 +79,10 @@ export default class ModelTable extends Component {
   }
 
   renderPropertyCellContent(propertySchema, value) {
+    const { classes } = this.props
     switch (propertySchema?.type) {
       case "boolean":
-        return <Checkbox checked={value} />
+        return <Checkbox checked={value} classes={{ root: classes.checkboxRoot }} />
       default:
         if (propertySchema.connection) {
           if (Array.isArray(value)) {
@@ -152,10 +152,6 @@ export default class ModelTable extends Component {
       }
     )
 
-    return (
-      <div className={classes.tableWrapper}>
-        <MuiTable  includeHeaders={true} {...tableProps} columns={patchedColumns} />
-      </div>
-    )
+    return <MuiTable  includeHeaders={true} {...tableProps} columns={patchedColumns} />
   }
 }
