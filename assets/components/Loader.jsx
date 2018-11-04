@@ -15,13 +15,15 @@ export default function Loader(props) {
       </div>
     )
   }
-  if (props.item.success) {
+  if (props.item.success && props.item.data && typeof props.item.data === "object") {
     return props.children
   }
   return (
     <Card className="loader loader_error">
       <CardContent>
-        {(props.item.data && props.item.data.message) || props.errorText || "An error occured"}
+        { props.item.meta?.responseMeta?.status === 403
+          ? "Access denied"
+          : (props.item.data?.message) || props.errorText || "An error occured" }
         {props.onRetry && (
           <button className="btn white black-text" onClick={props.onRetry}>
             {props.retryText || "Retry"}
