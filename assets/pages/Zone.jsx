@@ -1,16 +1,20 @@
 /* eslint-disable react/prop-types */
-import React, { Component, Fragment } from "react"
+import React, { Component } from "react"
 import { connect } from "react-redux"
 
 import YaxysClue, { queries } from "../services/YaxysClue"
 import { pick } from "lodash"
 
-import { withConstants } from "../services/Utils"
+import { withStyles } from "@material-ui/core/styles"
+import { commonClasses, withConstants } from "../services/Utils"
+
+import { Paper } from "@material-ui/core"
 
 import Wrapper from "../components/Wrapper.jsx"
 import Loader from "../components/Loader.jsx"
 import Update from "../components/Update.jsx"
 import ModelForm from "../components/ModelForm.jsx"
+import Connection from "../components/Connection.jsx"
 
 const zoneClue = props => ({
   identity: "zone",
@@ -19,6 +23,7 @@ const zoneClue = props => ({
 })
 const zoneSelector = YaxysClue.selectors.byClue(zoneClue)
 
+@withStyles(theme => commonClasses(theme))
 @withConstants
 @connect(
   (state, props) => ({
@@ -81,7 +86,7 @@ export default class Zone extends Component {
   }
 
   render() {
-    const { constants, zone, match } = this.props
+    const { constants, zone, match, classes } = this.props
     const update = (
       <Update
         clue={zoneClue(this.props)}
@@ -100,7 +105,8 @@ export default class Zone extends Component {
       >
         <h1 style={{ marginTop: 0 }}>Zone #{match.params.id}</h1>
         <Loader item={zone}>
-          <Fragment>
+          <Paper className={classes.block}>
+            <h5>Properties</h5>
             <ModelForm
               autoFocus={true}
               values={this.state.zone}
@@ -111,8 +117,21 @@ export default class Zone extends Component {
               attributes={["title", "description"]}
             />
             <br />
-          </Fragment>
+          </Paper>
         </Loader>
+        <Paper className={classes.block}>
+          <h5>Access points</h5>
+          <Connection
+            relatedIdentity="accesspoint"
+            relatedProperty="zoneTo"
+            parentId={match.params.id}
+            additionalCluePropertiea={{ populate: "door" }}
+            columns={["id", "title", "description", "door"]}
+            onAttach={this.onAttach}
+            canAddExisting={this.canAddAccessPoint}
+            canCreateNew={this.canAddAccessPoint}
+          />
+        </Paper>
       </Wrapper>
     )
   }

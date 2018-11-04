@@ -14,6 +14,8 @@ import Login from "./pages/Login.jsx"
 import Me from "./pages/Me.jsx"
 import Operators from "./pages/Operators.jsx"
 import Operator from "./pages/Operator.jsx"
+import Users from "./pages/Users.jsx"
+import User from "./pages/User.jsx"
 import AccessPoints from "./pages/AccessPoints.jsx"
 import AccessPoint from "./pages/AccessPoint.jsx"
 import Doors from "./pages/Doors.jsx"
@@ -23,6 +25,8 @@ import Zone from "./pages/Zone.jsx"
 import Settings from "./pages/Settings.jsx"
 import OperatorProfiles from "./pages/OperatorProfiles.jsx"
 import OperatorProfile from "./pages/OperatorProfile.jsx"
+import UserProfiles from "./pages/UserProfiles.jsx"
+import UserProfile from "./pages/UserProfile.jsx"
 
 /* eslint-disable-next-line react/display-name */
 export default (store, constants) => (
@@ -42,9 +46,13 @@ export default (store, constants) => (
             <Route exact path="/doors/:id" component={Door} />
             <Route exact path="/zones" component={Zones} />
             <Route exact path="/zones/:id" component={Zone} />
+            <Route exact path="/users" component={Users} />
+            <Route exact path="/users/:id" component={User} />
             <Route exact path="/settings" component={Settings} />
             <Route exact path="/settings/operator-profiles" component={OperatorProfiles} />
             <Route exact path="/settings/operator-profiles/:id" component={OperatorProfile} />
+            <Route exact path="/settings/user-profiles" component={UserProfiles} />
+            <Route exact path="/settings/user-profiles/:id" component={UserProfile} />
           </ProtectedZone>
         </Switch>
       </Theme>

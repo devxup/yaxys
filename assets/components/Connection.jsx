@@ -41,7 +41,7 @@ const relatedSelector = YaxysClue.selectors.byClue(relatedClue)
     updateRelated: YaxysClue.actions.byClue,
   }
 )
-export default class Door extends Component {
+export default class Connection extends Component {
   static propTypes = {
     // from HOCs
     constants: PropTypes.object,
@@ -106,7 +106,7 @@ export default class Door extends Component {
 
   onCreatorClose = event => {
     this.setState({
-      creatorClose: false,
+      creatorOpen: false,
     })
   }
 

@@ -319,6 +319,7 @@ module.exports = class Adapter {
   async _populate(identity, models, property, trx) {
     const schema = this.schemas[identity.toLowerCase()]
     const propertySchema = schema.properties[property]
+
     const connection = propertySchema.connection
 
     switch (connection.type) {
@@ -456,7 +457,7 @@ module.exports = class Adapter {
    * @param {Object} schema The model's schema
    */
   async createTable(identity, schema) {
-    await this._newTable(identity, schema).then()
+    await this._newTable(identity, schema)//.then()
   }
 
   /**

@@ -15,7 +15,7 @@ import Created from "../components/Created.jsx"
 import ModelTable from "../components/ModelTable.jsx"
 import ModelDialog from "../components/ModelDialog.jsx"
 
-const zonesClue = props => ({ identity: "zone", query: queries.FIND, sort: { id: 1 } })
+const zonesClue = props => ({ identity: "zone", query: queries.FIND, sort: { id: 1 }, populate: "accessPoints,doors" })
 const zonesSelector = YaxysClue.selectors.byClue(zonesClue)
 
 const CREATED_ZONES_MARKER = "zones-page"
@@ -94,7 +94,7 @@ export default class Zones extends Component {
               schema={constants.schemas.zone}
               data={(zones && zones.data) || []}
               url={zone => `/zones/${zone.id}`}
-              columns={["id", "title", "description"]}
+              columns={["id", "title", "description", "accessPoints", "doors"]}
             />
           </Paper>
         </Loader>

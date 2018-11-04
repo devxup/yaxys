@@ -1,31 +1,31 @@
 module.exports = {
   schema: {
     uniqueKeys: {
-      operatorAndProfile: ["operator", "operatorProfile"],
+      userAndProfile: ["user", "userProfile"],
     },
     properties: {
       id: {
         type: "integer",
       },
-      operator: {
+      user: {
         type: "integer",
         connection: {
           type: "m:1",
-          relatedModel: "Operator",
+          relatedModel: "user",
         },
       },
-      operatorProfile: {
+      userProfile: {
         type: "integer",
         connection: {
           type: "m:1",
-          relatedModel: "OperatorProfile",
+          relatedModel: "userprofile",
         },
       },
     },
-    required: ["operator", "operatorProfile"],
+    required: ["user", "userProfile"],
   },
 
-  api: RestService.buildStandardAPI("operatorprofilebinding", {
+  api: RestService.buildStandardAPI("userprofilebinding", {
     exclude: "update",
   }),
 }

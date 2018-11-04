@@ -12,6 +12,10 @@ const styles = theme => ({
     paddingTop: theme.spacing.unit * 2,
     paddingBottom: theme.spacing.unit * 2,
   },
+  list: {
+    margin:0,
+    padding:0,
+  },
 })
 
 @withStyles(styles)
@@ -25,7 +29,10 @@ export default class Settings extends Component {
         <p>Not so much settings so far</p>
 
         <Paper className={classes.root} elevation={1}>
-          <Link to={"/settings/operator-profiles"}>Operator profiles</Link>
+          <ul className={classes.list}>
+            <li><Link to={"/settings/operator-profiles"}>Operator profiles</Link></li>
+            <li><Link to={"/settings/user-profiles"}>User profiles</Link></li>
+          </ul>
         </Paper>
       </Wrapper>
     )

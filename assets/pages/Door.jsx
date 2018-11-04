@@ -23,12 +23,7 @@ const doorClue = props => ({
 })
 const doorSelector = YaxysClue.selectors.byClue(doorClue)
 
-@withStyles(theme => ({
-  ...commonClasses(theme),
-  button: {
-    margin: "0 10px 10px",
-  },
-}))
+@withStyles(theme => commonClasses(theme))
 @withConstants
 @connect(
   (state, props) => ({
@@ -138,7 +133,6 @@ export default class Door extends Component {
             canCreateNew={this.canAddAccessPoint}
           />
         </Paper>
-
       </Wrapper>
     )
   }

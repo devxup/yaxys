@@ -45,12 +45,12 @@ class Me extends Component {
   }
 
   render() {
-    const { classes } = this.props
+    const { classes, constants } = this.props
 
     return (
       <Wrapper>
         <h1>Account</h1>
-        <p>You are authenticated until {moment.tz(this.props.me.exp * 1000).format("MMMM DD HH:mm")}</p>
+        <p>You are authenticated until {moment.tz(this.props.me.exp * 1000, constants.timezone).format("MMMM DD HH:mm")}</p>
         <p>Email: {this.props.me?.email}</p>
         <Button
           onClick={this.onLogout}

@@ -49,10 +49,9 @@ yaxys
       )
     }
     await commandsHash[command]()
-    return Promise.resolve()
-  })
-  .then(() => {
-    process.exit()
+    await global.yaxys.db.shutdown()
+
+    process.exit(0)
   })
   .catch(err => {
     yaxys.logger.error("An error occured!", err)

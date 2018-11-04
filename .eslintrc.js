@@ -25,6 +25,7 @@ module.exports = {
     PageRouter: false,
 
     // Services
+    AccessService: false,
     AuthService: false,
     ModelService: false,
     PolicyService: false,

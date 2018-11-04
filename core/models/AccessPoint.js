@@ -41,9 +41,9 @@ module.exports = {
         await ZoneService.checkDoorAccessPointsCount(item.door, trx)
       }
     },
-    "update:after": async (trx, old, patch) => {
-      if (patch.door) {
-        await ZoneService.checkDoorAccessPointsCount(patch.door, trx)
+    "update:after": async (trx, old, updated) => {
+      if (updated.door) {
+        await ZoneService.checkDoorAccessPointsCount(updated.door, trx)
       }
     },
   },

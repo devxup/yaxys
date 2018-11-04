@@ -130,16 +130,14 @@ export default class OperatorProfile extends Component {
               attributes={["title", "description"]}
             />
             <br />
-            {!this.state.operatorProfile.isAdministrator && (
-              <Paper className={classes.rights}>
-                <h5>The profile rights:</h5>
-                <RightsEditor
-                  type="profile"
-                  values={(this.state.operatorProfile && this.state.operatorProfile.rights) || {}}
-                  onChange={this.onRightsChange}
-                />
-              </Paper>
-            )}
+            <Paper className={classes.rights}>
+              <h5>The profile rights:</h5>
+              <RightsEditor
+                type="profile"
+                values={(this.state.operatorProfile && this.state.operatorProfile.rights) || {}}
+                onChange={this.onRightsChange}
+              />
+            </Paper>
           </Fragment>
         </Loader>
       </Wrapper>
