@@ -9,14 +9,10 @@ import Button from "@material-ui/core/Button"
 import YaxysClue, { queries } from "../services/YaxysClue"
 import { withConstants } from "../services/Utils"
 
-import Loader from "../components/Loader.jsx"
 import Wrapper from "../components/Wrapper.jsx"
 import Created from "../components/Created.jsx"
-import ModelTable from "../components/ModelTable.jsx"
+import ModelTableLoader from "../components/ModelTableLoader.jsx"
 import ModelDialog from "../components/ModelDialog.jsx"
-
-const doorsClue = props => ({ identity: "door", query: queries.FIND, sort: { id: 1 }, populate: "accessPoints,zones" })
-const doorsSelector = YaxysClue.selectors.byClue(doorsClue)
 
 const CREATED_DOORS_MARKER = "doors-page"
 const createdDoorsSelector = YaxysClue.selectors.byClue(
@@ -27,21 +23,15 @@ const createdDoorsSelector = YaxysClue.selectors.byClue(
 @withConstants
 @connect(
   (state, props) => ({
-    doors: doorsSelector(state, props),
     createdDoors: createdDoorsSelector(state, props),
   }),
   {
-    loadDoors: YaxysClue.actions.byClue,
     createDoor: YaxysClue.actions.byClue,
   }
 )
 export default class Doors extends Component {
   state = {
     addOpen: false,
-  }
-
-  componentDidMount() {
-    this.props.loadDoors(doorsClue(this.props))
   }
 
   onAdd = event => {
@@ -66,7 +56,7 @@ export default class Doors extends Component {
   }
 
   render() {
-    const { constants, doors } = this.props
+    const { constants } = this.props
     return (
       <Wrapper breadcrumbs={["Doors"]}>
         <Button
@@ -88,16 +78,14 @@ export default class Doors extends Component {
           }
           url={door => `/doors/${door.id}`}
         />
-        <Loader item={doors}>
-          <Paper>
-            <ModelTable
-              schema={constants.schemas.door}
-              data={(doors && doors.data) || []}
-              url={door => `/doors/${door.id}`}
-              columns={["id", "title", "description", "accessPoints", "zones"]}
-            />
-          </Paper>
-        </Loader>
+        <Paper>
+          <ModelTableLoader
+            identity="door"
+            url={door => `/doors/${door.id}`}
+            columns={["id", "title", "description", "accessPoints", "zones"]}
+            additionalClueProperties={{ populate: "accessPoints,zones" }}
+          />
+        </Paper>
         <br />
         <ModelDialog
           title="Create new door"

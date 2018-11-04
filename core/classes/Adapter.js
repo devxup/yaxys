@@ -258,6 +258,7 @@ module.exports = class Adapter {
         case "limit":
         case "skip":
         case "select":
+        case "offset":
           query = query[key](value)
           break
         case "sort":

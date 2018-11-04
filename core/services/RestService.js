@@ -147,6 +147,7 @@ module.exports = {
             break
           case "skip":
           case "limit":
+          case "offset":
             options[k] = v
             break
           case "populate":
