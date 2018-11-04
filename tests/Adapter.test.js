@@ -592,9 +592,9 @@ describe("Adapter", () => {
     ]
 
     beforeAll(async () => {
-      await testCases.forEach(async testCase => {
+      for (let testCase of testCases) {
         await gAdapter.knex.raw(getDropQueryForTable(testCase.args[0]))
-      })
+      }
     })
 
     testCases.forEach(testCase =>
