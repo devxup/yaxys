@@ -159,12 +159,6 @@ export default class User extends Component {
     this.forceUpdate()
   }
 
-  onProfileDeleteRepeat = () => {
-    if (this.state.deletedBindingId) {
-      this._deleteProfile(this.state.deletedBindingId)
-    }
-  }
-
   onTableCellClick = data => {
     this.onDeleteProfile(data.rowData)
   }

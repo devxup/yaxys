@@ -12,7 +12,8 @@ import { Button } from "@material-ui/core"
 import Loader from "./Loader.jsx"
 import ModelTable from "./ModelTable.jsx"
 import ModelPicker from "./ModelPicker.jsx"
-import Created from "../components/Created.jsx"
+import Created from "./Created.jsx"
+import Request from "./Request.jsx"
 
 const CREATED_ACCESS_RIGHT_MARKER = "user-or-profile"
 const createdAccessRightSelector = YaxysClue.selectors.byClue(
@@ -44,6 +45,7 @@ const accessRightsSelector = YaxysClue.selectors.byClue(accessRightsClue)
   {
     loadAccessRights: YaxysClue.actions.byClue,
     createAccessRight: YaxysClue.actions.byClue,
+    deleteAccessRight: YaxysClue.actions.byClue,
   }
 )
 export default class AccessRights extends Component {
@@ -55,9 +57,26 @@ export default class AccessRights extends Component {
     accessRights: PropTypes.func,
     loadAccessRights: PropTypes.func,
     createAccessRight: PropTypes.func,
+    deleteAccessRight: PropTypes.func,
 
     userProperty: PropTypes.string,
     userPropertyValue: PropTypes.string,
+  }
+
+  static accessRightToURL(accessRight) {
+    if (accessRight.accessPoint) { return `/access-points/${accessRight.accessPoint}` }
+    if (accessRight.door) { return `/doors/${accessRight.door}` }
+    if (accessRight.zoneTo) { return `/zones/${accessRight.zoneTo}` }
+
+    return ""
+  }
+
+  static accessRightToText(accessRight) {
+    if (accessRight.accessPoint) { return `Granted access to Access Point #${accessRight.accessPoint}` }
+    if (accessRight.door) { return `Granted access to Door #${accessRight.door}` }
+    if (accessRight.zoneTo) { return `Granted access to Zone #${accessRight.zoneTo}` }
+
+    return `#${accessRight.id}`
   }
 
   constructor(props) {
@@ -66,6 +85,10 @@ export default class AccessRights extends Component {
       pickerProperty: null,
       pickerOpen: false,
       pickerProps: null,
+
+      deletedAccessRightId: null,
+      deletedHash: {},
+      deleteAttemptAt: null,
     }
   }
 
@@ -111,6 +134,41 @@ export default class AccessRights extends Component {
     })
   }
 
+  _deleteAccessRight(id) {
+    this.props.deleteAccessRight({
+      identity: "accessright",
+      query: queries.DELETE,
+      id,
+    })
+
+    this.setState({
+      deletedSelector: YaxysClue.selectors.byClue(
+        props => ({ identity: "accessright", query: queries.DELETE, id })
+      ),
+      deletedAccessRightId: id,
+      deleteAttemptAt: new Date().getTime(),
+    })
+  }
+
+  onDeleteAccessRight(accessRight) {
+    if (this.state.deletedHash[accessRight.id]) {
+      return
+    }
+    if (!confirm(`Are you sure to delete the Access Right #${accessRight.id}`)) {
+      return
+    }
+    this._deleteAccessRight(accessRight.id)
+  }
+
+  onAccessRightDeleted = (item) => {
+    this.state.deletedHash[item?.meta?.clue?.id] = true
+    this.forceUpdate()
+  }
+
+  onTableCellClick = data => {
+    this.onDeleteAccessRight(data.rowData)
+  }
+
   render() {
     const { constants, accessRights, createdAccessRights, classes } = this.props
     const schema = constants.schemas.accessright
@@ -119,8 +177,8 @@ export default class AccessRights extends Component {
       <Fragment>
         <Created
           items={createdAccessRights}
-          content={accessRight => JSON.stringify(accessRight)}
-          url={accessRight => `/access-points/${accessRight.id}`}
+          content={AccessRights.accessRightToText}
+          url={AccessRights.accessRightToURL}
         />
         <Loader item={accessRights}>
           <Button
@@ -152,6 +210,8 @@ export default class AccessRights extends Component {
             data={accessRights?.data || []}
             columns={["accessPoint", "door", "zoneTo"]}
             onCellClick={this.onTableCellClick}
+            deletedHash={ this.state.deletedHash }
+            deletedKey="id"
           />
         </Loader>
         {this.state.pickerOpen && (
@@ -162,6 +222,12 @@ export default class AccessRights extends Component {
             identity={this.state.pickerIdentity}
           />
         )}
+        <Request
+          selector={this.state.deletedSelector}
+          message={"Deleting Access Right"}
+          attemptAt={ this.state.deleteAttemptAt }
+          onSuccess={ this.onAccessRightDeleted }
+        />
       </Fragment>
     )
   }

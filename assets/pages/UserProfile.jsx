@@ -14,6 +14,7 @@ import Wrapper from "../components/Wrapper.jsx"
 import Loader from "../components/Loader.jsx"
 import Update from "../components/Update.jsx"
 import ModelForm from "../components/ModelForm.jsx"
+import AccessRights from "../components/AccessRights.jsx"
 
 const userProfileClue = props => ({
   identity: "userprofile",
@@ -124,7 +125,10 @@ export default class UserProfile extends Component {
             <br />
             <Paper className={classes.rights}>
               <h5>The profile rights:</h5>
-
+              <AccessRights
+                userProperty={"userProfile"}
+                userPropertyValue={ match.params.id }
+              />
             </Paper>
           </Fragment>
         </Loader>
