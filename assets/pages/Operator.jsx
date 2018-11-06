@@ -192,8 +192,8 @@ export default class Operator extends Component {
     }
   }
 
-  onTableCellClick = data => {
-    this.onDeleteProfile(data.rowData)
+  onTrashClick = data => {
+    this.onDeleteProfile(data)
   }
 
   render() {
@@ -267,11 +267,12 @@ export default class Operator extends Component {
                     <ModelTable
                       schema={constants.schemas.operatorprofile}
                       data={operator?.data?.profiles}
-                      // url={profile => `/settings/operator-profiles/${profile.id}`}
-                      onCellClick={this.onTableCellClick}
+                      url={profile => `/settings/operator-profiles/${profile.id}`}
                       columns={ ["id", "title"] }
                       deletedHash={ this.state.deletedHash }
                       deletedKey="_binding_id"
+                      remove={true}
+                      onRemove={this.onTrashClick}
                     />
                   )}
                 </Paper>

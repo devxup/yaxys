@@ -9,6 +9,8 @@ import { deepOrange } from "@material-ui/core/colors"
 import Checkbox from "@material-ui/core/Checkbox"
 import Chip from "@material-ui/core/Chip"
 import Avatar from "@material-ui/core/Avatar"
+import DeleteIcon from "@material-ui/icons/Delete"
+import IconButton from "@material-ui/core/IconButton"
 
 const styles = theme => ({
   cell: {
@@ -38,10 +40,16 @@ const styles = theme => ({
     "&:hover": {
       background: theme.palette.grey[100],
     },
+    "&:hover $trashButton": {
+      visibility: "visible",
+    },
   },
   deletedCell: {
     color: theme.palette.grey[700],
     background: deepOrange[50],
+  },
+  trashButton: {
+    visibility: "hidden",
   },
 })
 
@@ -55,6 +63,8 @@ export default class ModelTable extends Component {
     onCellClick: PropTypes.func,
     deletedHash: PropTypes.object,
     deletedKey: PropTypes.string,
+    onRemove: PropTypes.func,
+    remove: PropTypes.bool,
   }
 
   _renderRelatedModel(model, props) {
@@ -106,7 +116,7 @@ export default class ModelTable extends Component {
   }
 
   render() {
-    const { classes, columns, url, schema, deletedHash, deletedKey } = this.props
+    const { classes, columns, url, schema, deletedHash, deletedKey, remove, onRemove } = this.props
     const tableProps = {
       rowProps: {
         className: classes.row,
@@ -147,6 +157,24 @@ export default class ModelTable extends Component {
         return column
       }
     )
+
+    if (remove) {
+      const column = {
+        header: <IconButton disabled={true}>
+                 <DeleteIcon/>
+                </IconButton>,
+        cell: rowData => {
+          return (
+            <div className={classes.link} >
+              <IconButton className={classes.trashButton} onClick={() => onRemove(rowData)}>
+                <DeleteIcon/>
+              </IconButton>
+            </div>
+          )
+        },
+      }
+      patchedColumns.push(column)
+    }
 
     return <MuiTable includeHeaders={true} {...tableProps} columns={patchedColumns} />
   }
