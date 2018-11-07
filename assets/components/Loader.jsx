@@ -13,21 +13,19 @@ import { CircularProgress, Paper, Button } from "@material-ui/core"
     padding: `${1 * theme.spacing.unit}px ${3 * theme.spacing.unit}px`,
     display: "flex",
     alignItems: "center",
+    fontSize: 16,
+    fontWeight: 400,
   },
   error: {
     backgroundColor: theme.palette.error.main,
     color: "white",
-    fontWeight: 400,
-    fontSize:16,
+    fontWeight: 600,
 
     justifyContent: "space-between",
   },
   pending: {
     backgroundColor: theme.palette.pending.main,
     paddingLeft: theme.spacing.unit * 2,
-  },
-  progress: {
-    marginRight: theme.spacing.unit,
   },
   button: {
     backgroundColor: "white",
@@ -36,6 +34,9 @@ import { CircularProgress, Paper, Button } from "@material-ui/core"
     "&:hover": {
       background: theme.palette.error.light,
     },
+  },
+  progress: {
+    marginRight: theme.spacing.unit,
   },
   message: {
     display: "inline-block",
@@ -54,7 +55,6 @@ export default class Loader extends Component {
 
     item: PropTypes.object,
     loadingText: PropTypes.string,
-    errorText: PropTypes.string,
     retryText: PropTypes.string,
     onRetry: PropTypes.func,
   }
@@ -65,13 +65,13 @@ export default class Loader extends Component {
   }
 
   render() {
-    const { item, loadingText, retryText, errorText, classes, children } = this.props
+    const { item, loadingText, retryText, classes, children } = this.props
 
     if (!item || item.pending) {
       return (
-        <Paper className={ classNames(classes.root, classes.pending) }>
-          <CircularProgress className={classes.progress} size={ 30 } />
-          <div className={classes.message}>{ loadingText || "Loading..."}</div>
+        <Paper className={classNames(classes.root, classes.pending)}>
+          <CircularProgress className={classes.progress} size={30} />
+          <div className={classes.message}>{loadingText || "Loading..."}</div>
         </Paper>
       )
     }
@@ -79,12 +79,14 @@ export default class Loader extends Component {
       return children
     }
     return (
-      <Paper className={ classNames(classes.root, classes.error) }>
-        { item?.meta?.responseMeta?.status === 403
-          ? <div className={classes.message}>{ item?.data?.message || item?.data || "Permission denied" }</div>
-          : item?.data?.message || errorText || "An error occured" }
+      <Paper className={classNames(classes.root, classes.error)}>
+        <div className={classes.message}>
+          {item?.data?.message ||
+            item?.data?.toString() ||
+            (item?.meta?.responseMeta?.status === 403 ? "Permission denied" : "An error occured")}
+        </div>
         <Button classes={{ root: classes.button }} onClick={this.onRetry}>
-          { retryText || "Retry" }
+          {retryText || "Retry"}
         </Button>
       </Paper>
     )

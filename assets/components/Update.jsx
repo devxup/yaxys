@@ -2,43 +2,62 @@ import React, { Component, Fragment } from "react"
 import PropTypes from "prop-types"
 import { connect } from "react-redux"
 
+import classNames from "classnames"
+
 import { withStyles } from "@material-ui/core/styles"
 import CircularProgress from "@material-ui/core/CircularProgress"
 import Button from "@material-ui/core/Button"
 
 import { isEqual, omit } from "lodash"
 import YaxysClue from "../services/YaxysClue"
-import { green } from "@material-ui/core/colors"
-import classNames from "classnames"
 
 const styles = theme => ({
   button: {
-    fontSize: 16,
+    backgroundColor: "white",
+    color: "black",
+    lineHeight: "18px",
+    "&:hover": {
+      background: theme.palette.primary.light,
+    },
+    marginRight: theme.spacing.unit * 2,
   },
   root: {
     fontSize: 16,
-    borderTop: "1px solid #aaa",
-    padding: "16px 24px",
+    padding: `${1 * theme.spacing.unit}px ${3 * theme.spacing.unit}px`,
+    display: "flex",
+    alignItems: "center",
+    minHeight: 53,
   },
   rootIdle: {
     backgroundColor: theme.palette.primary.light,
   },
   rootModified: {
-    backgroundColor: theme.palette.primary.dark,
+    backgroundColor: theme.palette.primary.light,
   },
   rootSuccess: {
-    backgroundColor: green["A100"],
+    backgroundColor: theme.palette.success.light,
   },
   rootPending: {
     backgroundColor: theme.palette.pending.main,
   },
   rootError: {
-    backgroundColor: theme.palette.error.light,
-    color: theme.palette.error.contrastText,
+    backgroundColor: theme.palette.error.main,
+    color: "white",
+    fontWeight: 600,
+  },
+  errorButton: {
+    "&:hover": {
+      background: theme.palette.error.light,
+    },
+  },
+  progress: {
+    marginRight: theme.spacing.unit,
+  },
+  message: {
+    display: "inline-block",
   },
 })
 
-export default
 @withStyles(styles)
 @connect(
   (state, props) => ({
@@ -48,7 +67,7 @@ export default
     readyAction: action => action,
   }
 )
-class Update extends Component {
+export default class Update extends Component {
   static propTypes = {
     clue: PropTypes.object,
     current: PropTypes.object,
@@ -135,7 +154,6 @@ class Update extends Component {
 
       return !isEqual(itemValue, currentValue)
     })
-
   }
 
   onSave = event => {
@@ -152,34 +170,46 @@ class Update extends Component {
   }
 
   renderContents() {
-    const { classes } = this.props
+    const { item, classes } = this.props
     const { status } = this.state
+
+    const lastUpdateKey = Object.keys(item?.updates || {}).pop()
+    const updateItem = item?.updates?.[lastUpdateKey]
 
     switch (status) {
       case "idle":
-        return "Not modified"
+        return <div className={classes.message}>Not modified</div>
       case "modified":
         return (
-          <Button variant="contained" className={classes.button} onClick={this.onSave}>
+          <Button variant="text" className={classes.button} onClick={this.onSave}>
             Save changes
           </Button>
         )
       case "pending":
         return (
           <Fragment>
-            <CircularProgress />
+            <CircularProgress size={30} class={classes.progress} />
             Saving changes&hellip;
           </Fragment>
         )
       case "success":
-        return "Changes have been saved"
+        return <div className={classes.message}>Changes have been saved</div>
       case "error":
         return (
           <Fragment>
-            <Button variant="contained" className={classes.button} onClick={this.onSave}>
-              Repeat
+            <Button
+              className={classNames(classes.button, classes.errorButton)}
+              onClick={this.onSave}
+            >
+              Retry
             </Button>
-            An error occured!
+            <div className={classes.message}>
+              {updateItem?.data?.message ||
+                updateItem?.data?.toString() ||
+                (updateItem?.meta?.responseMeta?.status === 403
+                  ? "Permission denied"
+                  : "An error occured")}
+            </div>
           </Fragment>
         )
     }

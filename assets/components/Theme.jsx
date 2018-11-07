@@ -5,7 +5,11 @@ import CssBaseline from "@material-ui/core/CssBaseline"
 
 const theme = createMuiTheme({
   palette: {
-    primary: blue,
+    primary: {
+      main: blue["500"],
+      light: blue["200"],
+      dark: blue["700"],
+    },
     secondary: {
       main: green["600"],
       light: green["A400"],
@@ -18,6 +22,9 @@ const theme = createMuiTheme({
     },
     pending: {
       main: yellow[100],
+    },
+    success: {
+      light: green["A100"],
     },
   },
 })
