@@ -57,7 +57,7 @@ describe("Adapter", () => {
       properties: {
         a1: { type: "integer" },
         a2: { type: "string" },
-        a3: { type: "json" },
+        a3: { type: "object" },
       },
     })
     gAdapter.registerSchema(tableNames[1], {

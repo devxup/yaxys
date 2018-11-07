@@ -1,6 +1,8 @@
 const knex = require("knex")
 const _ = require("lodash")
 const EventEmitter = require("promise-events")
+const Ajv = require("ajv")
+const ajv = new Ajv({ format: "full" })
 
 const DEFAULT_OPTIONS = {
   limit: 100,
@@ -78,7 +80,7 @@ module.exports = class Adapter {
       const property = schema.properties[key]
       switch (property && property.type) {
         case "object":
-          return typeof value === "string" ? value : JSON.stringify(value)
+          return typeof value === "string" ? JSON.stringify(value) : value
         case "number":
         case "integer":
           if (
@@ -105,6 +107,19 @@ module.exports = class Adapter {
   }
 
   /**
+   * Validate data using ajv
+   * @param {Object} schema Schema to validate
+   * @param {Object} data Data to validate
+   * @returns {{passed: boolean, errors: Array<ajv.ErrorObject>}} The result of validation
+   * @private
+   */
+  _validate(schema, data) {
+    const validator = ajv.compile(schema)
+    const passed = validator(data)
+    return { passed: passed, errors: validator.errors }
+  }
+
+  /**
    * Insert new model into the table
    * @param {String} identity The model's identity
    * @param {Object} data The model blank to insert
@@ -116,6 +131,11 @@ module.exports = class Adapter {
     const dataToInsert = data.id ? data : _.omit(data, "id")
 
     const fixedData = this._sanitize(identity, dataToInsert)
+
+    const validation = this._validate(this.schemas[identity], _.omitBy(fixedData, _.isNil))
+    if (!validation.passed) {
+      throw new Error(`Property ${validation.errors[0].dataPath} validation fail: ${validation.errors[0].message}`)
+    }
 
     await this.emitter.emit(`${identity}:create:before`, trx, fixedData)
 
@@ -152,6 +172,11 @@ module.exports = class Adapter {
       throw new Error("id is required")
     }
     const fixedData = this._sanitize(identity, data)
+
+    const validation = this._validate(_.omit(this.schemas[identity], "required"), _.omitBy(fixedData, _.isNil))
+    if (!validation.passed) {
+      throw new Error(`Property ${validation.errors[0].dataPath} validation fail: ${validation.errors[0].message}`)
+    }
 
     const old = await this.findOne(identity, { id }, {}, trx)
     await this.emitter.emit(`${identity}:update:before`, trx, old, fixedData)
