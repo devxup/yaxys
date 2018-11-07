@@ -58,7 +58,7 @@ export default class Connection extends Component {
 
     canAddExisting: PropTypes.func,
     canCreateNew: PropTypes.func,
-    canRemove: PropTypes.func,
+    canDelete: PropTypes.func,
   }
   
   constructor(props) {
@@ -146,16 +146,16 @@ export default class Connection extends Component {
     this.props.loadRelated(relatedClue(this.props), { force: true })
   }
 
-  onTableCellClick = data => {
+  onDelete = model => {
     const { constants, relatedIdentity } = this.props
     const relatedSchema = constants.schemas[relatedIdentity?.toLowerCase()]
 
     if (!confirm(`Are you sure you want to detach this ${relatedSchema.title}?`)) { return }
-    this.updateRelated(data.rowData, null)
+    this.updateRelated(model, null)
   }
 
   render() {
-    const { constants, relatedIdentity, related, columns, url, classes } = this.props
+    const { constants, relatedIdentity, related, columns, url, canDelete, classes } = this.props
     const relatedSchema = constants.schemas[relatedIdentity?.toLowerCase()]
 
     return (
@@ -181,7 +181,7 @@ export default class Connection extends Component {
           data={related?.data || []}
           url={url}
           columns={columns}
-          onCellClick={this.onTableCellClick}
+          onDelete={canDelete && this.onDelete}
       />
         {this.state.pickerOpen && (
           <ModelPicker

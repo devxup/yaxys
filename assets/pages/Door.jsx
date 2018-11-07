@@ -131,6 +131,7 @@ export default class Door extends Component {
             onAttach={this.onAttach}
             canAddExisting={this.canAddAccessPoint}
             canCreateNew={this.canAddAccessPoint}
+            url={accessPoint => `/access-points/${accessPoint.id}`}
           />
         </Paper>
       </Wrapper>

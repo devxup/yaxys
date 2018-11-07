@@ -167,7 +167,7 @@ const styles = theme => ({
     color: "rgba(0, 0, 0, 0.54)",
   },
   drawerItemSelected: {
-    backgroundColor: `${theme.palette.primary[500]} !important`,
+    backgroundColor: `${theme.palette.primary.main} !important`,
     color: "white !important",
     fontWeight: 600,
   },

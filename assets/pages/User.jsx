@@ -144,7 +144,7 @@ export default class User extends Component {
     })
   }
 
-  onDeleteProfile(profile) {
+  onDeleteProfile = (profile) => {
     if (this.state.deletedHash[profile._binding_id]) {
       return
     }
@@ -157,10 +157,6 @@ export default class User extends Component {
   onProfileDeleted = (item) => {
     this.state.deletedHash[item?.meta?.clue?.id] = true
     this.forceUpdate()
-  }
-
-  onTableCellClick = data => {
-    this.onDeleteProfile(data.rowData)
   }
 
   render() {
@@ -222,8 +218,8 @@ export default class User extends Component {
             <ModelTable
               schema={constants.schemas.userprofile}
               data={user?.data?.profiles}
-              // url={profile => `/settings/user-profiles/${profile.id}`}
-              onCellClick={this.onTableCellClick}
+              url={profile => `/settings/user-profiles/${profile.id}`}
+              onDelete={this.onDeleteProfile}
               columns={ ["id", "title"] }
               deletedHash={ this.state.deletedHash }
               deletedKey="_binding_id"

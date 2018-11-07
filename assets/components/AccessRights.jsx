@@ -64,9 +64,10 @@ export default class AccessRights extends Component {
   }
 
   static accessRightToURL(accessRight) {
-    if (accessRight.accessPoint) { return `/access-points/${accessRight.accessPoint}` }
-    if (accessRight.door) { return `/doors/${accessRight.door}` }
-    if (accessRight.zoneTo) { return `/zones/${accessRight.zoneTo}` }
+    const { accessPoint, door, zoneTo } = accessRight
+    if (accessPoint) { return `/access-points/${accessPoint.id || accessPoint}` }
+    if (door) { return `/doors/${door.id || door}` }
+    if (zoneTo) { return `/zones/${zoneTo.id || zoneTo}` }
 
     return ""
   }
@@ -150,7 +151,7 @@ export default class AccessRights extends Component {
     })
   }
 
-  onDeleteAccessRight(accessRight) {
+  onDeleteAccessRight = (accessRight) => {
     if (this.state.deletedHash[accessRight.id]) {
       return
     }
@@ -163,10 +164,6 @@ export default class AccessRights extends Component {
   onAccessRightDeleted = (item) => {
     this.state.deletedHash[item?.meta?.clue?.id] = true
     this.forceUpdate()
-  }
-
-  onTableCellClick = data => {
-    this.onDeleteAccessRight(data.rowData)
   }
 
   render() {
@@ -209,7 +206,8 @@ export default class AccessRights extends Component {
             schema={schema}
             data={accessRights?.data || []}
             columns={["accessPoint", "door", "zoneTo"]}
-            onCellClick={this.onTableCellClick}
+            url={AccessRights.accessRightToURL}
+            onDelete={this.onDeleteAccessRight}
             deletedHash={ this.state.deletedHash }
             deletedKey="id"
           />

@@ -22,6 +22,7 @@ export default class ModelTableLoader extends Component {
     columns: PropTypes.arrayOf(PropTypes.string),
     onCellClick: PropTypes.func,
     url: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
+    onDelete: PropTypes.func,
     deletedHash: PropTypes.object,
     deletedKey: PropTypes.string,
   }

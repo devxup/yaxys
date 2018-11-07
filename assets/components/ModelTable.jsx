@@ -52,6 +52,11 @@ const styles = theme => ({
   trashButton: {
     visibility: "hidden",
   },
+  trashButtonCell: {
+    paddingRight: 0,
+    textAlign:"right",
+    width: 1,
+  },
 })
 
 @withStyles(styles)
@@ -64,15 +69,16 @@ export default class ModelTable extends Component {
     onCellClick: PropTypes.func,
     deletedHash: PropTypes.object,
     deletedKey: PropTypes.string,
-    onRemove: PropTypes.func,
-    remove: PropTypes.bool,
+    onDelete: PropTypes.func,
   }
 
   _renderRelatedModel(model, props) {
     const { classes } = this.props
 
     // it might be empty containing just _binding_id in case of m:m
-    if (!model.id) { return true }
+    if (!model.id) {
+      return true
+    }
 
     return (
       <Chip
@@ -81,7 +87,7 @@ export default class ModelTable extends Component {
         label={model.title || ""}
         color="primary"
         variant="outlined"
-        { ...props }
+        {...props}
       />
     )
   }
@@ -94,9 +100,7 @@ export default class ModelTable extends Component {
       default:
         if (propertySchema.connection) {
           if (Array.isArray(value)) {
-            return value.map(
-              (item, index) => this._renderRelatedModel(item, { key: index })
-            )
+            return value.map((item, index) => this._renderRelatedModel(item, { key: index }))
           }
           if (value && typeof value === "object") {
             return this._renderRelatedModel(value)
@@ -118,7 +122,7 @@ export default class ModelTable extends Component {
   }
 
   render() {
-    const { classes, columns, url, schema, deletedHash, deletedKey, remove, onRemove } = this.props
+    const { classes, columns, url, schema, deletedHash, deletedKey, onDelete } = this.props
     const tableProps = {
       rowProps: {
         className: classes.row,
@@ -160,22 +164,25 @@ export default class ModelTable extends Component {
       }
     )
 
-    if (remove) {
-      const column = {
-        header: <IconButton disabled={true}>
-                 <DeleteIcon/>
-                </IconButton>,
+    if (onDelete) {
+      patchedColumns.push({
+        header: (
+          <IconButton disabled={true}>
+            <DeleteIcon />
+          </IconButton>
+        ),
+        cellProps: { classes: { root:classes.trashButtonCell } },
         cell: rowData => {
+          if (deletedHash?.[rowData[deletedKey || "id"]]) {
+            return false
+          }
           return (
-            <div className={classes.link} >
-              <IconButton className={classes.trashButton} onClick={() => onRemove(rowData)}>
-                <DeleteIcon/>
-              </IconButton>
-            </div>
+            <IconButton className={classes.trashButton} onClick={() => onDelete(rowData)}>
+              <DeleteIcon />
+            </IconButton>
           )
         },
-      }
-      patchedColumns.push(column)
+      })
     }
 
     return <MuiTable includeHeaders={true} {...tableProps} columns={patchedColumns} />

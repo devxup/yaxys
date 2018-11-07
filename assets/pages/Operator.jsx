@@ -271,8 +271,7 @@ export default class Operator extends Component {
                       columns={ ["id", "title"] }
                       deletedHash={ this.state.deletedHash }
                       deletedKey="_binding_id"
-                      remove={true}
-                      onRemove={this.onTrashClick}
+                      onDelete={this.onTrashClick}
                     />
                   )}
                 </Paper>
