@@ -24,8 +24,6 @@ const POSTGRES_TYPES = [
   "uuid",
 ]
 
-const SET_TRANSACTION_LEVEL = "SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;"
-
 module.exports = class Adapter {
   constructor(config, options) {
     this.knex = knex({
@@ -52,36 +50,6 @@ module.exports = class Adapter {
    */
   async on(event, listener) {
     await this.emitter.on(event, listener)
-  }
-
-  /**
-   * Start the transaction and return its context
-   * @returns {Promise<Object>} The transaction context to use in further queries
-   */
-  async transaction() {
-    return new Promise((resolve, reject) => {
-      this.knex
-        .transaction(trx => {
-          trx.raw(SET_TRANSACTION_LEVEL).then(() => resolve(trx))
-        })
-        .catch(reject)
-    })
-  }
-
-  /**
-   * Commit the transaction
-   * @param {Object} trx The transaction context created by await Adapter.transaction()
-   */
-  async transactionCommit(trx) {
-    await trx.commit()
-  }
-
-  /**
-   * Rollback the transaction
-   * @param {Object} trx The transaction context created by await Adapter.transaction()
-   */
-  async transactionRollback(trx) {
-    await trx.rollback()
   }
 
   /**

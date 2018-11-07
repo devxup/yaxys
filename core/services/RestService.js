@@ -182,7 +182,9 @@ module.exports = {
         ctx.throw(400, "id is required")
       }
 
-      ctx.body = await yaxys.db.update(identity, ctx.params.id, ctx.request.body)
+      ctx.body = await yaxys.db.knex.transaction((trx) =>
+        yaxys.db.update(identity, ctx.params.id, ctx.request.body, trx))
+
     }
   },
 
@@ -204,7 +206,7 @@ module.exports = {
         ctx.throw(400, "id is required")
       }
 
-      ctx.body = await yaxys.db.delete(identity, ctx.params.id)
+      ctx.body = await yaxys.db.knex.transaction((trx) => yaxys.db.delete(identity, ctx.params.id, trx))
     }
   },
 
@@ -223,7 +225,8 @@ module.exports = {
       const options = {
         populate: ctx.query.populate && ctx.query.populate.split(","),
       }
-      ctx.body = await yaxys.db.insert(identity, ctx.request.body, options)
+
+      ctx.body = await yaxys.db.knex.transaction((trx) => yaxys.db.insert(identity, ctx.request.body, options, trx))
     }
   },
 }
