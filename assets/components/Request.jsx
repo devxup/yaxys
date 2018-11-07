@@ -6,7 +6,6 @@ import classNames from "classnames"
 import { withStyles } from "@material-ui/core/styles"
 import { Done } from "@material-ui/icons"
 import { Snackbar, CircularProgress, Button } from "@material-ui/core"
-import { red } from "@material-ui/core/colors"
 
 import YaxysClue from "../services/YaxysClue"
 
@@ -15,7 +14,7 @@ const styles = theme => ({
     padding: theme.spacing.unit / 2,
   },
   error: {
-    backgroundColor: red[900],
+    backgroundColor: theme.palette.error.dark,
     fontWeight: "600",
   },
   button: {
@@ -23,7 +22,7 @@ const styles = theme => ({
     color: "black",
     lineHeight: "18px",
     "&:hover": {
-      background: red[50],
+      background: theme.palette.error.light,
     },
   },
 })

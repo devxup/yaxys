@@ -8,7 +8,7 @@ import Button from "@material-ui/core/Button"
 
 import { isEqual, omit } from "lodash"
 import YaxysClue from "../services/YaxysClue"
-import { green, yellow } from "@material-ui/core/colors"
+import { green } from "@material-ui/core/colors"
 import classNames from "classnames"
 
 const styles = theme => ({
@@ -30,7 +30,7 @@ const styles = theme => ({
     backgroundColor: green["A100"],
   },
   rootPending: {
-    backgroundColor: yellow[100],
+    backgroundColor: theme.palette.pending.main,
   },
   rootError: {
     backgroundColor: theme.palette.error.light,
