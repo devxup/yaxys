@@ -251,32 +251,13 @@ module.exports = class Adapter {
   }
 
   /**
-   * Start query execution and return its promise.
-   * Wrap query into existing transaction if needed
-   * @param {Object} query The query
-   * @param {Object} [trx] The transaction context
-   * @returns {Promise<*>} The query result
-   * @private
-   */
-  async _trxWrapper(query, trx) {
-    return trx ? query.transacting(trx) : query
-  }
-
-  /**
    * Count the number of models of some identity
    * @param {String} identity The identity of model
    * @param {Object} filter The filter to match
-   * @param {Object} [trx] The transaction context
    * @returns {Promise<number>} The number of models
    */
-  async count(identity, filter, trx) {
-    const rz = await this._trxWrapper(
-      this.knex(identity)
-        .where(filter)
-        .count("*"),
-      trx
-    )
-    return Number(rz[0].count)
+  async count(identity, filter) {
+    return (await this.knex(identity).where(filter).count("*"))[0].count
   }
 
   /** Populates the given models with 1:m relation
@@ -299,20 +280,14 @@ module.exports = class Adapter {
           linkerSchema.properties[connection.linkerRelatedAttribute].connection.relatedModel
 
         const ids = [...new Set(models.map(model => model.id))]
-        const linkerModels = await this._trxWrapper(
-          this.knex(connection.linkerModel.toLowerCase())
+        const linkerModels = await this.knex(connection.linkerModel.toLowerCase())
             .whereIn(connection.linkerMyAttribute, ids)
-            .orderBy("id", "asc"),
-          trx
-        )
+            .orderBy("id", "asc")
 
         const relatedIds = [
           ...new Set(linkerModels.map(model => model[connection.linkerRelatedAttribute])),
         ]
-        const relatedModels = await this._trxWrapper(
-          this.knex(relatedIdentity.toLowerCase()).whereIn("id", relatedIds),
-          trx
-        )
+        const relatedModels = await this.knex(relatedIdentity.toLowerCase()).whereIn("id", relatedIds)
         const relatedHash = relatedModels.reduce((hash, relatedItem) => {
           hash[relatedItem.id] = relatedItem
           return hash
@@ -340,10 +315,7 @@ module.exports = class Adapter {
       case "m:1": {
         const ids = [...new Set(models.map(model => model[property]))]
 
-        const relatedModels = await this._trxWrapper(
-          this.knex(connection.relatedModel.toLowerCase()).whereIn("id", ids),
-          trx
-        )
+        const relatedModels = await this.knex(connection.relatedModel.toLowerCase()).whereIn("id", ids)
 
         const relatedHash = relatedModels.reduce((hash, relatedItem) => {
           hash[relatedItem.id] = relatedItem
@@ -360,12 +332,9 @@ module.exports = class Adapter {
       case "1:m": {
         const ids = [...new Set(models.map(model => model.id))]
 
-        const relatedModels = await this._trxWrapper(
-          this.knex(connection.relatedModel.toLowerCase())
+        const relatedModels = await this.knex(connection.relatedModel.toLowerCase())
             .whereIn(connection.relatedModelAttribute, ids)
-            .orderBy("id", "asc"),
-          trx
-        )
+            .orderBy("id", "asc")
 
         const relatedByMyIdHash = relatedModels.reduce((hash, relatedItem) => {
           const myId = relatedItem[connection.relatedModelAttribute]
