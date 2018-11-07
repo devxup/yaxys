@@ -16,6 +16,7 @@ export default ReduxClue({
     "userprofile",
     "userprofilebinding",
     "accessright",
+    "credential",
   ],
 })
 

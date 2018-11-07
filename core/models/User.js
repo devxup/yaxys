@@ -26,6 +26,16 @@ module.exports = {
         readOnly: true,
         type: "boolean",
       },
+      credentials: {
+        title: "Credentials",
+        type: "array",
+        virtual: true,
+        connection: {
+          type: "1:m",
+          relatedModel: "Credential",
+          relatedModelAttribute: "user",
+        },
+      },
     },
     required: ["name"],
   },

@@ -26,13 +26,13 @@ module.exports = {
    * @returns {String} The SQL
    */
   getSQLForAllModels() {
-    let result = ""
+    const modelsSQL = []
     for (let model in yaxys.models) {
       if (yaxys.models[model].schema) {
-        result += _getSQLForSchema(model, yaxys.models[model].schema)
+        modelsSQL.push(_getSQLForSchema(model, yaxys.models[model].schema))
       }
     }
-    return result
+    return modelsSQL.join(";\r\n")
   },
 
   /**

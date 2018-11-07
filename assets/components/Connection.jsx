@@ -15,6 +15,7 @@ import ModelPicker from "./ModelPicker.jsx"
 import ModelCreator from "./ModelCreator.jsx"
 
 import Request from "../components/Request.jsx"
+import { without } from "lodash"
 
 const relatedClue = props => ({
   identity: props.relatedIdentity,
@@ -59,8 +60,10 @@ export default class Connection extends Component {
     canAddExisting: PropTypes.func,
     canCreateNew: PropTypes.func,
     canDelete: PropTypes.func,
+
+    hideDeleteColumn: PropTypes.bool,
   }
-  
+
   constructor(props) {
     super(props)
     this.state = {
@@ -75,7 +78,9 @@ export default class Connection extends Component {
 
   onPickerOpen = event => {
     const { canAddExisting, related } = this.props
-    if (canAddExisting?.(related) === false) { return }
+    if (canAddExisting?.(related) === false) {
+      return
+    }
 
     this.setState({
       pickerOpen: true,
@@ -97,7 +102,9 @@ export default class Connection extends Component {
 
   onCreatorOpen = event => {
     const { canCreateNew, related } = this.props
-    if (canCreateNew?.(related) === false) { return }
+    if (canCreateNew?.(related) === false) {
+      return
+    }
 
     this.setState({
       creatorOpen: true,
@@ -130,12 +137,14 @@ export default class Connection extends Component {
     }
     const action = this.props.updateRelated(clue)
     this.setState({
-      relatedUpdateSelector: YaxysClue.selectors.byRequestId(action.payload.requestId, { resultOnly: true }),
+      relatedUpdateSelector: YaxysClue.selectors.byRequestId(action.payload.requestId, {
+        resultOnly: true,
+      }),
       relatedUpdateAttemptAt: new Date().getTime(),
     })
   }
 
-  onRelatedUpdateRepeat = (requestId) => {
+  onRelatedUpdateRepeat = requestId => {
     this.setState({
       relatedUpdateSelector: YaxysClue.selectors.byRequestId(requestId, { resultOnly: true }),
       relatedUpdateAttemptAt: new Date().getTime(),
@@ -147,15 +156,30 @@ export default class Connection extends Component {
   }
 
   onDelete = model => {
-    const { constants, relatedIdentity } = this.props
+    const { constants, relatedIdentity, canDelete } = this.props
     const relatedSchema = constants.schemas[relatedIdentity?.toLowerCase()]
+    if (canDelete?.(model) === false) {
+      return
+    }
 
-    if (!confirm(`Are you sure you want to detach this ${relatedSchema.title}?`)) { return }
+    if (!confirm(`Are you sure you want to detach this ${relatedSchema.title}?`)) {
+      return
+    }
     this.updateRelated(model, null)
   }
 
   render() {
-    const { constants, relatedIdentity, related, columns, url, canDelete, classes } = this.props
+    const {
+      constants,
+      relatedIdentity,
+      relatedProperty,
+      related,
+      parentId,
+      columns,
+      url,
+      hideDeleteColumn,
+      classes,
+    } = this.props
     const relatedSchema = constants.schemas[relatedIdentity?.toLowerCase()]
 
     return (
@@ -181,8 +205,8 @@ export default class Connection extends Component {
           data={related?.data || []}
           url={url}
           columns={columns}
-          onDelete={canDelete && this.onDelete}
-      />
+          onDelete={!hideDeleteColumn && this.onDelete}
+        />
         {this.state.pickerOpen && (
           <ModelPicker
             onClose={this.onPickerClose}
@@ -197,14 +221,16 @@ export default class Connection extends Component {
             onCreate={this.onCreate}
             open={this.state.creatorOpen}
             identity={relatedIdentity}
+            initial={{ [relatedProperty]: Number(parentId) }}
+            attributes={without(relatedSchema.defaultProperties, "id", relatedProperty)}
           />
         )}
         <Request
           selector={this.state.relatedUpdateSelector}
           message={`Updating ${relatedSchema.title && relatedIdentity}`}
-          attemptAt={ this.state.relatedUpdateAttemptAt }
-          onSuccess={ this.onRelatedUpdated }
-          onRepeat={ this.onRelatedUpdateRepeat }
+          attemptAt={this.state.relatedUpdateAttemptAt}
+          onSuccess={this.onRelatedUpdated}
+          onRepeat={this.onRelatedUpdateRepeat}
         />
       </Loader>
     )

@@ -19,6 +19,7 @@ import ModelPicker from "../components/ModelPicker.jsx"
 import Created from "../components/Created.jsx"
 import ModelTable from "../components/ModelTable.jsx"
 import AccessRights from "../components/AccessRights.jsx"
+import Connection from "../components/Connection.jsx"
 
 const userClue = props => ({
   identity: "user",
@@ -231,6 +232,16 @@ export default class User extends Component {
           <AccessRights
             userProperty={"user"}
             userPropertyValue={ match.params.id }
+          />
+        </Paper>
+        <Paper className={classes.block}>
+          <h5>Credentials</h5>
+          <Connection
+            relatedIdentity="credential"
+            relatedProperty="user"
+            parentId={match.params.id}
+            columns={["id", "title", "code"]}
+            url={credential => `/users/${match.params.id}/credentials/${credential.id}`}
           />
         </Paper>
         <ModelPicker

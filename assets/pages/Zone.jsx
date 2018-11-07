@@ -127,7 +127,6 @@ export default class Zone extends Component {
             parentId={match.params.id}
             additionalCluePropertiea={{ populate: "door" }}
             columns={["id", "title", "description", "door"]}
-            onAttach={this.onAttach}
             canAddExisting={this.canAddAccessPoint}
             canCreateNew={this.canAddAccessPoint}
             url={accessPoint => `/access-points/${accessPoint.id}`}

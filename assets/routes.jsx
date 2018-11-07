@@ -16,6 +16,7 @@ import Operators from "./pages/Operators.jsx"
 import Operator from "./pages/Operator.jsx"
 import Users from "./pages/Users.jsx"
 import User from "./pages/User.jsx"
+import Credential from "./pages/Credential.jsx"
 import AccessPoints from "./pages/AccessPoints.jsx"
 import AccessPoint from "./pages/AccessPoint.jsx"
 import Doors from "./pages/Doors.jsx"
@@ -48,6 +49,7 @@ export default (store, constants) => (
             <Route exact path="/zones/:id" component={Zone} />
             <Route exact path="/users" component={Users} />
             <Route exact path="/users/:id" component={User} />
+            <Route exact path="/users/:user/credentials/:id" component={Credential} />
             <Route exact path="/settings" component={Settings} />
             <Route exact path="/settings/operator-profiles" component={OperatorProfiles} />
             <Route exact path="/settings/operator-profiles/:id" component={OperatorProfile} />

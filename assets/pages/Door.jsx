@@ -128,7 +128,6 @@ export default class Door extends Component {
             parentId={match.params.id}
             additionalCluePropertiea={{ populate: "zoneTo" }}
             columns={["id", "title", "description", "zoneTo"]}
-            onAttach={this.onAttach}
             canAddExisting={this.canAddAccessPoint}
             canCreateNew={this.canAddAccessPoint}
             url={accessPoint => `/access-points/${accessPoint.id}`}

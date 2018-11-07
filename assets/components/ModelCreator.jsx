@@ -22,6 +22,7 @@ export default class ModelCreator extends Component {
   static propTypes = {
     title: PropTypes.string,
     open: PropTypes.bool.isRequired,
+    initial: PropTypes.object,
     identity: PropTypes.string.isRequired,
     onClose: PropTypes.func,
     onCreate: PropTypes.func,
@@ -65,7 +66,7 @@ export default class ModelCreator extends Component {
   }
 
   render() {
-    const { title, constants, identity, attributes, onClose } = this.props
+    const { title, constants, identity, initial, attributes, onClose } = this.props
     const { open } = this.state
     const schema = constants.schemas[identity?.toLowerCase?.()]
     return (
@@ -76,6 +77,7 @@ export default class ModelCreator extends Component {
           onClose={onClose}
           onReady={this.onBlankReady}
           schema={schema}
+          values={initial}
           attributes={attributes || without(schema.defaultProperties, "id")}
           btnReady="Create"
         >
