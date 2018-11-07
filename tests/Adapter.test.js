@@ -1,6 +1,5 @@
 const Adapter = require("../core/classes/Adapter")
 const config = require("config")
-const Promise = require("bluebird")
 const _ = require("lodash")
 
 describe("Adapter", () => {
@@ -263,110 +262,6 @@ describe("Adapter", () => {
       const foundItems = await gAdapter.find(tableNames[0], { id: inserted.id })
       expect(foundItems).toStrictEqual([])
     })
-  })
-
-  describe("transactions", () => {
-    const testCases = [
-      {
-        title: "Rolled back transaction",
-        operations: [
-          {
-            // inserting item under transaction
-            method: "insert",
-            args: [tableNames[0], { a1: 10 }, {}, "_trx_"],
-            result: { id: 4, a1: 10, a2: null, a3: null },
-          },
-          {
-            // finding item under transaction – should get result
-            method: "findOne",
-            args: [tableNames[0], { a1: 10 }, null, "_trx_"],
-            result: { id: 4, a1: 10, a2: null, a3: null },
-          },
-          {
-            // finding item without transaction – should be empty
-            method: "findOne",
-            args: [tableNames[0], { a1: 10 }],
-            result: undefined,
-          },
-          {
-            // rolling back transaction
-            method: "transactionRollback",
-            args: ["_trx_"],
-          },
-          {
-            // ensuring there is an error after transaction rollback
-            method: "findOne",
-            args: [tableNames[0], { a1: 10 }, null, "_trx_"],
-            error: "Transaction query already complete",
-          },
-          {
-            // ensuring there is no item without transaction
-            method: "findOne",
-            args: [tableNames[0], { a1: 10 }],
-            result: undefined,
-          },
-        ],
-      },
-      {
-        title: "Committed transaction",
-        operations: [
-          {
-            // inserting item under transaction
-            // id is 4, since even rolled back transaction affects autoincrements
-            method: "insert",
-            args: [tableNames[0], { a1: 10 }, {}, "_trx_"],
-            result: { id: 5, a1: 10, a2: null, a3: null },
-          },
-          {
-            // finding item under transaction – should get result
-            method: "findOne",
-            args: [tableNames[0], { a1: 10 }, null, "_trx_"],
-            result: { id: 5, a1: 10, a2: null, a3: null },
-          },
-          {
-            // finding item without transaction – should be empty
-            method: "findOne",
-            args: [tableNames[0], { a1: 10 }],
-            result: undefined,
-          },
-          {
-            // committing back transaction
-            method: "transactionCommit",
-            args: ["_trx_"],
-          },
-          {
-            // ensuring there is an error after transaction commit
-            method: "findOne",
-            args: [tableNames[0], { a1: 10 }, null, "_trx_"],
-            error: "Transaction query already complete",
-          },
-          {
-            // ensuring there is an item after transaction committed
-            method: "findOne",
-            args: [tableNames[0], { a1: 10 }],
-            result: { id: 5, a1: 10, a2: null, a3: null },
-          },
-        ],
-      },
-    ]
-
-    testCases.forEach(testCase =>
-      it(testCase.title, async () => {
-        const trx = await gAdapter.transaction()
-        await Promise.each(testCase.operations, async operation => {
-          const patchedArgs = operation.args.map(arg => (arg === "_trx_" ? trx : arg))
-          const promise = gAdapter[operation.method].apply(gAdapter, patchedArgs)
-          if (operation.error) {
-            await expect(promise).rejects.toThrow(operation.error)
-          } else {
-            const result = await promise
-            if (operation.hasOwnProperty("result")) {
-              expect(result).toStrictEqual(operation.result)
-            }
-          }
-        })
-      })
-    )
   })
 
   describe("getSQL", () => {

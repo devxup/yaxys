@@ -182,12 +182,8 @@ module.exports = {
         ctx.throw(400, "id is required")
       }
 
-      try {
-        ctx.body = await yaxys.db.knex.transaction((trx) =>
-          yaxys.db.update(identity, ctx.params.id, ctx.request.body, trx))
-      } catch (err) {
-        ctx.throw(500)
-      }
+      ctx.body = await yaxys.db.knex.transaction((trx) =>
+        yaxys.db.update(identity, ctx.params.id, ctx.request.body, trx))
 
     }
   },
@@ -210,12 +206,7 @@ module.exports = {
         ctx.throw(400, "id is required")
       }
 
-      try {
-        ctx.body = await yaxys.db.knex.transaction((trx) =>
-          yaxys.db.delete(identity, ctx.params.id, trx))
-      } catch (err) {
-        ctx.throw(500)
-      }
+      ctx.body = await yaxys.db.knex.transaction((trx) => yaxys.db.delete(identity, ctx.params.id, trx))
     }
   },
 
@@ -235,12 +226,7 @@ module.exports = {
         populate: ctx.query.populate && ctx.query.populate.split(","),
       }
 
-      try {
-        ctx.body = await yaxys.db.knex.transaction((trx) =>
-          yaxys.db.insert(identity, ctx.request.body, options, trx))
-      } catch (err) {
-        ctx.throw(500)
-      }
+      ctx.body = await yaxys.db.knex.transaction((trx) => yaxys.db.insert(identity, ctx.request.body, options, trx))
     }
   },
 }
