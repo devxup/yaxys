@@ -162,9 +162,9 @@ export default class ModelForm extends Component {
   onKeyPress = event => {
     switch (event.charCode) {
       case 13:
-        if (this.props.onEnter) {
-          this.props.onEnter()
-        }
+        this.validateAll()
+        this.notify()
+        this.props.onEnter?.()
         break
     }
   }

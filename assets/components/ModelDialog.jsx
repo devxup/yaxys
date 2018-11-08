@@ -1,12 +1,16 @@
 import React, { Component } from "react"
 import PropTypes from "prop-types"
-import ModelForm from "./ModelForm.jsx"
+
+import { pick } from "lodash"
+
 import Dialog from "@material-ui/core/Dialog"
 import DialogActions from "@material-ui/core/DialogActions"
 import DialogContent from "@material-ui/core/DialogContent"
 import DialogContentText from "@material-ui/core/DialogContentText"
 import DialogTitle from "@material-ui/core/DialogTitle"
 import Button from "@material-ui/core/Button"
+
+import ModelForm from "./ModelForm.jsx"
 
 export default class ModelDialog extends Component {
   static propTypes = {
@@ -55,10 +59,9 @@ export default class ModelDialog extends Component {
   };
 
   onChange = (formState) => {
-    this.setState({
-      valid: formState.valid,
-      values: formState.values,
-    })
+    // we need an instant state change here
+    Object.assign(this.state, pick(formState, "valid", "values"))
+    this.forceUpdate()
   };
 
   render() {
