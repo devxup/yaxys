@@ -110,7 +110,7 @@ module.exports = class Adapter {
    * @param {Object} data The model blank to insert
    * @param {Object} [options] The options to find
    * @param {Object} [trx] The transaction context
-   * @returns {Promise<Object>} The inserted model containing all of the fields, includeing id
+   * @returns {Promise<Object>} The inserted model containing all of the fields, including id
    */
   async insert(identity, data, options = {}, trx) {
     const dataToInsert = data.id ? data : _.omit(data, "id")
