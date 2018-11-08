@@ -104,19 +104,19 @@ module.exports = class Adapter {
    */
   registerSchema(identity, schema) {
     this.schemas[identity.toLowerCase()] = schema
+    this.schemas[identity.toLowerCase()].validator = ajv.compile(schema)
   }
 
   /**
    * Validate data using ajv
-   * @param {Object} schema Schema to validate
+   * @param {Object} identity Identity of schema to validate
    * @param {Object} data Data to validate
    * @returns {{passed: boolean, errors: Array<ajv.ErrorObject>}} The result of validation
    * @private
    */
-  _validate(schema, data) {
-    const validator = ajv.compile(schema)
-    const passed = validator(data)
-    return { passed: passed, errors: validator.errors }
+  _validate(identity, data) {
+    const passed = this.schemas[identity.toLowerCase()].validator(data)
+    return { passed: passed, errors: this.schemas[identity.toLowerCase()].validator.errors }
   }
 
   /**
@@ -132,7 +132,7 @@ module.exports = class Adapter {
 
     const fixedData = this._sanitize(identity, dataToInsert)
 
-    const validation = this._validate(this.schemas[identity], _.omitBy(fixedData, _.isNil))
+    const validation = this._validate(identity, _.omitBy(fixedData, _.isNil))
     if (!validation.passed) {
       throw new Error(`Property ${validation.errors[0].dataPath} validation fail: ${validation.errors[0].message}`)
     }
@@ -172,13 +172,17 @@ module.exports = class Adapter {
       throw new Error("id is required")
     }
     const fixedData = this._sanitize(identity, data)
+    const old = await this.findOne(identity, { id }, {}, trx)
 
-    const validation = this._validate(_.omit(this.schemas[identity], "required"), _.omitBy(fixedData, _.isNil))
+    if (!old) {
+      throw new Error(`Update failed – record with id ${id} not found`)
+    }
+
+    const validation = this._validate(identity, _.omitBy(Object.assign(old, fixedData), _.isNil))
     if (!validation.passed) {
       throw new Error(`Property ${validation.errors[0].dataPath} validation fail: ${validation.errors[0].message}`)
     }
 
-    const old = await this.findOne(identity, { id }, {}, trx)
     await this.emitter.emit(`${identity}:update:before`, trx, old, fixedData)
 
     const update = this.knex(identity)
@@ -186,10 +190,6 @@ module.exports = class Adapter {
       .update(fixedData)
       .returning("*")
     const result = trx ? await update.transacting(trx) : await update
-
-    if (!result.length) {
-      throw new Error(`Update failed – record with id ${id} not found`)
-    }
 
     const item = result[0]
     await this.emitter.emit(`${identity}:update:after`, trx, old, item)
