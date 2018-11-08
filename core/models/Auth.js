@@ -1,6 +1,9 @@
+const config = require("config")
+
 module.exports = {
   api: {
     "post auth": [
+      ...(config.get("debug.pause") ? [PolicyService.pause] : []),
       async ctx => {
         try {
           const operator = await AuthService.getOperatorByCredentials(

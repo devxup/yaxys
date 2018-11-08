@@ -16,7 +16,7 @@ export default
 )
 class ProtectedZone extends Component {
   static propTypes = {
-    me: PropTypes.object,
+    me: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
   }
   render() {
     if (!this.props.me) {

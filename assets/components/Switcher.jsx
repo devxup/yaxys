@@ -10,7 +10,7 @@ export default class Switcher extends Component {
     emptyLabel: PropTypes.string,
     emptyClasses: PropTypes.string,
     emptyProps: PropTypes.string,
-    value: PropTypes.oneOfType[PropTypes.string, PropTypes.boolean],
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
     choices: PropTypes.arrayOf(PropTypes.object),
     onChange: PropTypes.func,
   }

@@ -5,7 +5,7 @@ import moment from "moment-timezone"
 import Wrapper from "../components/Wrapper.jsx"
 
 import { withStyles } from "@material-ui/core"
-import { withConstants } from "../services/Utils"
+import { withConstants, commonClasses } from "../services/Utils"
 import PropTypes from "prop-types"
 
 import Button from "@material-ui/core/Button/Button"
@@ -18,6 +18,7 @@ export default
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.secondary.contrastText,
   },
+  ...commonClasses(theme),
 }))
 @withConstants
 @connect(
@@ -46,10 +47,10 @@ class Me extends Component {
 
   render() {
     const { classes, constants } = this.props
-
     return (
-      <Wrapper>
-        <h1>Account</h1>
+      <Wrapper breadcrumbs={["Account"]}>
+        <h1 className={ classes.h1 }>Your account</h1>
+        { JSON.stringify(commonClasses) }
         <p>You are authenticated until {moment.tz(this.props.me.exp * 1000, constants.timezone).format("MMMM DD HH:mm")}</p>
         <p>Email: {this.props.me?.email}</p>
         <Button

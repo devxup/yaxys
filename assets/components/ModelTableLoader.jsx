@@ -118,7 +118,7 @@ class ModelTableLoaderPage extends Component {
             classes={{
               spacer: classes.paginationSpacer,
             }}
-            count={JSON.parse(models.meta.responseMeta.meta).total}
+            count={Number(JSON.parse(models.meta.responseMeta.meta).total)}
             rowsPerPage={limit}
             rowsPerPageOptions={[]}
             page={page}

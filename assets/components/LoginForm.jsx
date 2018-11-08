@@ -3,11 +3,19 @@ import PropTypes from "prop-types"
 import { connect } from "react-redux"
 
 import { withStyles } from "@material-ui/core/styles"
-
-import Button from "@material-ui/core/Button"
-import TextField from "@material-ui/core/TextField"
+import classNames from "classnames"
+import { Button, TextField, CircularProgress } from "@material-ui/core"
 
 import YaxysClue, { queries } from "../services/YaxysClue"
+
+const marker = "login-form"
+
+const authClue = props => ({
+  identity: "auth",
+  query: queries.CREATE,
+})
+
+const authSelector = YaxysClue.selectors.byClue(authClue, { marker })
 
 const FORM_SCHEMA = {
   properties: {
@@ -21,22 +29,43 @@ const FORM_SCHEMA = {
   },
 }
 
-export default
 @withStyles(theme => ({
   button: {
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.primary.contrastText,
+    "&:hover": {
+      backgroundColor: theme.palette.primary.dark,
+    },
+  },
+  progress: {
+    marginTop: 3,
+    verticalAlign: "middle",
+  },
+  message: {
+    display: "inline-block",
+    marginTop: 3,
+    marginBottom: 3,
+    marginLeft: theme.spacing.unit,
+    verticalAlign: "middle",
+  },
+  pending: {
+    color: "#999",
+  },
+  error: {
+    color: theme.palette.error.dark,
   },
 }))
 @connect(
   (state, props) => ({
+    auth: authSelector(state, props),
   }),
   {
     authenticate: YaxysClue.actions.byClue,
   }
 )
-class LoginForm extends Component {
+export default class LoginForm extends Component {
   static propTypes = {
+    auth: PropTypes.object,
     authenticate: PropTypes.func.isRequired,
   }
 
@@ -44,6 +73,7 @@ class LoginForm extends Component {
     super(props)
     this.state = {
       dirty: false,
+      hasAttempt: false,
       form: {
         email: null,
         password: null,
@@ -52,11 +82,8 @@ class LoginForm extends Component {
   }
 
   onLogin = () => {
-    this.props.authenticate({
-      identity: "auth",
-      query: queries.CREATE,
-      data: this.state.form,
-    })
+    this.setState({ hasAttempt: true })
+    this.props.authenticate({ ...authClue(this.props), data: this.state.form }, { marker })
   }
 
   onChange = event => {
@@ -99,15 +126,38 @@ class LoginForm extends Component {
   }
 
   render() {
-    const { classes } = this.props
+    const { classes, auth } = this.props
     const propertyKeys = Object.keys(FORM_SCHEMA.properties)
+
+    const authJSON = auth?.toJSON?.() || auth
+    const lastAttempt = this.state.hasAttempt && authJSON?.[authJSON?.length - 1]
 
     return (
       <Fragment>
         {propertyKeys.map(this.renderProperty)}
-        <Button className={classes.button} variant="text" onClick={this.onLogin}>
-          Log in
-        </Button>
+        {lastAttempt?.pending ? (
+          <Fragment>
+            <CircularProgress className={classes.progress} size={30} />
+            <span className={classNames(classes.message, classes.pending)}>
+              Checking email and password
+            </span>
+          </Fragment>
+        ) : (
+          <Fragment>
+            <Button classes={{ root: classes.button }} variant="text" onClick={this.onLogin}>
+              Log in
+            </Button>
+            {lastAttempt?.error && (
+              <span className={classNames(classes.message, classes.error)}>
+                {lastAttempt?.data?.message ||
+                  lastAttempt?.data?.toString() ||
+                  (lastAttempt?.meta?.responseMeta?.status === 403
+                    ? "Wrong credentials"
+                    : "An error occured")}
+              </span>
+            )}
+          </Fragment>
+        )}
       </Fragment>
     )
   }

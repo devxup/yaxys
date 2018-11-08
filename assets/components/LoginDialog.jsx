@@ -6,7 +6,6 @@ import LoginForm from "../components/LoginForm.jsx"
 import Dialog from "@material-ui/core/Dialog"
 import DialogContent from "@material-ui/core/DialogContent"
 import DialogTitle from "@material-ui/core/DialogTitle"
-import Button from "@material-ui/core/Button"
 
 import { withImmutablePropsFixed } from "../services/Utils.js"
 
@@ -23,9 +22,6 @@ class LoginDialog extends Component {
         <DialogTitle>{"Login"}</DialogTitle>
         <DialogContent>
           <LoginForm />
-          <Button onClick={onClose} color="primary">
-            {"Close"}
-          </Button>
         </DialogContent>
       </Dialog>
     )

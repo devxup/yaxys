@@ -52,7 +52,7 @@ export default class Connection extends Component {
 
     relatedIdentity: PropTypes.string,
     relatedProperty: PropTypes.string,
-    parentId: PropTypes.oneOfType(PropTypes.number, PropTypes.string),
+    parentId: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     additionalCluePropertiea: PropTypes.object,
     columns: PropTypes.array,
     url: PropTypes.func,

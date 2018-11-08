@@ -41,7 +41,7 @@ export default class Request extends Component {
     item: PropTypes.object,
     repeat: PropTypes.func,
 
-    selector: PropTypes.oneOfType([PropTypes.function, PropTypes.object]),
+    selector: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
     attemptAt: PropTypes.number,
     message: PropTypes.string,
     onSuccess: PropTypes.func,

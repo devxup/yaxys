@@ -5,6 +5,9 @@ export const commonClasses = theme => ({
     padding: `1px ${theme.spacing.unit * 3}px ${theme.spacing.unit * 2}px`,
     marginBottom: theme.spacing.unit * 2,
   },
+  h1: {
+    marginTop: 0,
+  },
 })
 
 // Some props coming from selector may be an Immutable Map,
