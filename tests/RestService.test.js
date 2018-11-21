@@ -9,21 +9,19 @@ describe("RestService", () => {
 
     const adapterMethodsToEmulate = ["find", "findOne", "insert", "update", "count", "delete"]
     global.yaxys = {
-      db: Object.assign(_.reduce(
-          adapterMethodsToEmulate,
-          (memo, methodName) => {
-            memo[methodName] = function() {
-              return [methodName, ...arguments]
-            }
-            return memo
-          },
-          {}
-        ),
+      db: _.reduce(
+        adapterMethodsToEmulate,
+        (memo, methodName) => {
+          memo[methodName] = function() {
+            return [methodName, ...arguments]
+          }
+          return memo
+        },
         {
           knex: {
-            transaction: (callback) => callback("trx"),
+            transaction: callback => callback("trx"),
           },
-        },
+        }
       ),
       models: {
         m1: {},
