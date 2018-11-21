@@ -3,6 +3,9 @@ import React, { Component } from "react"
 import { connect } from "react-redux"
 import PropTypes from "prop-types"
 import { omit } from "lodash"
+import { withRouter } from "react-router"
+
+import queryString from "query-string"
 
 import TablePagination from "@material-ui/core/TablePagination"
 import { withStyles } from "@material-ui/core/styles"
@@ -13,6 +16,7 @@ import { withConstants } from "../services/Utils.js"
 import ModelTable from "./ModelTable.jsx"
 import Loader from "./Loader.jsx"
 
+@withRouter
 @withConstants
 export default class ModelTableLoader extends Component {
   static propTypes = {
@@ -27,21 +31,18 @@ export default class ModelTableLoader extends Component {
     deletedKey: PropTypes.string,
   }
 
-  state = {
-    page: 0,
-  }
-
   onChangePage = (event, page) => {
-    this.setState({ page: page })
+    this.props.history.push({ search: `page=${page + 1}` })
   }
 
   render() {
+    const page = queryString.parse(this.props.history.location.search)?.page - 1 || 0
     return (
       <ModelTableLoaderPage
-        page={this.state.page}
+        page={page}
         onChangePage={this.onChangePage}
         limit={this.props.limit || this.props.constants.paginationLimit}
-        {...omit(this.props, "limit")}
+        {...omit(this.props, "limit", "staticContext")}
       />
     )
   }
