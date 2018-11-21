@@ -109,7 +109,7 @@ module.exports = class Adapter {
 
   /**
    * Validate data using ajv
-   * @param {Object} identity Identity of schema to validate
+   * @param {String} identity Identity of schema to validate
    * @param {Object} data Data to validate
    * @returns {{passed: boolean, errors: Array<ajv.ErrorObject>}} The result of validation
    * @private
