@@ -1,6 +1,8 @@
 const knex = require("knex")
 const _ = require("lodash")
 const EventEmitter = require("promise-events")
+const Ajv = require("ajv")
+const ajv = new Ajv({ format: "full" })
 
 const DEFAULT_OPTIONS = {
   limit: 100,
@@ -78,7 +80,7 @@ module.exports = class Adapter {
       const property = schema.properties[key]
       switch (property && property.type) {
         case "object":
-          return typeof value === "string" ? value : JSON.stringify(value)
+          return typeof value === "string" ? JSON.stringify(value) : value
         case "number":
         case "integer":
           if (
@@ -102,6 +104,19 @@ module.exports = class Adapter {
    */
   registerSchema(identity, schema) {
     this.schemas[identity.toLowerCase()] = schema
+    this.schemas[identity.toLowerCase()].validator = ajv.compile(schema)
+  }
+
+  /**
+   * Validate data using ajv
+   * @param {Object} identity Identity of schema to validate
+   * @param {Object} data Data to validate
+   * @returns {{passed: boolean, errors: Array<ajv.ErrorObject>}} The result of validation
+   * @private
+   */
+  _validate(identity, data) {
+    const passed = this.schemas[identity.toLowerCase()].validator(data)
+    return { passed: passed, errors: this.schemas[identity.toLowerCase()].validator.errors }
   }
 
   /**
@@ -116,6 +131,11 @@ module.exports = class Adapter {
     const dataToInsert = data.id ? data : _.omit(data, "id")
 
     const fixedData = this._sanitize(identity, dataToInsert)
+
+    const validation = this._validate(identity, _.omitBy(fixedData, _.isNil))
+    if (!validation.passed) {
+      throw new Error(`Property ${validation.errors[0].dataPath} validation fail: ${validation.errors[0].message}`)
+    }
 
     await this.emitter.emit(`${identity}:create:before`, trx, fixedData)
 
@@ -152,8 +172,17 @@ module.exports = class Adapter {
       throw new Error("id is required")
     }
     const fixedData = this._sanitize(identity, data)
-
     const old = await this.findOne(identity, { id }, {}, trx)
+
+    if (!old) {
+      throw new Error(`Update failed – record with id ${id} not found`)
+    }
+
+    const validation = this._validate(identity, _.omitBy(Object.assign(old, fixedData), _.isNil))
+    if (!validation.passed) {
+      throw new Error(`Property ${validation.errors[0].dataPath} validation fail: ${validation.errors[0].message}`)
+    }
+
     await this.emitter.emit(`${identity}:update:before`, trx, old, fixedData)
 
     const update = this.knex(identity)
@@ -161,10 +190,6 @@ module.exports = class Adapter {
       .update(fixedData)
       .returning("*")
     const result = trx ? await update.transacting(trx) : await update
-
-    if (!result.length) {
-      throw new Error(`Update failed – record with id ${id} not found`)
-    }
 
     const item = result[0]
     await this.emitter.emit(`${identity}:update:after`, trx, old, item)

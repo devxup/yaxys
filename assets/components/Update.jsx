@@ -188,7 +188,7 @@ export default class Update extends Component {
       case "pending":
         return (
           <Fragment>
-            <CircularProgress size={30} class={classes.progress} />
+            <CircularProgress size={30} className={classes.progress} />
             Saving changes&hellip;
           </Fragment>
         )

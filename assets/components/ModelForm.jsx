@@ -6,7 +6,7 @@ import ModelPicker from "./ModelPicker.jsx"
 import ModelCreator from "./ModelCreator.jsx"
 
 const Ajv = require("ajv")
-const ajv = new Ajv({ allErrors: true })
+const ajv = new Ajv({ allErrors: true, format: "full" })
 
 @withConstants
 export default class ModelForm extends Component {
