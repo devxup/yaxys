@@ -3,7 +3,6 @@ import React, { Component } from "react"
 import { connect } from "react-redux"
 
 import { Paper, Button } from "@material-ui/core"
-import AddIcon from "@material-ui/icons/Add"
 
 import YaxysClue, { queries } from "../services/YaxysClue"
 import { withConstants } from "../services/Utils"
@@ -58,16 +57,15 @@ export default class AccessPoints extends Component {
     const { constants } = this.props
     return (
       <Wrapper breadcrumbs={["Access points"]}>
+        <h1 style={{ marginTop: 0 }}>Access points</h1>
         <Button
-          variant="fab"
+          variant="text"
           color="secondary"
           onClick={this.onAdd}
-          style={{ float: "right" }}
           title="Create access point"
         >
-          <AddIcon />
+          Add access point
         </Button>
-        <h1 style={{ marginTop: 0 }}>Access points</h1>
         <Created
           items={this.props.createdAccessPoints}
           content={accessPoint =>

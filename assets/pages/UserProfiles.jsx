@@ -2,9 +2,7 @@
 import React, { Component } from "react"
 import { connect } from "react-redux"
 
-import Paper from "@material-ui/core/Paper"
-import AddIcon from "@material-ui/icons/Add"
-import Button from "@material-ui/core/Button"
+import { Paper, Button } from "@material-ui/core"
 
 import YaxysClue, { queries } from "../services/YaxysClue"
 import { withConstants } from "../services/Utils"
@@ -59,16 +57,15 @@ export default class UserProfiles extends Component {
     const { constants } = this.props
     return (
       <Wrapper breadcrumbs={[{ title: "Settings", url: "/settings" }, "User profiles"]}>
+        <h1 style={{ marginTop: 0 }}>User Profiles</h1>
         <Button
-          variant="fab"
+          variant="text"
           color="secondary"
           onClick={this.onAdd}
-          style={{ float: "right" }}
           title="Create new profile"
         >
-          <AddIcon />
+          Add profile
         </Button>
-        <h1 style={{ marginTop: 0 }}>User Profiles</h1>
         <Created
           items={this.props.createdProfiles}
           content={profile => profile.title}

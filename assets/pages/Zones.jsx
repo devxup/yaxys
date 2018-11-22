@@ -3,7 +3,6 @@ import React, { Component } from "react"
 import { connect } from "react-redux"
 
 import Paper from "@material-ui/core/Paper"
-import AddIcon from "@material-ui/icons/Add"
 import Button from "@material-ui/core/Button"
 
 import YaxysClue, { queries } from "../services/YaxysClue"
@@ -59,16 +58,15 @@ export default class Zones extends Component {
     const { constants } = this.props
     return (
       <Wrapper breadcrumbs={["Zones"]}>
+        <h1 style={{ marginTop: 0 }}>Zones</h1>
         <Button
-          variant="fab"
+          variant="text"
           color="secondary"
           onClick={this.onAdd}
-          style={{ float: "right" }}
           title="Create zone"
         >
-          <AddIcon />
+          Add zone
         </Button>
-        <h1 style={{ marginTop: 0 }}>Zones</h1>
         <Created
           items={this.props.createdZones}
           content={zone =>

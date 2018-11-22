@@ -1,6 +1,6 @@
 import React from "react"
 import { createMuiTheme, MuiThemeProvider } from "@material-ui/core/styles"
-import { blue, green, red, yellow } from "@material-ui/core/colors"
+import { blue, pink, green, red, yellow } from "@material-ui/core/colors"
 import CssBaseline from "@material-ui/core/CssBaseline"
 
 const theme = createMuiTheme({
@@ -12,9 +12,9 @@ const theme = createMuiTheme({
       contrastText: "#fff",
     },
     secondary: {
-      main: green["600"],
-      light: green["A400"],
-      dark: green["900"],
+      main: pink["600"],
+      light: pink["A400"],
+      dark: pink["900"],
     },
     error: {
       main: red["400"],

@@ -8,6 +8,9 @@ export const commonClasses = theme => ({
   h1: {
     marginTop: 0,
   },
+  addButton: {
+    background: theme.palette.secondary.main,
+  },
 })
 
 // Some props coming from selector may be an Immutable Map,

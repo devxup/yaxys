@@ -4,7 +4,6 @@ import { Link } from "react-router-dom"
 import { connect } from "react-redux"
 
 import Paper from "@material-ui/core/Paper"
-import AddIcon from "@material-ui/icons/Add"
 import Button from "@material-ui/core/Button"
 
 import YaxysClue, { queries } from "../services/YaxysClue"
@@ -60,20 +59,19 @@ export default class Users extends Component {
     const { constants } = this.props
     return (
       <Wrapper breadcrumbs={["Users"]}>
-        <Button
-          variant="fab"
-          color="secondary"
-          onClick={this.onAdd}
-          style={{ float: "right" }}
-          title="Create user"
-        >
-          <AddIcon />
-        </Button>
         <h1 style={{ marginTop: 0 }}>Users</h1>
         <p>
           Also, you can control users&#39; rights by{" "}
           <Link to={"/settings/user-profiles"}>managing their profiles</Link>
         </p>
+        <Button
+          variant="text"
+          color="secondary"
+          onClick={this.onAdd}
+          title="Create user"
+        >
+          Add user
+        </Button>
         <Created
           items={this.props.createdUsers}
           content={user => user.name}

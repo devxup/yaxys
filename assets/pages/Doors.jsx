@@ -3,7 +3,6 @@ import React, { Component } from "react"
 import { connect } from "react-redux"
 
 import Paper from "@material-ui/core/Paper"
-import AddIcon from "@material-ui/icons/Add"
 import Button from "@material-ui/core/Button"
 
 import YaxysClue, { queries } from "../services/YaxysClue"
@@ -59,23 +58,18 @@ export default class Doors extends Component {
     const { constants } = this.props
     return (
       <Wrapper breadcrumbs={["Doors"]}>
+        <h1 style={{ marginTop: 0 }}>Doors</h1>
         <Button
-          variant="fab"
+          variant="text"
           color="secondary"
           onClick={this.onAdd}
-          style={{ float: "right" }}
           title="Create door"
         >
-          <AddIcon />
+          Add door
         </Button>
-        <h1 style={{ marginTop: 0 }}>Doors</h1>
         <Created
           items={this.props.createdDoors}
-          content={door =>
-            door.title
-              ? `#${door.id} ${door.title}`
-              : `Door #${door.id}`
-          }
+          content={door => (door.title ? `#${door.id} ${door.title}` : `Door #${door.id}`)}
           url={door => `/doors/${door.id}`}
         />
         <Paper>
