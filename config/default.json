@@ -23,5 +23,10 @@
   "debug": {
     "pause": false,
     "randomError": false
+  },
+  "credentialsCodeRestrictions": {
+    "minLength": 8,
+    "maxLength": 8,
+    "pattern": "hexadecimal"
   }
 }
