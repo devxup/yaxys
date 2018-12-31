@@ -3,13 +3,12 @@
 import React from "react"
 
 import { Provider } from "react-redux"
-import { Route, Switch } from "react-router-dom"
+import { Route, Switch, Redirect } from "react-router-dom"
 
 import { ConstantsProvider } from "./services/Utils"
 import Theme from "./components/Theme.jsx"
 import ProtectedZone from "./components/ProtectedZone.jsx"
 
-import Index from "./pages/Index.jsx"
 import Login from "./pages/Login.jsx"
 import Me from "./pages/Me.jsx"
 import Operators from "./pages/Operators.jsx"
@@ -37,7 +36,7 @@ export default (store, constants) => (
         <Switch>
           <Route exact path="/login" component={Login} />
           <ProtectedZone>
-            <Route exact path="/" component={Index} />
+            <Redirect exact path="/" to="/users" />
             <Route exact path="/me" component={Me} />
             <Route exact path="/operators" component={Operators} />
             <Route exact path="/operators/:id" component={Operator} />

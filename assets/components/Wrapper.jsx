@@ -21,7 +21,6 @@ import ChevronLeftIcon from "@material-ui/icons/ChevronLeft"
 import ListItem from "@material-ui/core/ListItem"
 import ListItemIcon from "@material-ui/core/ListItemIcon"
 import ListItemText from "@material-ui/core/ListItemText"
-import DashboardIcon from "@material-ui/icons/Dashboard"
 import SdCardIcon from "@material-ui/icons/SdCard"
 import PeopleIcon from "@material-ui/icons/People"
 import PeopleOutlineIcon from "@material-ui/icons/PeopleOutline"
@@ -38,9 +37,14 @@ const drawerWidth = 240
 const lists = {
   primary: [
     {
-      icon: DashboardIcon,
-      title: "Dashboard",
-      url: "/",
+      icon: PeopleOutlineIcon,
+      title: "Users",
+      url: "/users",
+    },
+    {
+      icon: PersonOutlineIcon,
+      title: "User Profiles",
+      url: "/user-profiles",
     },
     {
       icon: SdCardIcon,
@@ -56,16 +60,6 @@ const lists = {
       icon: PictureInPictureIcon,
       title: "Zones",
       url: "/zones",
-    },
-    {
-      icon: PeopleOutlineIcon,
-      title: "Users",
-      url: "/users",
-    },
-    {
-      icon: PersonOutlineIcon,
-      title: "User Profiles",
-      url: "/user-profiles",
     },
   ],
   secondary: [
