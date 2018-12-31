@@ -3,7 +3,7 @@ const config = require("config")
 const jwt = require("jsonwebtoken")
 
 module.exports = {
-  OPERATOR_ATTRIBUTES_FOR_JWT: ["id", "email", "rights", "isAdministrator"],
+  OPERATOR_ATTRIBUTES_FOR_JWT: ["id", "name", "login", "email", "rights", "isAdministrator"],
 
   /**
    * Encrypt the password using bcrypt
@@ -22,12 +22,16 @@ module.exports = {
 
   /**
    * Find the operator by credentials (email and password) or throw the exception
-   * @param {String} email Operator's email
+   * @param {String} loginOrEmail Operator's login or email
    * @param {String} password Operator's password
    * @returns {Promise<Object>} The operator found
    */
-  getOperatorByCredentials: async (email, password) => {
-    const operator = await yaxys.db.findOne("operator", { email }, {})
+  getOperatorByCredentials: async (loginOrEmail, password) => {
+    let operator = null
+    operator = await yaxys.db.findOne("operator", { email: loginOrEmail }, {})
+    if (!operator) {
+      operator = await yaxys.db.findOne("operator", { login: loginOrEmail }, {})
+    }
     if (operator && AuthService.checkPassword(password, operator.passwordHash)) {
       return operator
     }
@@ -111,5 +115,17 @@ module.exports = {
         return _.some(rights[identity], value => !_.isNil(value))
       })
     )
+  },
+
+  /**
+   * Checks the operator integrity and throws an error if something is wrong
+   * @param {Object} instance The current instance
+   * @param {Object=} patch The patch being applied
+   */
+  checkOperatorIntegrity(instance, patch = null) {
+    const patchedInstance = Object.assign({}, instance, patch)
+    if (!patchedInstance.login && !patchedInstance.email) {
+      throw new Error("Operator should have login or email")
+    }
   },
 }

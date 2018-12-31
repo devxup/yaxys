@@ -50,9 +50,12 @@ class Me extends Component {
     return (
       <Wrapper breadcrumbs={["Account"]}>
         <h1 className={ classes.h1 }>Your account</h1>
-        { JSON.stringify(commonClasses) }
         <p>You are authenticated until {moment.tz(this.props.me.exp * 1000, constants.timezone).format("MMMM DD HH:mm")}</p>
-        <p>Email: {this.props.me?.email}</p>
+        {
+          this.props.me?.email
+            ? <p>Email: {this.props.me?.email}</p>
+            : <p>Login: {this.props.me?.login}</p>
+        }
         <Button
           onClick={this.onLogout}
           variant="text"

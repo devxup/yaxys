@@ -17,8 +17,8 @@ yaxys
         console.log(ModelService.getSQLForAllModels())
       },
       async create_operator() {
-        if (!argv.email) {
-          yaxys.logger.error("Email is required!")
+        if (!argv.email && !argv.login) {
+          yaxys.logger.error("Email or login is required!")
           return
         }
         if (!argv.pwd) {
@@ -26,7 +26,8 @@ yaxys
           return
         }
         await yaxys.db.insert("operator", {
-          email: argv.email,
+          ...(argv.email ? { email: argv.email } : {}),
+          ...(argv.login ? { login: argv.login } : {}),
           passwordHash: AuthService.encryptPassword(String(argv.pwd)),
           rights: {},
           isAdministrator: true,

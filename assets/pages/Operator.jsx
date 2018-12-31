@@ -34,7 +34,7 @@ const createdBindingsSelector = YaxysClue.selectors.byClue(
   { marker: CREATED_BINDINGS_MARKER }
 )
 
-const EDIBLE_PROPERTIES = ["id", "email", "isAdministrator", "rights"]
+const EDIBLE_PROPERTIES = ["id", "name", "login", "email", "isAdministrator", "rights"]
 
 @withStyles(theme => ({
   ...commonClasses(theme),
@@ -197,7 +197,10 @@ export default class Operator extends Component {
 
   render() {
     const { operator, match, classes, constants } = this.props
-    const idAndName = `#${match.params.id}${ operator?.success ? ` ${operator.data.email}` : "" }`
+    const idAndName = `#${match.params.id}${ 
+      operator?.success 
+        ? ` ${operator.data.name || operator.data.login || operator.data.email}` 
+        : "" }`
     const update = (
       <Update
         clue={operatorClue(this.props)}
@@ -223,7 +226,7 @@ export default class Operator extends Component {
                 forceValidation={this.state.forceValidation}
                 schema={this.state.schema}
                 margin="dense"
-                attributes={["email", "passwordHash"]}
+                attributes={["name", "login", "email", "passwordHash"]}
               />
               <br />
               <FormControlLabel

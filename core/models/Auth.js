@@ -7,7 +7,7 @@ module.exports = {
       async ctx => {
         try {
           const operator = await AuthService.getOperatorByCredentials(
-            ctx.request.body.email,
+            ctx.request.body.loginOrEmail,
             ctx.request.body.password
           )
           ctx.cookies.set("jwt", AuthService.generateToken(operator), {

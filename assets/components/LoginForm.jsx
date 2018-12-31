@@ -19,8 +19,8 @@ const authSelector = YaxysClue.selectors.byClue(authClue, { marker })
 
 const FORM_SCHEMA = {
   properties: {
-    email: {
-      title: "E-mail",
+    loginOrEmail: {
+      title: "Login or e-mail",
     },
     password: {
       title: "Password",
@@ -75,7 +75,7 @@ export default class LoginForm extends Component {
       dirty: false,
       hasAttempt: false,
       form: {
-        email: null,
+        loginOrEmail: null,
         password: null,
       },
     }
@@ -110,7 +110,7 @@ export default class LoginForm extends Component {
     return (
       <TextField
         key={index}
-        type={property.password ? "password" : "email"}
+        type={property.password ? "password" : "text"}
         fullWidth
         autoFocus={index === 0}
         name={propertyKey}
@@ -139,7 +139,7 @@ export default class LoginForm extends Component {
           <Fragment>
             <CircularProgress className={classes.progress} size={30} />
             <span className={classNames(classes.message, classes.pending)}>
-              Checking email and password
+              Checking credentials&hellip;
             </span>
           </Fragment>
         ) : (

@@ -5,6 +5,15 @@ module.exports = {
       id: {
         type: "integer",
       },
+      name: {
+        title: "Name",
+        type: "string",
+      },
+      login: {
+        title: "Login",
+        type: "string",
+        unique: true,
+      },
       email: {
         title: "E-mail",
         type: "string",
@@ -41,15 +50,20 @@ module.exports = {
         },
       },
     },
-    required: ["email", "passwordHash"],
+    required: ["passwordHash"],
   },
 
   hooks: {
     "create:before": (trx, blank) => {
-      blank.hasCustomRights = AuthService.hasCustomRights(blank)
+      AuthService.checkOperatorIntegrity(blank)
+      if (!blank.name) {
+        blank.name = blank.login
+          ? blank.login
+          : String(blank.email).replace(/@.*$/, "")
+      }
     },
     "update:before": (trx, old, patch) => {
-      patch.hasCustomRights = AuthService.hasCustomRights(old, patch)
+      AuthService.checkOperatorIntegrity(old, patch)
     },
   },
 

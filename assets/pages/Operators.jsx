@@ -81,7 +81,7 @@ export default class Operators extends Component {
           <ModelTableLoader
             identity="operator"
             url={operator => `/operators/${operator.id}`}
-            columns={["id", "email", "isAdministrator", "hasCustomRights", "profiles"]}
+            columns={["id", "name", "login", "email", "isAdministrator", "hasCustomRights", "profiles"]}
             additionalClueProperties={{ populate: "profiles" }}
           />
         </Paper>

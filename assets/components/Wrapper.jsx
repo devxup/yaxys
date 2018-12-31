@@ -160,7 +160,7 @@ const styles = theme => ({
   },
   authMe: {
     color: "white",
-    fontWeight: 400,
+    fontWeight: 600,
     fontSize: 16,
   },
   drawerItem: {
@@ -244,17 +244,17 @@ export default class Wrapper extends Component {
     if (this.props.me) {
       return (
         <Link to="/me" className={classes.authMe}>
-          {this.props.me.email}
+          { this.props.me.name || this.props.me.login || this.props.me.email}
         </Link>
       )
     }
     return (
-        <div className={classes.authLogin} onClick={this.openLoginDialog}>
-          <span className={classes.authLoginSpan}>Log in</span>
-          <Avatar className={classes.avatar}>
-            <PersonIcon />
-          </Avatar>
-        </div>
+      <div className={classes.authLogin} onClick={this.openLoginDialog}>
+        <span className={classes.authLoginSpan}>Log in</span>
+        <Avatar className={classes.avatar}>
+          <PersonIcon />
+        </Avatar>
+      </div>
     )
   }
 
