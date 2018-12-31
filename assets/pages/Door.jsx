@@ -109,7 +109,6 @@ export default class Door extends Component {
         <h1 style={{ marginTop: 0 }}>Door {idAndName}</h1>
         <Loader item={door}>
           <Paper className={classes.block}>
-            <h5>Properties</h5>
             <ModelForm
               autoFocus={true}
               values={this.state.door}

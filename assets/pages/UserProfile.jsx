@@ -8,7 +8,7 @@ import { pick, cloneDeep } from "lodash"
 import { Paper } from "@material-ui/core"
 import { withStyles } from "@material-ui/core/styles"
 
-import { withConstants } from "../services/Utils"
+import { commonClasses, withConstants } from "../services/Utils"
 
 import Wrapper from "../components/Wrapper.jsx"
 import Loader from "../components/Loader.jsx"
@@ -23,14 +23,13 @@ const userProfileClue = props => ({
 })
 const userProfileSelector = YaxysClue.selectors.byClue(userProfileClue)
 
-const styles = {
+@withStyles(theme => ({
+  ...commonClasses(theme),
   rights: {
     padding: "1px 30px 20px",
     margin: "0 0 30px 0",
   },
-}
-
-@withStyles(styles)
+}))
 @withConstants
 @connect(
   (state, props) => ({
@@ -112,16 +111,17 @@ export default class UserProfile extends Component {
         <h1 style={{ marginTop: 0 }}>User profile {idAndName}</h1>
         <Loader item={userProfile}>
           <Fragment>
-            <ModelForm
-              autoFocus={true}
-              values={this.state.userProfile}
-              onChange={this.onFormChange}
-              forceValidation={this.state.forceValidation}
-              schema={constants.schemas.userprofile}
-              margin="dense"
-              attributes={["name", "description"]}
-            />
-            <br />
+            <Paper className={classes.block}>
+              <ModelForm
+                autoFocus={true}
+                values={this.state.userProfile}
+                onChange={this.onFormChange}
+                forceValidation={this.state.forceValidation}
+                schema={constants.schemas.userprofile}
+                margin="dense"
+                attributes={["name", "description"]}
+              />
+            </Paper>
             <Paper className={classes.rights}>
               <h5>The profile rights:</h5>
               <AccessRights

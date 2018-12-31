@@ -2,7 +2,7 @@ import React, { createContext } from "react"
 
 export const commonClasses = theme => ({
   block: {
-    padding: `1px ${theme.spacing.unit * 3}px ${theme.spacing.unit * 2}px`,
+    padding: `5px ${theme.spacing.unit * 3}px ${theme.spacing.unit * 2}px`,
     marginBottom: theme.spacing.unit * 2,
   },
   h1: {

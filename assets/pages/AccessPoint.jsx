@@ -114,7 +114,6 @@ export default class AccessPoint extends Component {
         <Loader item={accessPoint}>
           <Fragment>
             <Paper className={classes.block}>
-              <h5>Properties</h5>
               <ModelForm
                 autoFocus={true}
                 values={this.state.accessPoint}

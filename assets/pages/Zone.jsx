@@ -107,7 +107,6 @@ export default class Zone extends Component {
         <h1 style={{ marginTop: 0 }}>Zone {idAndName}</h1>
         <Loader item={zone}>
           <Paper className={classes.block}>
-            <h5>Properties</h5>
             <ModelForm
               autoFocus={true}
               values={this.state.zone}

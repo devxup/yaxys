@@ -8,7 +8,7 @@ import { pick, cloneDeep, pull } from "lodash"
 import { withStyles } from "@material-ui/core/styles"
 import { Paper, FormControlLabel, Switch, Button } from "@material-ui/core"
 
-import { withConstants } from "../services/Utils"
+import { commonClasses, withConstants } from "../services/Utils"
 
 import RightsEditor from "../components/RightsEditor.jsx"
 import Wrapper from "../components/Wrapper.jsx"
@@ -34,7 +34,10 @@ const createdBindingsSelector = YaxysClue.selectors.byClue(
   { marker: CREATED_BINDINGS_MARKER }
 )
 
-const styles = {
+const EDIBLE_PROPERTIES = ["id", "email", "isAdministrator", "rights"]
+
+@withStyles(theme => ({
+  ...commonClasses(theme),
   rights: {
     padding: "1px 30px 20px",
     margin: "0 0 30px 0",
@@ -43,11 +46,7 @@ const styles = {
     padding: "1px 30px 20px",
     margin: "0 0 30px 0",
   },
-}
-
-const EDIBLE_PROPERTIES = ["id", "email", "isAdministrator", "rights"]
-
-@withStyles(styles)
+}))
 @withConstants
 @connect(
   (state, props) => ({
@@ -216,27 +215,29 @@ export default class Operator extends Component {
         <h1 style={{ marginTop: 0 }}>Operator {idAndName}</h1>
         <Loader item={operator}>
           <Fragment>
-            <ModelForm
-              autoFocus={true}
-              values={this.state.operator}
-              onChange={this.onFormChange}
-              forceValidation={this.state.forceValidation}
-              schema={this.state.schema}
-              margin="dense"
-              attributes={["email", "passwordHash"]}
-            />
-            <br />
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={!!this.state.operator.isAdministrator}
-                  onChange={this.handleSingleChange("isAdministrator")}
-                  color="primary"
-                  value="isAdministrator"
-                />
-              }
-              label="isAdministrator"
-            />
+            <Paper className={classes.block}>
+              <ModelForm
+                autoFocus={true}
+                values={this.state.operator}
+                onChange={this.onFormChange}
+                forceValidation={this.state.forceValidation}
+                schema={this.state.schema}
+                margin="dense"
+                attributes={["email", "passwordHash"]}
+              />
+              <br />
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={!!this.state.operator.isAdministrator}
+                    onChange={this.handleSingleChange("isAdministrator")}
+                    color="primary"
+                    value="isAdministrator"
+                  />
+                }
+                label="isAdministrator"
+              />
+            </Paper>
 
             {!this.state.operator.isAdministrator && (
               <Fragment>

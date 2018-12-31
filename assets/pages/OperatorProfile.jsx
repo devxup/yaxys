@@ -8,7 +8,7 @@ import { pick, cloneDeep } from "lodash"
 import { Paper } from "@material-ui/core"
 import { withStyles } from "@material-ui/core/styles"
 
-import { withConstants } from "../services/Utils"
+import { commonClasses, withConstants } from "../services/Utils"
 
 import RightsEditor from "../components/RightsEditor.jsx"
 import Wrapper from "../components/Wrapper.jsx"
@@ -23,14 +23,13 @@ const operatorProfileClue = props => ({
 })
 const operatorProfileSelector = YaxysClue.selectors.byClue(operatorProfileClue)
 
-const styles = {
+@withStyles(theme => ({
+  ...commonClasses(theme),
   rights: {
     padding: "1px 30px 20px",
     margin: "0 0 30px 0",
   },
-}
-
-@withStyles(styles)
+}))
 @withConstants
 @connect(
   (state, props) => ({
@@ -119,16 +118,17 @@ export default class OperatorProfile extends Component {
         <h1 style={{ marginTop: 0 }}>Operator profile {idAndName}</h1>
         <Loader item={operatorProfile}>
           <Fragment>
-            <ModelForm
-              autoFocus={true}
-              values={this.state.operatorProfile}
-              onChange={this.onFormChange}
-              forceValidation={this.state.forceValidation}
-              schema={constants.schemas.operatorprofile}
-              margin="dense"
-              attributes={["name", "description"]}
-            />
-            <br />
+            <Paper className={classes.block}>
+              <ModelForm
+                autoFocus={true}
+                values={this.state.operatorProfile}
+                onChange={this.onFormChange}
+                forceValidation={this.state.forceValidation}
+                schema={constants.schemas.operatorprofile}
+                margin="dense"
+                attributes={["name", "description"]}
+              />
+            </Paper>
             <Paper className={classes.rights}>
               <h5>The profile rights:</h5>
               <RightsEditor

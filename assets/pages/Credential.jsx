@@ -114,7 +114,6 @@ export default class Credential extends Component {
         <Loader item={credential}>
           <Fragment>
             <Paper className={classes.block}>
-              <h5>Properties</h5>
               <ModelForm
                 autoFocus={true}
                 values={this.state.credential}
