@@ -240,7 +240,7 @@ export default class User extends Component {
             relatedIdentity="credential"
             relatedProperty="user"
             parentId={match.params.id}
-            columns={["id", "title", "code"]}
+            columns={["id", "code", "note"]}
             url={credential => `/users/${match.params.id}/credentials/${credential.id}`}
           />
         </Paper>

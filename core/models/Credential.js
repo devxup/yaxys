@@ -14,14 +14,10 @@ const getCodePattern = (key = "decimal") => {
 module.exports = {
   schema: {
     title: "Credential",
-    defaultProperties: ["id", "title", "user", "code"],
+    defaultProperties: ["id", "user", "code", "note"],
     properties: {
       id: {
         type: "integer",
-      },
-      title: {
-        title: "Title",
-        type: "string",
       },
       user: {
         title: "User",
@@ -37,6 +33,10 @@ module.exports = {
         pattern: getCodePattern(config.get("credentialsCodeRestrictions.pattern") || "decimal"),
         minLength: config.get("credentialsCodeRestrictions.minLength"),
         maxLength: config.get("credentialsCodeRestrictions.maxLength"),
+      },
+      note: {
+        title: "Note",
+        type: "string",
       },
     },
     required: [],

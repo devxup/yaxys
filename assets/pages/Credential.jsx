@@ -23,7 +23,7 @@ const credentialClue = props => ({
 })
 const credentialSelector = YaxysClue.selectors.byClue(credentialClue)
 
-const PROPS_2_WATCH = ["id", "title", "user", "code"]
+const PROPS_2_WATCH = ["id", "user", "code", "note"]
 
 @withStyles(theme => ({
   ...commonClasses(theme),
@@ -121,7 +121,7 @@ export default class Credential extends Component {
                 forceValidation={this.state.forceValidation}
                 schema={constants.schemas.credential}
                 margin="dense"
-                attributes={["title", "code", "user"]}
+                attributes={["code", "note", "user"]}
               />
             </Paper>
           </Fragment>
