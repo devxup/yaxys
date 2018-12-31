@@ -28,9 +28,6 @@ const styles = theme => ({
     alignItems: "center",
     minHeight: 53,
   },
-  rootIdle: {
-    backgroundColor: theme.palette.primary.light,
-  },
   rootModified: {
     backgroundColor: theme.palette.primary.light,
   },
@@ -177,8 +174,6 @@ export default class Update extends Component {
     const updateItem = item?.updates?.[lastUpdateKey]
 
     switch (status) {
-      case "idle":
-        return <div className={classes.message}>Not modified</div>
       case "modified":
         return (
           <Button variant="text" className={classes.button} onClick={this.onSave}>
@@ -218,11 +213,10 @@ export default class Update extends Component {
   render() {
     const { item, classes } = this.props
     const { status } = this.state
-    if (!item || !item.success) {
+    if (!item || !item.success || status === "idle") {
       return false
     }
     const rootClassName = classNames(classes.root, {
-      [classes.rootIdle]: status === "idle",
       [classes.rootModified]: status === "modified",
       [classes.rootPending]: status === "pending",
       [classes.rootError]: status === "error",
