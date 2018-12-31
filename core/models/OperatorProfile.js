@@ -5,8 +5,8 @@ module.exports = {
       id: {
         type: "integer",
       },
-      title: {
-        title: "Title",
+      name: {
+        title: "Name",
         type: "string",
       },
       description: {
@@ -28,7 +28,7 @@ module.exports = {
         },
       },
     },
-    required: ["title"],
+    required: ["name"],
   },
 
   api: RestService.buildStandardAPI("operatorprofile"),

@@ -59,7 +59,7 @@ export default class Zone extends Component {
     const props = propsArg || this.props
     const zone =
       props.zone && props.zone.success
-        ? pick(props.zone.data, "id", "title", "description")
+        ? pick(props.zone.data, "id", "name", "description")
         : {}
 
     return zone
@@ -114,7 +114,7 @@ export default class Zone extends Component {
               forceValidation={this.state.forceValidation}
               schema={constants.schemas.zone}
               margin="dense"
-              attributes={["title", "description"]}
+              attributes={["name", "description"]}
             />
             <br />
           </Paper>
@@ -126,7 +126,7 @@ export default class Zone extends Component {
             relatedProperty="zoneTo"
             parentId={match.params.id}
             additionalCluePropertiea={{ populate: "door" }}
-            columns={["id", "title", "description", "door"]}
+            columns={["id", "name", "description", "door"]}
             canAddExisting={this.canAddAccessPoint}
             canCreateNew={this.canAddAccessPoint}
             url={accessPoint => `/access-points/${accessPoint.id}`}

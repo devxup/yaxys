@@ -212,7 +212,7 @@ export default class ModelForm extends Component {
 
     const chipLabel = value
       ? `${relatedSchema.title} #${typeof value === "object" ? value.id : value} ${(value &&
-          value.title) ||
+          value.name) ||
           ""}`
       : "Not selected"
     const current = <Chip label={chipLabel} onDelete={ value && this.onDelete(attribute) } />

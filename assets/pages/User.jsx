@@ -207,9 +207,9 @@ export default class User extends Component {
           <Created
             items={this.props.createdBindings}
             content={binding =>
-              binding.userProfile.title
+              binding.userProfile.name
                 ? `Profile #${binding.userProfile.id} "${
-                    binding.userProfile.title
+                    binding.userProfile.name
                   }"`
                 : `Profile #${binding.userProfile}`
             }
@@ -221,7 +221,7 @@ export default class User extends Component {
               data={user?.data?.profiles}
               url={profile => `/settings/user-profiles/${profile.id}`}
               onDelete={this.onDeleteProfile}
-              columns={ ["id", "title"] }
+              columns={ ["id", "name"] }
               deletedHash={ this.state.deletedHash }
               deletedKey="_binding_id"
             />
@@ -249,7 +249,7 @@ export default class User extends Component {
           identity="userprofile"
           onClose={this.onProfileClose}
           onPick={this.onProfilePick}
-          columns={["id", "title", "description"]}
+          columns={["id", "name", "description"]}
         />
         <Request
           selector={this.state.deletedSelector}

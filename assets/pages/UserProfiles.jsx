@@ -68,14 +68,14 @@ export default class UserProfiles extends Component {
         </Button>
         <Created
           items={this.props.createdProfiles}
-          content={profile => profile.title}
+          content={profile => profile.name}
           url={profile => `/user-profiles/${profile.id}`}
         />
         <Paper>
           <ModelTableLoader
             identity="userprofile"
             url={profile => `/user-profiles/${profile.id}`}
-            columns={["id", "title"]}
+            columns={["id", "name"]}
           />
         </Paper>
         <br />
@@ -85,10 +85,10 @@ export default class UserProfiles extends Component {
           onClose={this.onAddClose}
           onReady={this.onAddReady}
           schema={constants.schemas.userprofile}
-          attributes={["title"]}
+          attributes={["name"]}
           btnReady="Create"
         >
-          Please provide title the new user profile.
+          Please provide name for the new user profile.
         </ModelDialog>
       </Wrapper>
     )

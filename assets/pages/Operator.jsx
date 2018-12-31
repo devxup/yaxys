@@ -255,9 +255,9 @@ export default class Operator extends Component {
                   <Created
                     items={this.props.createdBindings}
                     content={binding =>
-                      binding.operatorProfile.title
+                      binding.operatorProfile.name
                         ? `Profile #${binding.operatorProfile.id} "${
-                            binding.operatorProfile.title
+                            binding.operatorProfile.name
                           }"`
                         : `Profile #${binding.operatorProfile}`
                     }
@@ -268,7 +268,7 @@ export default class Operator extends Component {
                       schema={constants.schemas.operatorprofile}
                       data={operator?.data?.profiles}
                       url={profile => `/settings/operator-profiles/${profile.id}`}
-                      columns={ ["id", "title"] }
+                      columns={ ["id", "name"] }
                       deletedHash={ this.state.deletedHash }
                       deletedKey="_binding_id"
                       onDelete={this.onTrashClick}
@@ -290,7 +290,7 @@ export default class Operator extends Component {
               identity="operatorprofile"
               onClose={this.onProfileClose}
               onPick={this.onProfilePick}
-              columns={["id", "title", "description"]}
+              columns={["id", "name", "description"]}
             />
             <Request
               selector={this.state.deletedSelector}

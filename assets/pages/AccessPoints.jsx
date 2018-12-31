@@ -69,8 +69,8 @@ export default class AccessPoints extends Component {
         <Created
           items={this.props.createdAccessPoints}
           content={accessPoint =>
-            accessPoint.title
-              ? `#${accessPoint.id} ${accessPoint.title}`
+            accessPoint.name
+              ? `#${accessPoint.id} ${accessPoint.name}`
               : `Access point #${accessPoint.id}`
           }
           url={accessPoint => `/access-points/${accessPoint.id}`}
@@ -79,7 +79,7 @@ export default class AccessPoints extends Component {
           <ModelTableLoader
             identity="accesspoint"
             url={accessPoint => `/access-points/${accessPoint.id}`}
-            columns={["id", "title", "description", "door", "zoneTo"]}
+            columns={["id", "name", "description", "door", "zoneTo"]}
             additionalClueProperties={{ populate: "zoneTo,door" }}
           />
         </Paper>
@@ -90,10 +90,10 @@ export default class AccessPoints extends Component {
           onClose={this.onAddClose}
           onReady={this.onAddReady}
           schema={constants.schemas.accesspoint}
-          attributes={["title", "description"]}
+          attributes={["name", "description"]}
           btnReady="Create"
         >
-          Please provide title and description for the new access point.
+          Please provide name and description for the new access point.
         </ModelDialog>
       </Wrapper>
     )

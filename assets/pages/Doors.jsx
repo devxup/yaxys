@@ -69,14 +69,14 @@ export default class Doors extends Component {
         </Button>
         <Created
           items={this.props.createdDoors}
-          content={door => (door.title ? `#${door.id} ${door.title}` : `Door #${door.id}`)}
+          content={door => (door.name ? `#${door.id} ${door.name}` : `Door #${door.id}`)}
           url={door => `/doors/${door.id}`}
         />
         <Paper>
           <ModelTableLoader
             identity="door"
             url={door => `/doors/${door.id}`}
-            columns={["id", "title", "description", "accessPoints", "zones"]}
+            columns={["id", "name", "description", "accessPoints", "zones"]}
             additionalClueProperties={{ populate: "accessPoints,zones" }}
           />
         </Paper>
@@ -87,10 +87,10 @@ export default class Doors extends Component {
           onClose={this.onAddClose}
           onReady={this.onAddReady}
           schema={constants.schemas.door}
-          attributes={["title", "description"]}
+          attributes={["name", "description"]}
           btnReady="Create"
         >
-          Please provide title and description for the new door.
+          Please provide name and description for the new door.
         </ModelDialog>
       </Wrapper>
     )

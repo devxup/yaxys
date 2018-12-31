@@ -162,7 +162,7 @@ export default class Connection extends Component {
       return
     }
 
-    if (!confirm(`Are you sure you want to detach this ${relatedSchema.title}?`)) {
+    if (!confirm(`Are you sure you want to detach this ${relatedSchema.name}?`)) {
       return
     }
     this.updateRelated(model, null)
@@ -227,7 +227,7 @@ export default class Connection extends Component {
         )}
         <Request
           selector={this.state.relatedUpdateSelector}
-          message={`Updating ${relatedSchema.title && relatedIdentity}`}
+          message={`Updating ${relatedSchema.name && relatedIdentity}`}
           attemptAt={this.state.relatedUpdateAttemptAt}
           onSuccess={this.onRelatedUpdated}
           onRepeat={this.onRelatedUpdateRepeat}

@@ -23,7 +23,7 @@ const accessPointClue = props => ({
 })
 const accessPointSelector = YaxysClue.selectors.byClue(accessPointClue)
 
-const PROPS_2_WATCH = ["id", "title", "description", "door", "zoneTo"]
+const PROPS_2_WATCH = ["id", "name", "description", "door", "zoneTo"]
 
 @withStyles(theme => ({
   ...commonClasses(theme),
@@ -120,7 +120,7 @@ export default class AccessPoint extends Component {
                 forceValidation={this.state.forceValidation}
                 schema={constants.schemas.accesspoint}
                 margin="dense"
-                attributes={["title", "description"]}
+                attributes={["name", "description"]}
               />
             </Paper>
             <Paper className={classes.block}>

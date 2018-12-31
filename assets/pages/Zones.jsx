@@ -70,8 +70,8 @@ export default class Zones extends Component {
         <Created
           items={this.props.createdZones}
           content={zone =>
-            zone.title
-              ? `#${zone.id} ${zone.title}`
+            zone.name
+              ? `#${zone.id} ${zone.name}`
               : `Zone #${zone.id}`
           }
           url={zone => `/zones/${zone.id}`}
@@ -80,7 +80,7 @@ export default class Zones extends Component {
           <ModelTableLoader
             identity="zone"
             url={zone => `/zones/${zone.id}`}
-            columns={["id", "title", "description"]}
+            columns={["id", "name", "description"]}
           />
         </Paper>
         <br />
@@ -90,10 +90,10 @@ export default class Zones extends Component {
           onClose={this.onAddClose}
           onReady={this.onAddReady}
           schema={constants.schemas.zone}
-          attributes={["title", "description"]}
+          attributes={["name", "description"]}
           btnReady="Create"
         >
-          Please provide title and description for the new zone.
+          Please provide name and description for the new zone.
         </ModelDialog>
       </Wrapper>
     )

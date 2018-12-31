@@ -1,13 +1,13 @@
 module.exports = {
   schema: {
     title: "Zone",
-    defaultProperties: ["id", "title", "description"],
+    defaultProperties: ["id", "name", "description"],
     properties: {
       id: {
         type: "integer",
       },
-      title: {
-        title: "Title",
+      name: {
+        title: "Name",
         type: "string",
       },
       description: {

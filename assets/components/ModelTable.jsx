@@ -84,7 +84,7 @@ export default class ModelTable extends Component {
       <Chip
         className={classes.chip}
         avatar={<Avatar>#{model.id}</Avatar>}
-        label={model.title || ""}
+        label={model.name || ""}
         color="primary"
         variant="outlined"
         {...props}
@@ -142,7 +142,7 @@ export default class ModelTable extends Component {
       },
       ...omit(this.props, "url", "schema", "classes", "deletedHash", "deletedKey"),
     }
-    const patchedColumns = (columns || schema?.defaultProperties || ["id", "title"]).map(
+    const patchedColumns = (columns || schema?.defaultProperties || ["id", "name"]).map(
       columnOriginal => {
         let column =
           typeof columnOriginal === "string"

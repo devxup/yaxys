@@ -66,7 +66,7 @@ export default class UserProfile extends Component {
     const props = propsArg || this.props
     const userProfile =
       props.userProfile && props.userProfile.success
-        ? pick(props.userProfile.data, "id", "title", "description")
+        ? pick(props.userProfile.data, "id", "name", "description")
         : {}
 
     userProfile.rights = cloneDeep(userProfile.rights)
@@ -104,7 +104,7 @@ export default class UserProfile extends Component {
           [
             { title: "User profiles", url: "/user-profiles" },
             userProfile && userProfile.success
-              ? `#${match.params.id} ${userProfile.data.title}`
+              ? `#${match.params.id} ${userProfile.data.name}`
               : `User profile #${match.params.id}`,
           ]
         }
@@ -119,7 +119,7 @@ export default class UserProfile extends Component {
               forceValidation={this.state.forceValidation}
               schema={constants.schemas.userprofile}
               margin="dense"
-              attributes={["title", "description"]}
+              attributes={["name", "description"]}
             />
             <br />
             <Paper className={classes.rights}>

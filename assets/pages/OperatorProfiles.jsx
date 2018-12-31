@@ -68,14 +68,14 @@ export default class OperatorProfiles extends Component {
         </Button>
         <Created
           items={this.props.createdProfiles}
-          content={profile => profile.title}
+          content={profile => profile.name}
           url={profile => `/settings/operator-profiles/${profile.id}`}
         />
         <Paper>
           <ModelTableLoader
             identity="operatorprofile"
             url={profile => `/settings/operator-profiles/${profile.id}`}
-            columns={["id", "title"]}
+            columns={["id", "name"]}
           />
         </Paper>
         <br />
@@ -85,10 +85,10 @@ export default class OperatorProfiles extends Component {
           onClose={this.onAddClose}
           onReady={this.onAddReady}
           schema={constants.schemas.operatorprofile}
-          attributes={["title"]}
+          attributes={["name"]}
           btnReady="Create"
         >
-          Please provide title the new operator profile.
+          Please provide name for the new operator profile.
         </ModelDialog>
       </Wrapper>
     )

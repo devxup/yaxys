@@ -66,7 +66,7 @@ export default class OperatorProfile extends Component {
     const props = propsArg || this.props
     const operatorProfile =
       props.operatorProfile && props.operatorProfile.success
-        ? pick(props.operatorProfile.data, "id", "title", "description", "rights")
+        ? pick(props.operatorProfile.data, "id", "name", "description", "rights")
         : {}
 
     operatorProfile.rights = cloneDeep(operatorProfile.rights)
@@ -112,7 +112,7 @@ export default class OperatorProfile extends Component {
             { title: "Settings", url: "/settings" },
             { title: "Operator profiles", url: "/settings/operator-profiles" },
             operatorProfile && operatorProfile.success
-              ? `#${match.params.id} ${operatorProfile.data.title}`
+              ? `#${match.params.id} ${operatorProfile.data.name}`
               : `Operator profile #${match.params.id}`,
           ]
         }
@@ -127,7 +127,7 @@ export default class OperatorProfile extends Component {
               forceValidation={this.state.forceValidation}
               schema={constants.schemas.operatorprofile}
               margin="dense"
-              attributes={["title", "description"]}
+              attributes={["name", "description"]}
             />
             <br />
             <Paper className={classes.rights}>

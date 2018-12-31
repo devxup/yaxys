@@ -65,7 +65,7 @@ export default class Door extends Component {
   props2DoorState(propsArg) {
     const props = propsArg || this.props
     const door =
-      props.door && props.door.success ? pick(props.door.data, "id", "title", "description") : {}
+      props.door && props.door.success ? pick(props.door.data, "id", "name", "description") : {}
 
     return door
   }
@@ -116,7 +116,7 @@ export default class Door extends Component {
               forceValidation={this.state.forceValidation}
               schema={constants.schemas.door}
               margin="dense"
-              attributes={["title", "description"]}
+              attributes={["name", "description"]}
             />
           </Paper>
         </Loader>
@@ -127,7 +127,7 @@ export default class Door extends Component {
             relatedProperty="door"
             parentId={match.params.id}
             additionalCluePropertiea={{ populate: "zoneTo" }}
-            columns={["id", "title", "description", "zoneTo"]}
+            columns={["id", "name", "description", "zoneTo"]}
             canAddExisting={this.canAddAccessPoint}
             canCreateNew={this.canAddAccessPoint}
             url={accessPoint => `/access-points/${accessPoint.id}`}

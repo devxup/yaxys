@@ -1,13 +1,13 @@
 module.exports = {
   schema: {
     title: "Access Point",
-    defaultProperties: ["id", "title", "description", "door", "zoneTo"],
+    defaultProperties: ["id", "name", "description", "door", "zoneTo"],
     properties: {
       id: {
         type: "integer",
       },
-      title: {
-        title: "Title",
+      name: {
+        title: "Name",
         type: "string",
       },
       description: {
