@@ -57,7 +57,7 @@ export default class UserProfiles extends Component {
     const { constants } = this.props
     return (
       <Wrapper breadcrumbs={["User profiles"]}>
-        <h1 style={{ marginTop: 0 }}>User Profiles</h1>
+        <h1 style={{ marginTop: 0 }}>User profiles</h1>
         <Button
           variant="text"
           color="secondary"

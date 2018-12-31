@@ -96,6 +96,7 @@ export default class OperatorProfile extends Component {
 
   render() {
     const { operatorProfile, match, classes, constants } = this.props
+    const idAndName = `#${match.params.id}${ operatorProfile?.success ? ` ${operatorProfile.data.name}` : "" }`
     const update = (
       <Update
         clue={operatorProfileClue(this.props)}
@@ -111,13 +112,11 @@ export default class OperatorProfile extends Component {
           [
             { title: "Settings", url: "/settings" },
             { title: "Operator profiles", url: "/settings/operator-profiles" },
-            operatorProfile && operatorProfile.success
-              ? `#${match.params.id} ${operatorProfile.data.name}`
-              : `Operator profile #${match.params.id}`,
+            `Operator profile ${idAndName}`,
           ]
         }
       >
-        <h1 style={{ marginTop: 0 }}>Operator Profile #{match.params.id}</h1>
+        <h1 style={{ marginTop: 0 }}>Operator profile {idAndName}</h1>
         <Loader item={operatorProfile}>
           <Fragment>
             <ModelForm

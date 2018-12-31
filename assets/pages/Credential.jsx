@@ -91,6 +91,7 @@ export default class Credential extends Component {
 
   render() {
     const { constants, credential, match, classes } = this.props
+    const idAndCode = `#${match.params.id}${ credential?.success ? ` ${credential.data.code}` : "" }`
     const update = (
       <Update
         clue={credentialClue(this.props)}
@@ -106,10 +107,10 @@ export default class Credential extends Component {
         breadcrumbs={[
           { title: "Users", url: "/users" },
           { title: `User #${match.params.user}`, url: `/users/${match.params.user}` },
-          `Credential #${match.params.id}`,
+          `Credential ${idAndCode}`,
         ]}
       >
-        <h1 style={{ marginTop: 0 }}>Credential #{match.params.id}</h1>
+        <h1 style={{ marginTop: 0 }}>Credential {idAndCode}</h1>
         <Loader item={credential}>
           <Fragment>
             <Paper className={classes.block}>

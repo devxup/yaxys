@@ -91,6 +91,7 @@ export default class AccessPoint extends Component {
 
   render() {
     const { constants, accessPoint, match, classes } = this.props
+    const idAndName = `#${match.params.id}${ accessPoint?.success ? ` ${accessPoint.data.name}` : "" }`
     const update = (
       <Update
         clue={accessPointClue(this.props)}
@@ -100,15 +101,16 @@ export default class AccessPoint extends Component {
         watchProperties={PROPS_2_WATCH}
       />
     )
+
     return (
       <Wrapper
         bottom={update}
         breadcrumbs={[
           { title: "Access points", url: "/access-points" },
-          `Access point #${match.params.id}`,
+          `Access point ${idAndName}`,
         ]}
       >
-        <h1 style={{ marginTop: 0 }}>Access point #{match.params.id}</h1>
+        <h1 style={{ marginTop: 0 }}>Access point { idAndName }</h1>
         <Loader item={accessPoint}>
           <Fragment>
             <Paper className={classes.block}>

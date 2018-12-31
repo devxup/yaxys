@@ -198,6 +198,7 @@ export default class Operator extends Component {
 
   render() {
     const { operator, match, classes, constants } = this.props
+    const idAndName = `#${match.params.id}${ operator?.success ? ` ${operator.data.email}` : "" }`
     const update = (
       <Update
         clue={operatorClue(this.props)}
@@ -210,9 +211,9 @@ export default class Operator extends Component {
     return (
       <Wrapper
         bottom={update}
-        breadcrumbs={[{ title: "Operators", url: "/operators" }, `Operator #${match.params.id}`]}
+        breadcrumbs={[{ title: "Operators", url: "/operators" }, `Operator ${idAndName}`]}
       >
-        <h1 style={{ marginTop: 0 }}>Operator #{match.params.id}</h1>
+        <h1 style={{ marginTop: 0 }}>Operator {idAndName}</h1>
         <Loader item={operator}>
           <Fragment>
             <ModelForm

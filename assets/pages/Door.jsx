@@ -92,6 +92,7 @@ export default class Door extends Component {
 
   render() {
     const { constants, door, match, classes } = this.props
+    const idAndName = `#${match.params.id}${ door?.success ? ` ${door.data.name}` : "" }`
     const update = (
       <Update
         clue={doorClue(this.props)}
@@ -103,9 +104,9 @@ export default class Door extends Component {
     return (
       <Wrapper
         bottom={update}
-        breadcrumbs={[{ title: "Doors", url: "/doors" }, `Door #${match.params.id}`]}
+        breadcrumbs={[{ title: "Doors", url: "/doors" }, `Door ${idAndName}`]}
       >
-        <h1 style={{ marginTop: 0 }}>Door #{match.params.id}</h1>
+        <h1 style={{ marginTop: 0 }}>Door {idAndName}</h1>
         <Loader item={door}>
           <Paper className={classes.block}>
             <h5>Properties</h5>

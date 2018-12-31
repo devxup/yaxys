@@ -89,6 +89,8 @@ export default class UserProfile extends Component {
 
   render() {
     const { userProfile, match, classes, constants } = this.props
+    const idAndName = `#${match.params.id}${ userProfile?.success ? ` ${userProfile.data.name}` : "" }`
+
     const update = (
       <Update
         clue={userProfileClue(this.props)}
@@ -103,13 +105,11 @@ export default class UserProfile extends Component {
         breadcrumbs={
           [
             { title: "User profiles", url: "/user-profiles" },
-            userProfile && userProfile.success
-              ? `#${match.params.id} ${userProfile.data.name}`
-              : `User profile #${match.params.id}`,
+            `User profile ${idAndName}`,
           ]
         }
       >
-        <h1 style={{ marginTop: 0 }}>User Profile #{match.params.id}</h1>
+        <h1 style={{ marginTop: 0 }}>User profile {idAndName}</h1>
         <Loader item={userProfile}>
           <Fragment>
             <ModelForm

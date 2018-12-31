@@ -162,6 +162,7 @@ export default class User extends Component {
 
   render() {
     const { user, match, classes, constants } = this.props
+    const idAndName = `#${match.params.id}${ user?.success ? ` ${user.data.name}` : "" }`
     const schema = constants.schemas.user
     const update = (
       <Update
@@ -175,9 +176,9 @@ export default class User extends Component {
     return (
       <Wrapper
         bottom={update}
-        breadcrumbs={[{ title: "Users", url: "/users" }, `User #${match.params.id}`]}
+        breadcrumbs={[{ title: "Users", url: "/users" }, `User ${idAndName}`]}
       >
-        <h1 style={{ marginTop: 0 }}>User #{match.params.id}</h1>
+        <h1 style={{ marginTop: 0 }}>User {idAndName}</h1>
         <Loader item={user}>
           <Paper className={classes.block}>
             <ModelForm

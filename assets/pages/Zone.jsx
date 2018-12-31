@@ -87,6 +87,7 @@ export default class Zone extends Component {
 
   render() {
     const { constants, zone, match, classes } = this.props
+    const idAndName = `#${match.params.id}${ zone?.success ? ` ${zone.data.name}` : "" }`
     const update = (
       <Update
         clue={zoneClue(this.props)}
@@ -100,10 +101,10 @@ export default class Zone extends Component {
         bottom={update}
         breadcrumbs={[
           { title: "Zones", url: "/zones" },
-          `Zone #${match.params.id}`,
+          `Zone ${idAndName}`,
         ]}
       >
-        <h1 style={{ marginTop: 0 }}>Zone #{match.params.id}</h1>
+        <h1 style={{ marginTop: 0 }}>Zone {idAndName}</h1>
         <Loader item={zone}>
           <Paper className={classes.block}>
             <h5>Properties</h5>

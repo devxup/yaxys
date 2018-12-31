@@ -57,7 +57,7 @@ export default class OperatorProfiles extends Component {
     const { constants } = this.props
     return (
       <Wrapper breadcrumbs={[{ title: "Settings", url: "/settings" }, "Operator profiles"]}>
-        <h1 style={{ marginTop: 0 }}>Operator Profiles</h1>
+        <h1 style={{ marginTop: 0 }}>Operator profiles</h1>
         <Button
           variant="text"
           color="secondary"
