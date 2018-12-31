@@ -6,7 +6,7 @@ const CleanWebpackPlugin = require("clean-webpack-plugin")
 
 const config = {
   mode: "production",
-  entry: ["babel-polyfill", "./assets/app.jsx", "./assets/app.scss"],
+  entry: ["@babel/polyfill", "./assets/app.jsx", "./assets/app.scss"],
   output: {
     filename: "bundle.js",
     path: path.resolve(__dirname, "public"),

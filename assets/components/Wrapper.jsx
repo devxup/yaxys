@@ -208,7 +208,7 @@ const styles = theme => ({
 }))
 export default class Wrapper extends Component {
   static propTypes = {
-    me: PropTypes.object,
+    me: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
     location: PropTypes.object,
     bottom: PropTypes.object,
     breadcrumbs: PropTypes.array,
