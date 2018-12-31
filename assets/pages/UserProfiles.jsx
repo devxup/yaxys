@@ -56,7 +56,7 @@ export default class UserProfiles extends Component {
   render() {
     const { constants } = this.props
     return (
-      <Wrapper breadcrumbs={[{ title: "Settings", url: "/settings" }, "User profiles"]}>
+      <Wrapper breadcrumbs={["User profiles"]}>
         <h1 style={{ marginTop: 0 }}>User Profiles</h1>
         <Button
           variant="text"
@@ -69,12 +69,12 @@ export default class UserProfiles extends Component {
         <Created
           items={this.props.createdProfiles}
           content={profile => profile.title}
-          url={profile => `/settings/user-profiles/${profile.id}`}
+          url={profile => `/user-profiles/${profile.id}`}
         />
         <Paper>
           <ModelTableLoader
             identity="userprofile"
-            url={profile => `/settings/user-profiles/${profile.id}`}
+            url={profile => `/user-profiles/${profile.id}`}
             columns={["id", "title"]}
           />
         </Paper>

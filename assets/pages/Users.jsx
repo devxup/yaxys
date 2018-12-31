@@ -62,7 +62,7 @@ export default class Users extends Component {
         <h1 style={{ marginTop: 0 }}>Users</h1>
         <p>
           Also, you can control users&#39; rights by{" "}
-          <Link to={"/settings/user-profiles"}>managing their profiles</Link>
+          <Link to={"/user-profiles"}>managing their profiles</Link>
         </p>
         <Button
           variant="text"

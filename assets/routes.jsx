@@ -53,8 +53,8 @@ export default (store, constants) => (
             <Route exact path="/settings" component={Settings} />
             <Route exact path="/settings/operator-profiles" component={OperatorProfiles} />
             <Route exact path="/settings/operator-profiles/:id" component={OperatorProfile} />
-            <Route exact path="/settings/user-profiles" component={UserProfiles} />
-            <Route exact path="/settings/user-profiles/:id" component={UserProfile} />
+            <Route exact path="/user-profiles" component={UserProfiles} />
+            <Route exact path="/user-profiles/:id" component={UserProfile} />
           </ProtectedZone>
         </Switch>
       </Theme>

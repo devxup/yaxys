@@ -102,8 +102,7 @@ export default class UserProfile extends Component {
         bottom={update}
         breadcrumbs={
           [
-            { title: "Settings", url: "/settings" },
-            { title: "User profiles", url: "/settings/user-profiles" },
+            { title: "User profiles", url: "/user-profiles" },
             userProfile && userProfile.success
               ? `#${match.params.id} ${userProfile.data.title}`
               : `User profile #${match.params.id}`,

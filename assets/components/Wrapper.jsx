@@ -25,6 +25,7 @@ import DashboardIcon from "@material-ui/icons/Dashboard"
 import SdCardIcon from "@material-ui/icons/SdCard"
 import PeopleIcon from "@material-ui/icons/People"
 import PeopleOutlineIcon from "@material-ui/icons/PeopleOutline"
+import PersonOutlineIcon from "@material-ui/icons/PersonOutline"
 import MeetingRoomIcon from "@material-ui/icons/MeetingRoom"
 import PictureInPictureIcon from "@material-ui/icons/PictureInPicture"
 import SettingsIcon from "@material-ui/icons/Settings"
@@ -60,6 +61,11 @@ const lists = {
       icon: PeopleOutlineIcon,
       title: "Users",
       url: "/users",
+    },
+    {
+      icon: PersonOutlineIcon,
+      title: "User Profiles",
+      url: "/user-profiles",
     },
   ],
   secondary: [

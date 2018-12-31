@@ -26,12 +26,11 @@ export default class Settings extends Component {
       <Wrapper breadcrumbs={["Settings"]}>
         <h1 style={{ marginTop: 0 }}>Settings</h1>
 
-        <p>Not so much settings so far</p>
+        <p>Yaxys instance settings</p>
 
         <Paper className={classes.root} elevation={1}>
           <ul className={classes.list}>
             <li><Link to={"/settings/operator-profiles"}>Operator profiles</Link></li>
-            <li><Link to={"/settings/user-profiles"}>User profiles</Link></li>
           </ul>
         </Paper>
       </Wrapper>
