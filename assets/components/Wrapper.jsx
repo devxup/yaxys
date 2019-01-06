@@ -8,6 +8,7 @@ import { withRouter } from "react-router"
 
 import LoginDialog from "./LoginDialog.jsx"
 import Breadcrumbs from "../components/Breadcrumbs.jsx"
+import LanguageSelector from "./LanguageSelector.jsx"
 
 import classNames from "classnames"
 import Drawer from "@material-ui/core/Drawer"
@@ -325,6 +326,7 @@ export default class Wrapper extends Component {
                 isRoot={ this.props.isBreadcrumbsRoot }
                 items={ this.props.breadcrumbs }
               />
+            <LanguageSelector />
             {this.renderAuth()}
             <LoginDialog open={this.state.loginOpen} onClose={this.onCloseLoginDialog} />
           </Toolbar>

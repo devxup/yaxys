@@ -4,6 +4,7 @@ module.exports = {
   constants: {
     timezone: config.get("timezone"),
     paginationLimit: config.get("paginationLimit"),
+    language: config.get("lng"),
   },
 
   /**
@@ -21,5 +22,6 @@ module.exports = {
       },
       {}
     )
+    module.exports.constants.languages = yaxys.languages
   },
 }

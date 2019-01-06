@@ -10,6 +10,9 @@ import { BrowserRouter } from "react-router-dom"
 import routes from "./routes.jsx"
 import YaxysClue from "./services/YaxysClue"
 import { meReducer, meSaga } from "./services/Me"
+import { languageReducer, languageSaga } from "./components/LanguageSelector.jsx"
+
+import "./app.scss"
 
 const sagaMiddleware = createSagaMiddleware()
 
@@ -17,13 +20,13 @@ const store = createStore(
   combineReducers({
     YaxysClue: YaxysClue.reducer,
     Me: meReducer,
+    language: languageReducer,
   }),
   applyMiddleware(sagaMiddleware)
 )
 sagaMiddleware.run(YaxysClue.saga)
 sagaMiddleware.run(meSaga)
-
-import "./app.scss"
+sagaMiddleware.run(languageSaga)
 
 render(
   <BrowserRouter>{routes(store, yaxysConstants)}</BrowserRouter>,

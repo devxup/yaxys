@@ -1,0 +1,8 @@
+{
+  "cli": {
+    "EMAIL_REQUIRED": "Необходимо ввести e-mail!",
+    "PASSWORD_REQUIRED": "Необходимо задать пароль!",
+    "CREATE_OPERATOR_SUCCESS": "Оператор успешно создан!",
+    "COMMAND_NOT_FOUND": "Команда {{command}} не найдена. Запуск с параметром --help выведет список допустимых команд."
+  }
+}

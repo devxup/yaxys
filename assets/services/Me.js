@@ -1,7 +1,9 @@
-const jwt = require("jsonwebtoken")
-const cookie = require("cookie")
+//const jwt = require("jsonwebtoken")
+//const cookie = require("cookie")
 import { omit } from "lodash"
 import { takeEvery, call, put } from "redux-saga/effects"
+import * as jwt from "jsonwebtoken"
+import * as cookie from "cookie"
 
 const extractStateFromCookie = () => {
   if (typeof window === "undefined") {
