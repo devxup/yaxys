@@ -4,11 +4,13 @@ import { withConstants } from "../services/Utils"
 import { TextField, Chip, Button } from "@material-ui/core"
 import ModelPicker from "./ModelPicker.jsx"
 import ModelCreator from "./ModelCreator.jsx"
+import { withNamespaces } from "react-i18next"
+import Ajv from "ajv"
 
-const Ajv = require("ajv")
 const ajv = new Ajv({ allErrors: true, format: "full" })
 
 @withConstants
+@withNamespaces()
 export default class ModelForm extends Component {
   static propTypes = {
     schema: PropTypes.object.isRequired,
@@ -20,6 +22,7 @@ export default class ModelForm extends Component {
     autoFocus: PropTypes.bool,
     margin: PropTypes.oneOf(["normal", "dense", "none"]),
     forceValidation: PropTypes.bool,
+    t: PropTypes.func,
   }
 
   constructor(props) {
@@ -113,7 +116,7 @@ export default class ModelForm extends Component {
             ? item.params.missingProperty
             : item.dataPath.slice(1)
         if (name === attribute) {
-          this.state.valuesMeta[name].error = item.message
+          this.state.valuesMeta[name].error = this.props.t(`ModelForm_AJV_${item.keyword}`)
         }
       }
     }
@@ -214,7 +217,7 @@ export default class ModelForm extends Component {
       ? `${relatedSchema.title} #${typeof value === "object" ? value.id : value} ${(value &&
           value.title) ||
           ""}`
-      : "Not selected"
+      : this.props.t("ModelForm_NOT_SELECTED")
     const current = <Chip label={chipLabel} onDelete={ value && this.onDelete(attribute) } />
 
     return (
@@ -222,10 +225,10 @@ export default class ModelForm extends Component {
         <label>{property.title || attribute}: </label>
         {current}
         <Button variant="text" onClick={this.onPickerOpen(attribute, connection.relatedModel)}>
-          Select existing {relatedSchema.title}
+          {this.props.t("ADD_EXISTING", { item: relatedSchema.title })}
         </Button>
         <Button variant="text" onClick={this.onCreatorOpen(attribute, connection.relatedModel)}>
-          Create new {relatedSchema.title}
+          {this.props.t("CREATE_NEW", { item: relatedSchema.title })}
         </Button>
       </div>
     )

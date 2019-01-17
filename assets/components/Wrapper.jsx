@@ -33,6 +33,7 @@ import Avatar from "@material-ui/core/Avatar"
 import PersonIcon from "@material-ui/icons/Person"
 
 import { meSelector } from "../services/Me"
+import { withNamespaces } from "react-i18next"
 
 const drawerWidth = 240
 const lists = {
@@ -204,16 +205,18 @@ const styles = theme => ({
 
 @withRouter
 @withStyles(styles)
+@withNamespaces()
 @connect((state, props) => ({
   me: meSelector(state),
 }))
 export default class Wrapper extends Component {
   static propTypes = {
-    me: PropTypes.object,
+    me: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
     location: PropTypes.object,
     bottom: PropTypes.object,
     breadcrumbs: PropTypes.array,
     isBreadcrumbsRoot: PropTypes.bool,
+    t: PropTypes.func,
   }
 
   state = {
@@ -251,7 +254,7 @@ export default class Wrapper extends Component {
     }
     return (
         <div className={classes.authLogin} onClick={this.openLoginDialog}>
-          <span className={classes.authLoginSpan}>Log in</span>
+          <span className={classes.authLoginSpan}>{this.props.t("LOG_IN")}</span>
           <Avatar className={classes.avatar}>
             <PersonIcon />
           </Avatar>

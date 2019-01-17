@@ -9,13 +9,9 @@ describe("ZoneService", () => {
         count: 1,
       },
       {
-        title: "exactly 2",
-        count: 2,
-      },
-      {
-        title: "more than 2",
+        title: "2 or more",
         count: 3,
-        error: "Integrity violation: amount of accessPoints should not be more than 2",
+        error: "zoneService.TOO_MUCH_APS",
       },
     ]
 

@@ -21,6 +21,7 @@ import { lighten } from "@material-ui/core/styles/colorManipulator"
 import YaxysClue from "../services/YaxysClue"
 import { withImmutablePropsFixed } from "../services/Utils.js"
 import ErrorDialog from "./ErrorDialog.jsx"
+import { withNamespaces } from "react-i18next"
 
 const styles = theme => ({
   root: {
@@ -83,6 +84,7 @@ const styles = theme => ({
   }
 )
 @withStyles(styles)
+@withNamespaces()
 class Created extends Component {
   static propTypes = {
     items: PropTypes.arrayOf(PropTypes.object),
@@ -165,7 +167,7 @@ class Created extends Component {
         <ListItemIcon className={ classes.doneIcon }>
           <ReportProblemIcon />
         </ListItemIcon>
-        { this.props.errorText || "An error occured. Click for details or repeat the action." }
+        { item.data || this.props.errorText || this.props.t("Created_ERROR") }
         <ListItemSecondaryAction>
           <Button
             variant="text"
@@ -178,7 +180,7 @@ class Created extends Component {
             data-index={ index }
             onClick={ this.onRepeat }
           >
-            Repeat
+            {this.props.t("RETRY")}
           </Button>
         </ListItemSecondaryAction>
       </ListItem>)
@@ -187,7 +189,7 @@ class Created extends Component {
     if (item.pending) {
       return (<ListItem { ...liProps }>
         <CircularProgress size={ 30 } className={ classes.loader } />
-        { this.props.pendingText || "Creating..." }
+        { this.props.pendingText || this.props.t("Created_CREATING") }
       </ListItem>)
     }
   };

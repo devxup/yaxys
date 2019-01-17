@@ -15,6 +15,7 @@ import Loader from "../components/Loader.jsx"
 import Update from "../components/Update.jsx"
 import ModelForm from "../components/ModelForm.jsx"
 import Connection from "../components/Connection.jsx"
+import { withNamespaces } from "react-i18next"
 
 const doorClue = props => ({
   identity: "door",
@@ -25,6 +26,7 @@ const doorSelector = YaxysClue.selectors.byClue(doorClue)
 
 @withStyles(theme => commonClasses(theme))
 @withConstants
+@withNamespaces()
 @connect(
   (state, props) => ({
     door: doorSelector(state, props),
@@ -64,10 +66,7 @@ export default class Door extends Component {
 
   props2DoorState(propsArg) {
     const props = propsArg || this.props
-    const door =
-      props.door && props.door.success ? pick(props.door.data, "id", "title", "description") : {}
-
-    return door
+    return props.door && props.door.success ? pick(props.door.data, "id", "title", "description") : {}
   }
 
   onFormChange = data => {
@@ -83,15 +82,15 @@ export default class Door extends Component {
     this.forceUpdate()
   }
 
-  canAddAccessPoint(accessPoints) {
+  canAddAccessPoint = accessPoints => {
     if (accessPoints?.data?.length >= 2) {
-      alert("The door can't have more than 2 access points!")
+      alert(this.props.t("Door_TOO_MUCH_APS"))
       return false
     }
   }
 
   render() {
-    const { constants, door, match, classes } = this.props
+    const { constants, door, match, classes, t } = this.props
     const update = (
       <Update
         clue={doorClue(this.props)}
@@ -103,12 +102,12 @@ export default class Door extends Component {
     return (
       <Wrapper
         bottom={update}
-        breadcrumbs={[{ title: "Doors", url: "/doors" }, `Door #${match.params.id}`]}
+        breadcrumbs={[{ title: t("DOORS"), url: "/doors" }, t("DOOR_#", { door: match.params.id })]}
       >
-        <h1 style={{ marginTop: 0 }}>Door #{match.params.id}</h1>
+        <h1 style={{ marginTop: 0 }}>{t("DOOR_#", { door: match.params.id })}</h1>
         <Loader item={door}>
           <Paper className={classes.block}>
-            <h5>Properties</h5>
+            <h5>{t("PROPERTIES")}</h5>
             <ModelForm
               autoFocus={true}
               values={this.state.door}
@@ -121,7 +120,7 @@ export default class Door extends Component {
           </Paper>
         </Loader>
         <Paper className={classes.block}>
-          <h5>Access points</h5>
+          <h5>{t("AP")}</h5>
           <Connection
             relatedIdentity="accesspoint"
             relatedProperty="door"

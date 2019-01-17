@@ -13,6 +13,7 @@ import { withConstants } from "../services/Utils.js"
 import ModelTable from "./ModelTable.jsx"
 import Loader from "./Loader.jsx"
 import Button from "@material-ui/core/Button/Button"
+import { withNamespaces } from "react-i18next"
 
 const modelClue = props => ({
   identity: props.identity.toLowerCase(),
@@ -23,6 +24,7 @@ const modelClue = props => ({
 const modelSelector = YaxysClue.selectors.byClue(modelClue)
 
 @withConstants
+@withNamespaces()
 @connect(
   (state, props) => ({
     models: modelSelector(state, props),
@@ -59,10 +61,10 @@ export default class ModelPicker extends Component {
   }
 
   render() {
-    const { open, identity, onClose, columns, title, constants, models } = this.props
+    const { open, identity, onClose, columns, title, constants, models, t } = this.props
     return (
       <Dialog open={open} onClose={onClose}>
-        <DialogTitle>{title || `Select ${constants.schemas[identity].title}`}</DialogTitle>
+        <DialogTitle>{title || t("ModelPicker_SELECT", { model: constants.schemas[identity].title })}</DialogTitle>
         <Loader item={models}>
           <ModelTable
             schema={constants.schemas[identity]}
@@ -72,7 +74,7 @@ export default class ModelPicker extends Component {
           />
           <DialogActions>
             <Button onClick={onClose} color="primary">
-              {"Cancel"}
+              {t("CANCEL")}
             </Button>
           </DialogActions>
         </Loader>

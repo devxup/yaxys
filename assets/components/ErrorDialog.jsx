@@ -9,13 +9,16 @@ import DialogTitle from "@material-ui/core/DialogTitle"
 import Button from "@material-ui/core/Button"
 
 import { withImmutablePropsFixed } from "../services/Utils.js"
+import { withNamespaces } from "react-i18next"
 
+@withNamespaces()
 class ErrorDialog extends Component {
   static propTypes = {
     open: PropTypes.bool,
     title: PropTypes.string,
     item: PropTypes.object,
     onClose: PropTypes.func,
+    t: PropTypes.func,
   }
 
   render() {
@@ -24,7 +27,7 @@ class ErrorDialog extends Component {
       open={ open }
       onClose={ onClose }
     >
-      <DialogTitle>{ title || "The error details" }</DialogTitle>
+      <DialogTitle>{ title || this.props.t("ErrorDialog_DETAILS") }</DialogTitle>
       <DialogContent>
         <DialogContentText>
           { JSON.stringify(item) }
@@ -32,7 +35,7 @@ class ErrorDialog extends Component {
       </DialogContent>
       <DialogActions>
         <Button onClick={ onClose } color="primary">
-          { "Close" }
+          {this.props.t("CLOSE")}
         </Button>
       </DialogActions>
     </Dialog>)

@@ -1,5 +1,3 @@
-//const jwt = require("jsonwebtoken")
-//const cookie = require("cookie")
 import { omit } from "lodash"
 import { takeEvery, call, put } from "redux-saga/effects"
 import * as jwt from "jsonwebtoken"

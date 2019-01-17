@@ -14,6 +14,7 @@ import Wrapper from "../components/Wrapper.jsx"
 import Loader from "../components/Loader.jsx"
 import Update from "../components/Update.jsx"
 import ModelForm from "../components/ModelForm.jsx"
+import { withNamespaces } from "react-i18next"
 
 const accessPointClue = props => ({
   identity: "accesspoint",
@@ -29,6 +30,7 @@ const PROPS_2_WATCH = ["id", "title", "description", "door", "zoneTo"]
   ...commonClasses(theme),
 }))
 @withConstants
+@withNamespaces()
 @connect(
   (state, props) => ({
     accessPoint: accessPointSelector(state, props),
@@ -90,7 +92,7 @@ export default class AccessPoint extends Component {
   }
 
   render() {
-    const { constants, accessPoint, match, classes } = this.props
+    const { constants, accessPoint, match, classes, t } = this.props
     const update = (
       <Update
         clue={accessPointClue(this.props)}
@@ -104,15 +106,15 @@ export default class AccessPoint extends Component {
       <Wrapper
         bottom={update}
         breadcrumbs={[
-          { title: "Access points", url: "/access-points" },
-          `Access point #${match.params.id}`,
+          { title: this.props.t("AP"), url: "/access-points" },
+          t("AP_#", { ap: match.params.id }),
         ]}
       >
-        <h1 style={{ marginTop: 0 }}>Access point #{match.params.id}</h1>
+        <h1 style={{ marginTop: 0 }}>{t("AP_#", { ap: match.params.id })}</h1>
         <Loader item={accessPoint}>
           <Fragment>
             <Paper className={classes.block}>
-              <h5>Properties</h5>
+              <h5>{t("PROPERTIES")}</h5>
               <ModelForm
                 autoFocus={true}
                 values={this.state.accessPoint}
@@ -124,7 +126,7 @@ export default class AccessPoint extends Component {
               />
             </Paper>
             <Paper className={classes.block}>
-              <h5>Door and Zone</h5>
+              <h5>{t("AccessPoint_DOOR_AND_ZONE")}</h5>
               <ModelForm
                 autoFocus={true}
                 values={this.state.accessPoint}

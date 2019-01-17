@@ -2,6 +2,19 @@ const Adapter = require("../core/classes/Adapter")
 const config = require("config")
 const _ = require("lodash")
 
+let yaxysBuffer
+
+beforeAll(() => {
+  yaxysBuffer = global.yaxys
+  global.yaxys = {
+    i18n: key => key,
+  }
+})
+
+afterAll(() => {
+  global.yaxys = yaxysBuffer
+})
+
 describe("Adapter", () => {
   let gAdapter
 
@@ -119,7 +132,7 @@ describe("Adapter", () => {
         title: "update unexisting item",
         method: "update",
         args: [tableNames[0], 1000, { a1: 2, a3: { k: 1 } }],
-        error: "Update failed – record with id 1000 not found",
+        error: "Adapter.ID_NOT_FOUND",
       },
       {
         title: "insert another item",
@@ -343,7 +356,7 @@ describe("Adapter", () => {
             },
           },
         ],
-        error: "Incorrect data type wrongtype of field p2 in testtable1",
+        error: "Adapter.INCORRECT_DATA_TYPE",
       },
       {
         title: "get sql for create table with id field and without required array",
@@ -457,7 +470,7 @@ describe("Adapter", () => {
             },
           },
         ],
-        error: "Incorrect data type wrongtype of field p2 in testtable1",
+        error: "Adapter.INCORRECT_DATA_TYPE",
       },
       {
         title: "create table with id field, without required array and with uniqueKeys constraint",

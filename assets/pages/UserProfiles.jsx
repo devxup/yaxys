@@ -11,6 +11,7 @@ import Wrapper from "../components/Wrapper.jsx"
 import Created from "../components/Created.jsx"
 import ModelDialog from "../components/ModelDialog.jsx"
 import ModelTableLoader from "../components/ModelTableLoader.jsx"
+import { withNamespaces } from "react-i18next"
 
 const CREATED_PROFILES_MARKER = "profiles-page"
 const createdProfilesSelector = YaxysClue.selectors.byClue(
@@ -19,6 +20,7 @@ const createdProfilesSelector = YaxysClue.selectors.byClue(
 )
 
 @withConstants
+@withNamespaces()
 @connect(
   (state, props) => ({
     createdProfiles: createdProfilesSelector(state, props),
@@ -54,17 +56,17 @@ export default class UserProfiles extends Component {
   }
 
   render() {
-    const { constants } = this.props
+    const { constants, t } = this.props
     return (
-      <Wrapper breadcrumbs={[{ title: "Settings", url: "/settings" }, "User profiles"]}>
-        <h1 style={{ marginTop: 0 }}>User Profiles</h1>
+      <Wrapper breadcrumbs={[{ title: t("SETTINGS"), url: "/settings" }, t("USER_PROFILES")]}>
+        <h1 style={{ marginTop: 0 }}>{ t("USER_PROFILES")}</h1>
         <Button
           variant="text"
           color="secondary"
           onClick={this.onAdd}
-          title="Create new profile"
+          title={t("UserProfiles_CREATE_NEW")}
         >
-          Add profile
+          {t("ADD_USER_PROFILE")}
         </Button>
         <Created
           items={this.props.createdProfiles}
@@ -80,15 +82,15 @@ export default class UserProfiles extends Component {
         </Paper>
         <br />
         <ModelDialog
-          title="Create new user profile"
+          title={t("UserProfiles_CREATE_NEW")}
           open={this.state.addOpen}
           onClose={this.onAddClose}
           onReady={this.onAddReady}
           schema={constants.schemas.userprofile}
           attributes={["title"]}
-          btnReady="Create"
+          btnReady={t("CREATE")}
         >
-          Please provide title the new user profile.
+          {t("UserProfiles_CREATE_DESC")}
         </ModelDialog>
       </Wrapper>
     )

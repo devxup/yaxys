@@ -15,6 +15,7 @@ import Loader from "../components/Loader.jsx"
 import Update from "../components/Update.jsx"
 import ModelForm from "../components/ModelForm.jsx"
 import AccessRights from "../components/AccessRights.jsx"
+import { withNamespaces } from "react-i18next"
 
 const userProfileClue = props => ({
   identity: "userprofile",
@@ -32,6 +33,7 @@ const styles = {
 
 @withStyles(styles)
 @withConstants
+@withNamespaces()
 @connect(
   (state, props) => ({
     userProfile: userProfileSelector(state, props),
@@ -88,7 +90,7 @@ export default class UserProfile extends Component {
   }
 
   render() {
-    const { userProfile, match, classes, constants } = this.props
+    const { userProfile, match, classes, constants, t } = this.props
     const update = (
       <Update
         clue={userProfileClue(this.props)}
@@ -102,15 +104,15 @@ export default class UserProfile extends Component {
         bottom={update}
         breadcrumbs={
           [
-            { title: "Settings", url: "/settings" },
-            { title: "User profiles", url: "/settings/user-profiles" },
+            { title: t("SETTINGS"), url: "/settings" },
+            { title: t("USER_PROFILES"), url: "/settings/user-profiles" },
             userProfile && userProfile.success
               ? `#${match.params.id} ${userProfile.data.title}`
-              : `User profile #${match.params.id}`,
+              : t("USER_PROFILE_#", { number: match.params.id }),
           ]
         }
       >
-        <h1 style={{ marginTop: 0 }}>User Profile #{match.params.id}</h1>
+        <h1 style={{ marginTop: 0 }}>{t("USER_PROFILE_#", { number: match.params.id })}</h1>
         <Loader item={userProfile}>
           <Fragment>
             <ModelForm
@@ -124,7 +126,7 @@ export default class UserProfile extends Component {
             />
             <br />
             <Paper className={classes.rights}>
-              <h5>The profile rights:</h5>
+              <h5>{t("UserProfile_RIGHTS")}</h5>
               <AccessRights
                 userProperty={"userProfile"}
                 userPropertyValue={ match.params.id }

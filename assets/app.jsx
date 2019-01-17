@@ -10,9 +10,20 @@ import { BrowserRouter } from "react-router-dom"
 import routes from "./routes.jsx"
 import YaxysClue from "./services/YaxysClue"
 import { meReducer, meSaga } from "./services/Me"
-import { languageReducer, languageSaga } from "./components/LanguageSelector.jsx"
-
 import "./app.scss"
+
+import i18next from "i18next"
+import Backend from "i18next-xhr-backend"
+
+/*eslint-disable-next-line*/
+i18next
+	.use(Backend)
+	.init({
+		backend: {
+			loadPath: "/api/language/{{lng}}",
+		},
+		fallbackLng: "en_US",
+	})
 
 const sagaMiddleware = createSagaMiddleware()
 
@@ -20,15 +31,13 @@ const store = createStore(
   combineReducers({
     YaxysClue: YaxysClue.reducer,
     Me: meReducer,
-    language: languageReducer,
   }),
   applyMiddleware(sagaMiddleware)
 )
 sagaMiddleware.run(YaxysClue.saga)
 sagaMiddleware.run(meSaga)
-sagaMiddleware.run(languageSaga)
 
 render(
-  <BrowserRouter>{routes(store, yaxysConstants)}</BrowserRouter>,
+  <BrowserRouter>{routes(store, yaxysConstants, i18next)}</BrowserRouter>,
   document.getElementById("root")
 )

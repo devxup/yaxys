@@ -1,12 +1,9 @@
-/* eslint-disable react/prop-types */
 import React from "react"
 import PropTypes from "prop-types"
-import { Select, MenuItem } from "@material-ui/core"
+import { Select, MenuItem, withStyles } from "@material-ui/core"
 import { withConstants } from "../services/Utils"
-import { takeEvery, put } from "redux-saga/effects"
-import { connect } from "react-redux"
 import * as cookie from "cookie"
-//const cookie = require("cookie")
+import { withNamespaces } from "react-i18next"
 
 const extractLanguageFromCookie = () => {
 	try {
@@ -16,69 +13,52 @@ const extractLanguageFromCookie = () => {
 	}
 }
 
-const defaultState = {
-	language: extractLanguageFromCookie(),
-	locale: {},
-}
-
-export const languageReducer = (state = defaultState, action) => {
-	switch (action.type) {
-		case "SET_LANGUAGE":
-			return {
-				...state,
-				language: action.language,
-				locale: action.locale,
-			}
-		case "FETCH_LOCALE":
-		default:
-			return state
-	}
-}
-
-function* fetchLocale(action) {
-	const response = yield fetch(`api/language/${action.language}`)
-	const locale = yield response.json()
-	document.cookie = `language=${action.language}`
-	yield put({
-		type: "SET_LANGUAGE",
-		language: action.language,
-		locale,
-	})
-}
-
-export const languageSaga = function*() {
-	yield takeEvery("FETCH_LOCALE", fetchLocale)
-}
+const StyledSelect = withStyles({
+	root: {
+		color: "#fff",
+	},
+})(Select)
 
 @withConstants
-@connect(
-	state => ({ current: state.language.language }),
-	dispatch => ({
-		setLanguage: language => {dispatch({ type: "FETCH_LOCALE", language })},
-	})
-)
+@withNamespaces()
 export default class LanguageSelector extends React.Component {
 	static propTypes = {
-		current: PropTypes.string,
-		setLanguage: PropTypes.func,
+		constants: PropTypes.object,
+		i18n: PropTypes.object,
+		t: PropTypes.func,
+	}
+
+	state = {
+		currentLang: extractLanguageFromCookie() || this.props.constants.language || "en_US",
 	}
 
 	componentDidMount() {
-		this.props.setLanguage(this.props.current || this.props.constants.language || "en_US")
+		this.appendLocaleScript(this.state.currentLang)
+		this.props.i18n.changeLanguage(this.state.currentLang)
+	}
+
+	appendLocaleScript = async lang => {
+		const response = await fetch(`/api/localizedSchemas/${lang}`)
+		window.yaxysConstants.schemas = await response.json()
 	}
 
 	handleChange = e => {
-		this.props.setLanguage(e.target.value)
+		document.cookie = `language=${e.target.value};path=/`
+		this.appendLocaleScript(e.target.value)
+		this.props.i18n.changeLanguage(e.target.value)
+		this.setState({ currentLang: e.target.value })
 	}
 
 	render() {
-		const { constants, current } = this.props
-		return (
-			<Select value={current || constants.language || "en_US"} onChange={this.handleChange}>
-				{constants.languages.map((language, index) => (
-					<MenuItem key={index} value={language}>{language}</MenuItem>
-				))}
-			</Select>
-		)
+		return (<React.Fragment>
+			<h6>{this.props.t("LanguageSelector_LANG_SEL_TITLE")}</h6>
+			<div style={{ margin: "0 40px 0 10px" }}>
+				<StyledSelect value={this.state.currentLang} onChange={this.handleChange}>
+					{this.props.constants.languages.map((language, index) => (
+						<MenuItem key={index} value={language.code}>{language.name}</MenuItem>
+					))}
+				</StyledSelect>
+			</div>
+		</React.Fragment>)
 	}
 }

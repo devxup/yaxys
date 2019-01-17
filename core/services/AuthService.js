@@ -31,7 +31,7 @@ module.exports = {
     if (operator && AuthService.checkPassword(password, operator.passwordHash)) {
       return operator
     }
-    throw new Error("No such operator or wrong password provided")
+    throw new Error("authService.WRONG_CREDENTIALS")
   },
 
   /**

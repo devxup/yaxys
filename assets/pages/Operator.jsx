@@ -19,6 +19,7 @@ import ModelForm from "../components/ModelForm.jsx"
 import ModelPicker from "../components/ModelPicker.jsx"
 import Created from "../components/Created.jsx"
 import ModelTable from "../components/ModelTable.jsx"
+import { withNamespaces } from "react-i18next"
 
 const operatorClue = props => ({
   identity: "operator",
@@ -49,6 +50,7 @@ const EDIBLE_PROPERTIES = ["id", "email", "isAdministrator", "rights"]
 
 @withStyles(styles)
 @withConstants
+@withNamespaces()
 @connect(
   (state, props) => ({
     operator: operatorSelector(state, props),
@@ -175,7 +177,7 @@ export default class Operator extends Component {
     if (this.state.deletedHash[profile._binding_id]) {
       return
     }
-    if (!confirm(`Are you sure to detach profile #${profile.id} from the operator?`)) {
+    if (!confirm(this.props.t("Operator_DETACH", { profile : profile.id }))) {
       return
     }
     this._deleteProfile(profile._binding_id)
@@ -197,7 +199,7 @@ export default class Operator extends Component {
   }
 
   render() {
-    const { operator, match, classes, constants } = this.props
+    const { operator, match, classes, constants, t } = this.props
     const update = (
       <Update
         clue={operatorClue(this.props)}
@@ -210,9 +212,9 @@ export default class Operator extends Component {
     return (
       <Wrapper
         bottom={update}
-        breadcrumbs={[{ title: "Operators", url: "/operators" }, `Operator #${match.params.id}`]}
+        breadcrumbs={[{ title: t("OPERATORS"), url: "/operators" }, t("OPERATOR_#", { operator: match.params.id })]}
       >
-        <h1 style={{ marginTop: 0 }}>Operator #{match.params.id}</h1>
+        <h1 style={{ marginTop: 0 }}>{t("OPERATOR_#", { operator: match.params.id })}</h1>
         <Loader item={operator}>
           <Fragment>
             <ModelForm
@@ -240,9 +242,9 @@ export default class Operator extends Component {
             {!this.state.operator.isAdministrator && (
               <Fragment>
                 <Paper className={classes.profiles}>
-                  <h5>The operator profiles</h5>
+                  <h5>{t("Operator_PROFILES")}</h5>
                   {!operator?.data?.profiles?.length && (
-                    <p>Here you can manage profiles of the operator</p>
+                    <p>{t("Operator_PROFILES_DESC")}</p>
                   )}
                   <Button
                     variant="text"
@@ -250,16 +252,17 @@ export default class Operator extends Component {
                     onClick={this.onProfileOpen}
                     style={{ marginBottom: 10 }}
                   >
-                    Add profile
+                    {t("ADD_OPERATOR_PROFILE")}
                   </Button>
                   <Created
                     items={this.props.createdBindings}
                     content={binding =>
                       binding.operatorProfile.title
-                        ? `Profile #${binding.operatorProfile.id} "${
-                            binding.operatorProfile.title
-                          }"`
-                        : `Profile #${binding.operatorProfile}`
+                        ? t("OPERATOR_PROFILE_#", {
+                          number: binding.operatorProfile.id,
+                          name: `"${binding.operatorProfile.title}"`,
+                        })
+                        : t("OPERATOR_PROFILE_#", { number: binding.operatorProfile })
                     }
                     url={binding => `/settings/operator-profiles/${binding.operatorProfile.id}`}
                   />
@@ -276,7 +279,7 @@ export default class Operator extends Component {
                   )}
                 </Paper>
                 <Paper className={classes.rights}>
-                  <h5>Custom operator&#39;s rights:</h5>
+                  <h5>{t("Operator_CUSTOM_RIGHTS")}</h5>
                   <RightsEditor
                     type="operator"
                     values={(this.state.operator && this.state.operator.rights) || {}}
@@ -294,7 +297,7 @@ export default class Operator extends Component {
             />
             <Request
               selector={this.state.deletedSelector}
-              message={"Detaching profile"}
+              message={t("Operator_DETACHING")}
               attemptAt={ this.state.deleteAttemptAt }
               onSuccess={ this.onProfileDeleted }
             />

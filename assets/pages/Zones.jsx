@@ -12,6 +12,7 @@ import Wrapper from "../components/Wrapper.jsx"
 import Created from "../components/Created.jsx"
 import ModelTableLoader from "../components/ModelTableLoader.jsx"
 import ModelDialog from "../components/ModelDialog.jsx"
+import { withNamespaces } from "react-i18next"
 
 const CREATED_ZONES_MARKER = "zones-page"
 const createdZonesSelector = YaxysClue.selectors.byClue(
@@ -20,6 +21,7 @@ const createdZonesSelector = YaxysClue.selectors.byClue(
 )
 
 @withConstants
+@withNamespaces()
 @connect(
   (state, props) => ({
     createdZones: createdZonesSelector(state, props),
@@ -55,24 +57,24 @@ export default class Zones extends Component {
   }
 
   render() {
-    const { constants } = this.props
+    const { constants, t } = this.props
     return (
-      <Wrapper breadcrumbs={["Zones"]}>
-        <h1 style={{ marginTop: 0 }}>Zones</h1>
+      <Wrapper breadcrumbs={[t("ZONES")]}>
+        <h1 style={{ marginTop: 0 }}>{t("ZONES")}</h1>
         <Button
           variant="text"
           color="secondary"
           onClick={this.onAdd}
-          title="Create zone"
+          title={t("Zones_CREATE")}
         >
-          Add zone
+          {t("Zones_ADD_ZONE")}
         </Button>
         <Created
           items={this.props.createdZones}
           content={zone =>
             zone.title
               ? `#${zone.id} ${zone.title}`
-              : `Zone #${zone.id}`
+              : t("ZONE_#", { zone: zone.id })
           }
           url={zone => `/zones/${zone.id}`}
         />
@@ -85,15 +87,15 @@ export default class Zones extends Component {
         </Paper>
         <br />
         <ModelDialog
-          title="Create new zone"
+          title={t("Zones_CREATE")}
           open={this.state.addOpen}
           onClose={this.onAddClose}
           onReady={this.onAddReady}
           schema={constants.schemas.zone}
           attributes={["title", "description"]}
-          btnReady="Create"
+          btnReady={t("CREATE")}
         >
-          Please provide title and description for the new zone.
+          {t("Zones_CREATE_DESC")}
         </ModelDialog>
       </Wrapper>
     )

@@ -1,0 +1,62 @@
+{
+  "accesspoint": {
+    "schemaTitle": "Access point",
+    "title": "Title",
+    "description": "Description",
+    "door": "Door",
+    "zoneTo": "Zone To"
+  },
+  "accessright": {
+    "schemaTitle": "Access right",
+    "accessPoint": "Access point",
+    "door": "Door",
+    "zoneTo": "Zone"
+  },
+  "credential": {
+    "schemaTitle": "Credential",
+    "title": "Title",
+    "user": "User",
+    "code": "Code"
+  },
+  "door": {
+    "schemaTitle": "Door",
+    "title": "Title",
+    "description": "Description",
+    "accessPoints": "Access points",
+    "zones": "Zones"
+  },
+  "operator": {
+    "schemaTitle": "Operator",
+    "email": "E-mail",
+    "passwordHash": "Password",
+    "isAdministrator": "Is administrator",
+    "hasCustomRights": "Has custom rights",
+    "profiles": "Operator profiles"
+  },
+  "operatorprofile": {
+    "schemaTitle": "Operator Profile",
+    "title": "Title",
+    "description": "Description",
+    "operators": "Operators"
+  },
+  "user": {
+    "schemaTitle": "User",
+    "name": "Name",
+    "profiles": "User profiles",
+    "hasCustomRights": "Has custom rights",
+    "credentials": "Credentials"
+  },
+  "userprofile": {
+    "schemaTitle": "User profile",
+    "title": "Title",
+    "description": "Description",
+    "users": "Users"
+  },
+  "zone": {
+    "schemaTitle": "Zone",
+    "title": "Title",
+    "description": "Description",
+    "accessPoints": "Access points",
+    "doors": "Doors"
+  }
+}

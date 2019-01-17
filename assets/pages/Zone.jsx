@@ -15,6 +15,7 @@ import Loader from "../components/Loader.jsx"
 import Update from "../components/Update.jsx"
 import ModelForm from "../components/ModelForm.jsx"
 import Connection from "../components/Connection.jsx"
+import { withNamespaces } from "react-i18next"
 
 const zoneClue = props => ({
   identity: "zone",
@@ -25,6 +26,7 @@ const zoneSelector = YaxysClue.selectors.byClue(zoneClue)
 
 @withStyles(theme => commonClasses(theme))
 @withConstants
+@withNamespaces()
 @connect(
   (state, props) => ({
     zone: zoneSelector(state, props),
@@ -86,7 +88,7 @@ export default class Zone extends Component {
   }
 
   render() {
-    const { constants, zone, match, classes } = this.props
+    const { constants, zone, match, classes, t } = this.props
     const update = (
       <Update
         clue={zoneClue(this.props)}
@@ -99,14 +101,14 @@ export default class Zone extends Component {
       <Wrapper
         bottom={update}
         breadcrumbs={[
-          { title: "Zones", url: "/zones" },
-          `Zone #${match.params.id}`,
+          { title: t("ZONES"), url: "/zones" },
+          t("ZONE_#", { zone: match.params.id }),
         ]}
       >
-        <h1 style={{ marginTop: 0 }}>Zone #{match.params.id}</h1>
+        <h1 style={{ marginTop: 0 }}>{t("ZONE_#", { zone: match.params.id })}</h1>
         <Loader item={zone}>
           <Paper className={classes.block}>
-            <h5>Properties</h5>
+            <h5>{t("PROPERTIES")}</h5>
             <ModelForm
               autoFocus={true}
               values={this.state.zone}
@@ -120,7 +122,7 @@ export default class Zone extends Component {
           </Paper>
         </Loader>
         <Paper className={classes.block}>
-          <h5>Access points</h5>
+          <h5>{t("APS")}</h5>
           <Connection
             relatedIdentity="accesspoint"
             relatedProperty="zoneTo"

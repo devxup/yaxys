@@ -11,7 +11,9 @@ import DialogTitle from "@material-ui/core/DialogTitle"
 import Button from "@material-ui/core/Button"
 
 import ModelForm from "./ModelForm.jsx"
+import { withNamespaces } from "react-i18next"
 
+@withNamespaces()
 export default class ModelDialog extends Component {
   static propTypes = {
     open: PropTypes.bool,
@@ -23,6 +25,7 @@ export default class ModelDialog extends Component {
     onClose: PropTypes.func,
     btnReady: PropTypes.string,
     btnClose: PropTypes.string,
+    t: PropTypes.func,
   }
 
   constructor(props) {
@@ -88,10 +91,10 @@ export default class ModelDialog extends Component {
       </DialogContent>
       <DialogActions>
         <Button onClick={ onClose } color="primary">
-          { btnClose || "Cancel" }
+          { btnClose || this.props.t("CANCEL") }
         </Button>
         <Button onClick={this.onReady} color="primary">
-          { btnReady || "OK" }
+          { btnReady || this.props.t("OK") }
         </Button>
       </DialogActions>
     </Dialog>)

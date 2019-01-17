@@ -10,8 +10,10 @@ import { withConstants } from "../services/Utils.js"
 
 import Request from "./Request.jsx"
 import ModelDialog from "./ModelDialog.jsx"
+import { withNamespaces } from "react-i18next"
 
 @withConstants
+@withNamespaces()
 @connect(
   (state, props) => {},
   {
@@ -72,20 +74,20 @@ export default class ModelCreator extends Component {
     return (
       <Fragment>
         <ModelDialog
-          title={ title || `Create new ${schema.title || identity}`}
+          title={ title || this.props.t("CREATE_NEW", { item: schema.title || identity }) }
           open={open}
           onClose={onClose}
           onReady={this.onBlankReady}
           schema={schema}
           values={initial}
           attributes={attributes || without(schema.defaultProperties, "id")}
-          btnReady="Create"
+          btnReady={this.props.t("CREATE")}
         >
           { this.props.children }
         </ModelDialog>
         <Request
           selector={this.state.createSelector}
-          message={`Creating new ${schema.title || identity}`}
+          message={this.props.t("ModelCreator_CREATING", { model: schema.title || identity })}
           attemptAt={ this.state.createAttemptAt }
           onSuccess={ this.onCreated }
         />

@@ -12,7 +12,7 @@ module.exports = {
    * - Build Utils.constants containing all model schemas and other constants for the client-side
    */
   init() {
-    module.exports.constants.schemas = _.reduce(
+    const schemas = _.reduce(
       yaxys.models,
       (memo, model, key) => {
         if (model.schema) {
@@ -23,5 +23,19 @@ module.exports = {
       {}
     )
     module.exports.constants.languages = yaxys.languages
+    const localizedSchemas = {}
+    for (let language in yaxys.schemaLocales) {
+      localizedSchemas[language] = JSON.parse(JSON.stringify(schemas))
+      for (let schema in yaxys.schemaLocales[language]) {
+        for (let property in yaxys.schemaLocales[language][schema]) {
+          property === "schemaTitle"
+          ? localizedSchemas[language][schema].title = yaxys.schemaLocales[language][schema][property]
+            /*eslint-disable-next-line*/
+          : localizedSchemas[language][schema].properties[property].title = yaxys.schemaLocales[language][schema][property]
+        }
+      }
+    }
+    module.exports.constants.schemas = schemas
+    module.exports.localizedSchemas = localizedSchemas
   },
 }

@@ -7,6 +7,7 @@ const bodyParser = require("koa-bodyparser")
 global._ = require("lodash")
 const i18next = require("i18next")
 const Backend = require("i18next-node-fs-backend")
+const i18middleware = require("koa-i18next")
 
 module.exports = class App extends Koa {
 	constructor() {
@@ -24,6 +25,40 @@ module.exports = class App extends Koa {
 				}),
 			],
 		})
+
+		this.locales = this._requireFolder("locales/frontend")
+		this.languages = []
+		for (let locale in this.locales){
+			this.languages.push({
+				code: locale,
+				name: this.locales[locale].LANG_NAME,
+			})
+		}
+		this.schemaLocales = this._requireFolder("locales/schemas")
+
+		i18next
+			.use(Backend)
+			.init({
+				backend: {
+					loadPath: `${__dirname}/../locales/backend/{{lng}}.json`,
+				},
+				lng: config.get("lng"),
+				preload: this.languages.map(lng => lng.code),
+				fallbackLng: "en_US",
+			})
+			.then(t => {
+				this.i18n = t
+			})
+			.catch(err => {
+				console.log("Error while loading locales: ", err) //eslint-disable-line
+			})
+
+		this.use(i18middleware(i18next, {
+				lookupCookie: "language",
+				order: ["cookie"],
+				next: true,
+			})
+		)
 
 		const models = this._requireFolder("models")
 
@@ -70,25 +105,6 @@ module.exports = class App extends Koa {
 		this.use(bodyParser())
 		this.use(this.apiRouter.routes())
 		this.use(this.pageRouter.routes())
-
-		i18next
-			.use(Backend)
-			.init({
-				backend: {
-					loadPath: `${__dirname}/../locales/backend/{{lng}}.json`,
-				},
-				lng: config.get("lng"),
-				fallbackLng: "en_US",
-			})
-			.then(t => {
-				this.i18n = t
-			})
-			.catch(err => {
-			console.log("Error while loading locales: ", err) //eslint-disable-line
-		})
-
-		this.locales = this._requireFolder("locales/frontend")
-		this.languages = _.keys(this.locales)
 	}
 
 	/**

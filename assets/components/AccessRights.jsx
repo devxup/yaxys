@@ -14,6 +14,7 @@ import ModelTable from "./ModelTable.jsx"
 import ModelPicker from "./ModelPicker.jsx"
 import Created from "./Created.jsx"
 import Request from "./Request.jsx"
+import { withNamespaces } from "react-i18next"
 
 const CREATED_ACCESS_RIGHT_MARKER = "user-or-profile"
 const createdAccessRightSelector = YaxysClue.selectors.byClue(
@@ -37,6 +38,7 @@ const accessRightsSelector = YaxysClue.selectors.byClue(accessRightsClue)
   },
 }))
 @withConstants
+@withNamespaces()
 @connect(
   (state, props) => ({
     createdAccessRights: createdAccessRightSelector(state, props),
@@ -58,6 +60,7 @@ export default class AccessRights extends Component {
     loadAccessRights: PropTypes.func,
     createAccessRight: PropTypes.func,
     deleteAccessRight: PropTypes.func,
+    t: PropTypes.func,
 
     userProperty: PropTypes.string,
     userPropertyValue: PropTypes.string,
@@ -70,14 +73,6 @@ export default class AccessRights extends Component {
     if (zoneTo) { return `/zones/${zoneTo.id || zoneTo}` }
 
     return ""
-  }
-
-  static accessRightToText(accessRight) {
-    if (accessRight.accessPoint) { return `Granted access to Access Point #${accessRight.accessPoint}` }
-    if (accessRight.door) { return `Granted access to Door #${accessRight.door}` }
-    if (accessRight.zoneTo) { return `Granted access to Zone #${accessRight.zoneTo}` }
-
-    return `#${accessRight.id}`
   }
 
   constructor(props) {
@@ -95,6 +90,14 @@ export default class AccessRights extends Component {
 
   componentDidMount() {
     this.props.loadAccessRights(accessRightsClue(this.props))
+  }
+
+  accessRightToText = accessRight => {
+    if (accessRight.accessPoint) { return this.props.t("AccessRights_GRANTED_AP", { ap: accessRight.accessPoint }) }
+    if (accessRight.door) { return this.props.t("AccessRights_GRANTED_DOOR", { door: accessRight.door }) }
+    if (accessRight.zoneTo) { return this.props.t("AccessRights_GRANTED_ZONE", { zone: accessRight.zoneTo }) }
+
+    return `#${accessRight.id}`
   }
 
   onAdd = property => event => {
@@ -155,7 +158,7 @@ export default class AccessRights extends Component {
     if (this.state.deletedHash[accessRight.id]) {
       return
     }
-    if (!confirm(`Are you sure to delete the Access Right #${accessRight.id}`)) {
+    if (!confirm(this.props.t("AccessRights_CONFIRM_DELETE", { ar: accessRight.id }))) {
       return
     }
     this._deleteAccessRight(accessRight.id)
@@ -167,14 +170,14 @@ export default class AccessRights extends Component {
   }
 
   render() {
-    const { constants, accessRights, createdAccessRights, classes } = this.props
+    const { constants, accessRights, createdAccessRights, classes, t } = this.props
     const schema = constants.schemas.accessright
 
     return (
       <Fragment>
         <Created
           items={createdAccessRights}
-          content={AccessRights.accessRightToText}
+          content={this.accessRightToText}
           url={AccessRights.accessRightToURL}
         />
         <Loader item={accessRights}>
@@ -184,7 +187,7 @@ export default class AccessRights extends Component {
             onClick={this.onAdd("accessPoint")}
             className={classes.button}
           >
-            Add access point
+            {t("ADD_AP")}
           </Button>
           <Button
             variant="text"
@@ -192,7 +195,7 @@ export default class AccessRights extends Component {
             onClick={this.onAdd("door")}
             className={classes.button}
           >
-            Add door
+            {t("ADD_DOOR")}
           </Button>
           <Button
             variant="text"
@@ -200,7 +203,7 @@ export default class AccessRights extends Component {
             onClick={this.onAdd("zoneTo")}
             className={classes.button}
           >
-            Add zone
+            {t("ADD_ZONE")}
           </Button>
           <ModelTable
             schema={schema}
@@ -222,7 +225,7 @@ export default class AccessRights extends Component {
         )}
         <Request
           selector={this.state.deletedSelector}
-          message={"Deleting Access Right"}
+          message={this.props.t("AccessRights_DELETING")}
           attemptAt={ this.state.deleteAttemptAt }
           onSuccess={ this.onAccessRightDeleted }
         />

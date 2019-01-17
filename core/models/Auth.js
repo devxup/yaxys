@@ -16,7 +16,7 @@ module.exports = {
           })
           ctx.response.body = ""
         } catch (err) {
-          ctx.throw(401, err.message)
+          ctx.throw(401, ctx.t(err.message))
         }
       },
     ],

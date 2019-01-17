@@ -7,6 +7,7 @@ import { red, green, grey } from "@material-ui/core/colors"
 
 import { withConstants } from "../services/Utils"
 import Switcher from "./Switcher.jsx"
+import { withNamespaces } from "react-i18next"
 
 const styles = theme => ({
   switcherCommon: {
@@ -38,6 +39,7 @@ const styles = theme => ({
 
 export default
 @withConstants
+@withNamespaces()
 @withStyles(styles)
 class RightsEditor extends Component {
   static propTypes = {
@@ -45,6 +47,7 @@ class RightsEditor extends Component {
     values: PropTypes.object,
     constants: PropTypes.object,
     onChange: PropTypes.func,
+    t: PropTypes.func,
   }
 
   constructor(props) {
@@ -67,14 +70,14 @@ class RightsEditor extends Component {
       case "operator":
         choices = [
           {
-            label: `${rightTitle}: denied`,
+            label: this.props.t("RightsEditor_DENIED", { rightTitle }),
             value: false,
             classes: {
               root: classNames(classes.switcherCommon, classes.switcherDenied),
             },
           },
           {
-            label: `${rightTitle}: allowed`,
+            label: this.props.t("RightsEditor_ALLOWED", { rightTitle }),
             value: true,
             classes: {
               root: classNames(classes.switcherCommon, classes.switcherAllowed),
@@ -85,7 +88,7 @@ class RightsEditor extends Component {
       case "profile":
         choices = [
           {
-            label: `${rightTitle}: allowed`,
+            label: this.props.t("RightsEditor_ALLOWED", { rightTitle }),
             value: true,
             classes: {
               root: classNames(classes.switcherCommon, classes.switcherAllowed),
@@ -99,8 +102,8 @@ class RightsEditor extends Component {
         emptyAllow={ true }
         emptyLabel={
           type === "profile"
-            ? `${rightTitle}: don't change`
-            : `${rightTitle}: untouched`
+            ? this.props.t("RightsEditor_DONT_CHANGE", { rightTitle })
+            : this.props.t("RightsEditor_UNTOUCHED", { rightTitle })
         }
         classes={{ root: classes.switcherCommon }}
         choices={choices}

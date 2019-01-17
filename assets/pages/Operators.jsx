@@ -13,6 +13,7 @@ import Wrapper from "../components/Wrapper.jsx"
 import Created from "../components/Created.jsx"
 import ModelTableLoader from "../components/ModelTableLoader.jsx"
 import ModelDialog from "../components/ModelDialog.jsx"
+import { withNamespaces } from "react-i18next"
 
 const CREATED_OPERATORS_MARKER = "operators-page"
 const createdOperatorsSelector = YaxysClue.selectors.byClue(
@@ -21,6 +22,7 @@ const createdOperatorsSelector = YaxysClue.selectors.byClue(
 )
 
 @withConstants
+@withNamespaces()
 @connect(
   (state, props) => ({
     createdOperators: createdOperatorsSelector(state, props),
@@ -56,13 +58,13 @@ export default class Operators extends Component {
   }
 
   render() {
-    const { constants } = this.props
+    const { constants, t } = this.props
     return (
-      <Wrapper breadcrumbs={["Operators"]}>
-        <h1 style={{ marginTop: 0 }}>Operators</h1>
+      <Wrapper breadcrumbs={[t("OPERATORS")]}>
+        <h1 style={{ marginTop: 0 }}>{t("OPERATORS")}</h1>
         <p>
-          Also, you can control operators&#39; rights by{" "}
-          <Link to={"/settings/operator-profiles"}>managing their profiles</Link>
+          {t("Operators_CONTROL_OPERATOR_RIGHTS")}
+          <Link to={"/settings/operator-profiles"}>{t("Operators_CONTROL_OPERATOR_RIGHTS_LINK")}</Link>
         </p>
         <Button
           variant="text"
@@ -70,7 +72,7 @@ export default class Operators extends Component {
           onClick={this.onAdd}
           title="Create operator"
         >
-          Add operator
+          {t("Operators_ADD_OPER")}
         </Button>
         <Created
           items={this.props.createdOperators}
@@ -87,15 +89,15 @@ export default class Operators extends Component {
         </Paper>
         <br />
         <ModelDialog
-          title="Create new operator"
+          title={t("Operators_ADD_OPER")}
           open={this.state.addOpen}
           onClose={this.onAddClose}
           onReady={this.onAddReady}
           schema={constants.schemas.operator}
           attributes={["email", "passwordHash"]}
-          btnReady="Create"
+          btnReady={t("CREATE")}
         >
-          Please provide email address and password for the new operator.
+          {t("Operators_CREATE_DESC")}
         </ModelDialog>
       </Wrapper>
     )

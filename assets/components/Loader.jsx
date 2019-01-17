@@ -7,6 +7,7 @@ import YaxysClue from "../services/YaxysClue"
 import classNames from "classnames"
 import { withStyles } from "@material-ui/core/styles"
 import { CircularProgress, Paper, Button } from "@material-ui/core"
+import { withNamespaces } from "react-i18next"
 
 @withStyles(theme => ({
   root: {
@@ -42,6 +43,7 @@ import { CircularProgress, Paper, Button } from "@material-ui/core"
     display: "inline-block",
   },
 }))
+@withNamespaces()
 @connect(
   null,
   {
@@ -52,6 +54,7 @@ export default class Loader extends Component {
   static propTypes = {
     repeat: PropTypes.func,
     classes: PropTypes.object,
+    t: PropTypes.func,
 
     item: PropTypes.object,
     loadingText: PropTypes.string,
@@ -65,13 +68,13 @@ export default class Loader extends Component {
   }
 
   render() {
-    const { item, loadingText, retryText, classes, children } = this.props
+    const { item, loadingText, retryText, classes, children, t } = this.props
 
     if (!item || item.pending) {
       return (
         <Paper className={classNames(classes.root, classes.pending)}>
           <CircularProgress className={classes.progress} size={30} />
-          <div className={classes.message}>{loadingText || "Loading..."}</div>
+          <div className={classes.message}>{loadingText || t("Loader_LOADING")}</div>
         </Paper>
       )
     }
@@ -83,10 +86,10 @@ export default class Loader extends Component {
         <div className={classes.message}>
           {item?.data?.message ||
             item?.data?.toString() ||
-            (item?.meta?.responseMeta?.status === 403 ? "Permission denied" : "An error occured")}
+            (item?.meta?.responseMeta?.status === 403 ? t("PERM_DENIED") : t("ERROR"))}
         </div>
         <Button classes={{ root: classes.button }} onClick={this.onRetry}>
-          {retryText || "Retry"}
+          {retryText || t("RETRY")}
         </Button>
       </Paper>
     )

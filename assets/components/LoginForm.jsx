@@ -7,6 +7,7 @@ import classNames from "classnames"
 import { Button, TextField, CircularProgress } from "@material-ui/core"
 
 import YaxysClue, { queries } from "../services/YaxysClue"
+import { withNamespaces } from "react-i18next"
 
 const marker = "login-form"
 
@@ -16,18 +17,6 @@ const authClue = props => ({
 })
 
 const authSelector = YaxysClue.selectors.byClue(authClue, { marker })
-
-const FORM_SCHEMA = {
-  properties: {
-    email: {
-      title: "E-mail",
-    },
-    password: {
-      title: "Password",
-      password: true,
-    },
-  },
-}
 
 @withStyles(theme => ({
   button: {
@@ -55,6 +44,7 @@ const FORM_SCHEMA = {
     color: theme.palette.error.dark,
   },
 }))
+@withNamespaces()
 @connect(
   (state, props) => ({
     auth: authSelector(state, props),
@@ -67,6 +57,7 @@ export default class LoginForm extends Component {
   static propTypes = {
     auth: PropTypes.object,
     authenticate: PropTypes.func.isRequired,
+    t: PropTypes.func,
   }
 
   constructor(props) {
@@ -99,33 +90,19 @@ export default class LoginForm extends Component {
     }
   }
 
-  renderProperty = (propertyKey, index) => {
-    const property = FORM_SCHEMA.properties[propertyKey]
-    if (!property) {
-      return false
+  render() {
+    const FORM_SCHEMA = {
+      properties: {
+        email: {
+          title: this.props.t("LOGIN"),
+        },
+        password: {
+          title: this.props.t("PASSWORD"),
+          password: true,
+        },
+      },
     }
 
-    const error = this.state.dirty && !this.state.form[propertyKey]
-
-    return (
-      <TextField
-        key={index}
-        type={property.password ? "password" : "email"}
-        fullWidth
-        autoFocus={index === 0}
-        name={propertyKey}
-        label={property.title}
-        margin={"normal"}
-        error={error}
-        helperText={error ? "Should not be empty" : ""}
-        value={this.state.form[propertyKey] || ""}
-        onChange={this.onChange}
-        onKeyPress={this.onKeyPress}
-      />
-    )
-  }
-
-  render() {
     const { classes, auth } = this.props
     const propertyKeys = Object.keys(FORM_SCHEMA.properties)
 
@@ -134,26 +111,49 @@ export default class LoginForm extends Component {
 
     return (
       <Fragment>
-        {propertyKeys.map(this.renderProperty)}
+        {propertyKeys.map((propertyKey, index) => {
+          const property = FORM_SCHEMA.properties[propertyKey]
+          if (!property) {
+            return false
+          }
+
+          const error = this.state.dirty && !this.state.form[propertyKey]
+
+          return (
+            <TextField
+              key={index}
+              type={property.password ? "password" : "email"}
+              fullWidth
+              autoFocus={index === 0}
+              name={propertyKey}
+              label={property.title}
+              margin={"normal"}
+              error={error}
+              helperText={error ? this.props.t("LoginForm_NOT_EMPTY") : ""}
+              value={this.state.form[propertyKey] || ""}
+              onChange={this.onChange}
+              onKeyPress={this.onKeyPress}
+            />
+          )})}
         {lastAttempt?.pending ? (
           <Fragment>
             <CircularProgress className={classes.progress} size={30} />
             <span className={classNames(classes.message, classes.pending)}>
-              Checking email and password
+              {this.props.t("LoginForm_CHECKING")}
             </span>
           </Fragment>
         ) : (
           <Fragment>
             <Button classes={{ root: classes.button }} variant="text" onClick={this.onLogin}>
-              Log in
+              {this.props.t("LOG_IN")}
             </Button>
             {lastAttempt?.error && (
               <span className={classNames(classes.message, classes.error)}>
                 {lastAttempt?.data?.message ||
                   lastAttempt?.data?.toString() ||
                   (lastAttempt?.meta?.responseMeta?.status === 403
-                    ? "Wrong credentials"
-                    : "An error occured")}
+                    ? this.props.t("LoginForm_WRONG_CREDS")
+                    : this.props.t("ERROR"))}
               </span>
             )}
           </Fragment>

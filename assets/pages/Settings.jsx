@@ -5,6 +5,7 @@ import { Link } from "react-router-dom"
 import { withStyles } from "@material-ui/core/styles"
 import Paper from "@material-ui/core/Paper"
 import Wrapper from "../components/Wrapper.jsx"
+import { withNamespaces } from "react-i18next"
 
 const styles = theme => ({
   root: {
@@ -19,19 +20,18 @@ const styles = theme => ({
 })
 
 @withStyles(styles)
+@withNamespaces()
 export default class Settings extends Component {
   render() {
-    const { classes } = this.props
+    const { classes, t } = this.props
     return (
-      <Wrapper breadcrumbs={["Settings"]}>
-        <h1 style={{ marginTop: 0 }}>Settings</h1>
-
-        <p>Not so much settings so far</p>
+      <Wrapper breadcrumbs={[t("SETTINGS")]}>
+        <h1 style={{ marginTop: 0 }}>{t("SETTINGS")}</h1>
 
         <Paper className={classes.root} elevation={1}>
           <ul className={classes.list}>
-            <li><Link to={"/settings/operator-profiles"}>Operator profiles</Link></li>
-            <li><Link to={"/settings/user-profiles"}>User profiles</Link></li>
+            <li><Link to={"/settings/operator-profiles"}>{t("OPERATOR_PROFILES")}</Link></li>
+            <li><Link to={"/settings/user-profiles"}>{t("USER_PROFILES")}</Link></li>
           </ul>
         </Paper>
       </Wrapper>

@@ -8,6 +8,7 @@ import { Done } from "@material-ui/icons"
 import { Snackbar, CircularProgress, Button } from "@material-ui/core"
 
 import YaxysClue from "../services/YaxysClue"
+import { withNamespaces } from "react-i18next"
 
 const styles = theme => ({
   close: {
@@ -28,6 +29,7 @@ const styles = theme => ({
 })
 
 @withStyles(styles)
+@withNamespaces()
 @connect(
   (state, props) => ({
     item: props.selector?.(state, props),
@@ -40,6 +42,7 @@ export default class Request extends Component {
   static propTypes = {
     item: PropTypes.object,
     repeat: PropTypes.func,
+    t: PropTypes.func,
 
     selector: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
     attemptAt: PropTypes.number,
@@ -135,7 +138,7 @@ export default class Request extends Component {
           item?.success && <Done />,
           item?.error && (
             <Button key="undo" className={classes.button} size="small" onClick={this.handleRepeat}>
-              REPEAT
+              {this.props.t("REPEAT")}
             </Button>
           ),
         ]}
