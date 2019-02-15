@@ -13,6 +13,7 @@ import Wrapper from "../components/Wrapper.jsx"
 import Created from "../components/Created.jsx"
 import ModelDialog from "../components/ModelDialog.jsx"
 import ModelTableLoader from "../components/ModelTableLoader.jsx"
+import Request from "../components/Request.jsx"
 
 const CREATED_USERS_MARKER = "users-page"
 const createdUsersSelector = YaxysClue.selectors.byClue(
@@ -27,11 +28,13 @@ const createdUsersSelector = YaxysClue.selectors.byClue(
   }),
   {
     createUser: YaxysClue.actions.byClue,
+    deleteUser: YaxysClue.actions.byClue,
   }
 )
 export default class Users extends Component {
   state = {
     addOpen: false,
+    deletedHash: {},
   }
 
   onAdd = event => {
@@ -53,6 +56,33 @@ export default class Users extends Component {
       },
       { marker: CREATED_USERS_MARKER }
     )
+  }
+
+  onDeleteItem = item => {
+    if (this.state.deletedHash[item.id]) {
+      return
+    }
+    if (!confirm(`Are you sure to delete the User #${item.id}?`)) {
+      return
+    }
+
+    this.props.deleteUser({
+      identity: "user",
+      query: queries.DELETE,
+      id: item.id,
+    })
+
+    this.setState({
+      deletedSelector: YaxysClue.selectors.byClue(
+        props => ({ identity: "user", query: queries.DELETE, id: item.id })
+      ),
+      deleteAttemptAt: new Date().getTime(),
+    })
+  }
+
+  onItemDeleted = item => {
+    this.state.deletedHash[item?.meta?.clue?.id] = true
+    this.forceUpdate()
   }
 
   render() {
@@ -83,6 +113,9 @@ export default class Users extends Component {
             url={user => `/users/${user.id}`}
             columns={["id", "name", "hasCustomRights", "profiles"]}
             additionalClueProperties={{ populate: "profiles" }}
+            onDelete={this.onDeleteItem}
+            deletedHash={ this.state.deletedHash }
+            deletedKey="id"
           />
         </Paper>
         <br />
@@ -97,6 +130,12 @@ export default class Users extends Component {
         >
           Please provide name for the new user.
         </ModelDialog>
+        <Request
+          selector={this.state.deletedSelector}
+          message={"Deleting the User"}
+          attemptAt={ this.state.deleteAttemptAt }
+          onSuccess={ this.onItemDeleted }
+        />
       </Wrapper>
     )
   }

@@ -41,7 +41,7 @@ module.exports = {
   api: RestService.buildStandardAPI("door"),
 
   hooks: {
-    "delete:after": async (trx, old, updated) => {
+    "delete:after": async (trx, old) => {
       const accessRights = await yaxys.db.find(trx, "accessright", { door: old.id })
       for (const accessRight of accessRights) {
         await yaxys.db.delete(trx, "accessright", accessRight.id)

@@ -41,4 +41,17 @@ module.exports = {
   },
 
   api: RestService.buildStandardAPI("user"),
+
+  hooks: {
+    "delete:after": async (trx, old) => {
+      const relatedEntities = ["accessright", "credential", "userprofilebinding"]
+
+      for (const entity of relatedEntities) {
+        const items = await yaxys.db.find(trx, entity, { user: old.id })
+        for (const item of items) {
+          await yaxys.db.delete(trx, entity, item.id)
+        }
+      }
+    },
+  },
 }

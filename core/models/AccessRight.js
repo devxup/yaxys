@@ -64,9 +64,14 @@ module.exports = {
       }
     },
     "delete:after": async (trx, deleted) => {
-      if (deleted.user) {
-        await AccessService.updateUserHasCustomRights(trx, deleted.user)
-      }
+      if (!deleted.user) { return }
+
+      // the delete of access right might be initiated by deleting the user –
+      // in this case user won't exist for the moment
+      const user = await yaxys.db.findOne(trx, "user", { id: deleted.user })
+      if (!user) { return }
+
+      await AccessService.updateUserHasCustomRights(trx, deleted.user)
     },
   },
 }
