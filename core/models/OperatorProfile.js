@@ -32,4 +32,13 @@ module.exports = {
   },
 
   api: RestService.buildStandardAPI("operatorprofile"),
+
+  hooks: {
+    "delete:after": async (trx, old) => {
+      const bindings = await yaxys.db.find(trx, "operatorprofilebinding", { operatorProfile: old.id })
+      for (const binding of bindings) {
+        await yaxys.db.delete(trx, "operatorprofilebinding", binding.id)
+      }
+    },
+  },
 }

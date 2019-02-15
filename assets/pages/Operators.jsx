@@ -13,6 +13,7 @@ import Wrapper from "../components/Wrapper.jsx"
 import Created from "../components/Created.jsx"
 import ModelTableLoader from "../components/ModelTableLoader.jsx"
 import ModelDialog from "../components/ModelDialog.jsx"
+import Request from "../components/Request.jsx"
 
 const CREATED_OPERATORS_MARKER = "operators-page"
 const createdOperatorsSelector = YaxysClue.selectors.byClue(
@@ -27,11 +28,13 @@ const createdOperatorsSelector = YaxysClue.selectors.byClue(
   }),
   {
     createOperator: YaxysClue.actions.byClue,
+    deleteOperator: YaxysClue.actions.byClue,
   }
 )
 export default class Operators extends Component {
   state = {
     addOpen: false,
+    deletedHash: {},
   }
 
   onAdd = event => {
@@ -53,6 +56,33 @@ export default class Operators extends Component {
       },
       { marker: CREATED_OPERATORS_MARKER }
     )
+  }
+
+  onDeleteItem = item => {
+    if (this.state.deletedHash[item.id]) {
+      return
+    }
+    if (!confirm(`Are you sure to delete the Operator #${item.id}?`)) {
+      return
+    }
+
+    this.props.deleteOperator({
+      identity: "operator",
+      query: queries.DELETE,
+      id: item.id,
+    })
+
+    this.setState({
+      deletedSelector: YaxysClue.selectors.byClue(
+        props => ({ identity: "operator", query: queries.DELETE, id: item.id })
+      ),
+      deleteAttemptAt: new Date().getTime(),
+    })
+  }
+
+  onItemDeleted = item => {
+    this.state.deletedHash[item?.meta?.clue?.id] = true
+    this.forceUpdate()
   }
 
   render() {
@@ -83,6 +113,9 @@ export default class Operators extends Component {
             url={operator => `/operators/${operator.id}`}
             columns={["id", "name", "login", "email", "isAdministrator", "hasCustomRights", "profiles"]}
             additionalClueProperties={{ populate: "profiles" }}
+            onDelete={this.onDeleteItem}
+            deletedHash={ this.state.deletedHash }
+            deletedKey="id"
           />
         </Paper>
         <br />
@@ -97,6 +130,12 @@ export default class Operators extends Component {
         >
           Please provide email address and password for the new operator.
         </ModelDialog>
+        <Request
+          selector={this.state.deletedSelector}
+          message={"Deleting the Operator"}
+          attemptAt={ this.state.deleteAttemptAt }
+          onSuccess={ this.onItemDeleted }
+        />
       </Wrapper>
     )
   }

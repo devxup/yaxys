@@ -60,7 +60,7 @@ export default class UserProfiles extends Component {
     if (this.state.deletedHash[item.id]) {
       return
     }
-    if (!confirm(`Are you sure to delete the Zone #${item.id}?`)) {
+    if (!confirm(`Are you sure to delete the User Profile #${item.id}?`)) {
       return
     }
 

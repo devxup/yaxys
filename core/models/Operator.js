@@ -65,6 +65,12 @@ module.exports = {
     "update:before": (trx, old, patch) => {
       AuthService.checkOperatorIntegrity(old, patch)
     },
+    "delete:after": async (trx, old) => {
+      const bindings = await yaxys.db.find(trx, "operatorprofilebinding", { operator: old.id })
+      for (const binding of bindings) {
+        await yaxys.db.delete(trx, "operatorprofilebinding", binding.id)
+      }
+    },
   },
 
   api: RestService.buildStandardAPI("operator", { hasPasswords: true }),

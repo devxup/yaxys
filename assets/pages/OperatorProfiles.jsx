@@ -11,6 +11,7 @@ import Wrapper from "../components/Wrapper.jsx"
 import Created from "../components/Created.jsx"
 import ModelTableLoader from "../components/ModelTableLoader.jsx"
 import ModelDialog from "../components/ModelDialog.jsx"
+import Request from "../components/Request.jsx"
 
 const CREATED_PROFILES_MARKER = "profiles-page"
 const createdProfilesSelector = YaxysClue.selectors.byClue(
@@ -25,11 +26,13 @@ const createdProfilesSelector = YaxysClue.selectors.byClue(
   }),
   {
     createProfile: YaxysClue.actions.byClue,
+    deleteProfile: YaxysClue.actions.byClue,
   }
 )
 export default class OperatorProfiles extends Component {
   state = {
     addOpen: false,
+    deletedHash: {},
   }
 
   onAdd = event => {
@@ -51,6 +54,33 @@ export default class OperatorProfiles extends Component {
       },
       { marker: CREATED_PROFILES_MARKER }
     )
+  }
+
+  onDeleteItem = item => {
+    if (this.state.deletedHash[item.id]) {
+      return
+    }
+    if (!confirm(`Are you sure to delete the Operator Profile #${item.id}?`)) {
+      return
+    }
+
+    this.props.deleteProfile({
+      identity: "operatorprofile",
+      query: queries.DELETE,
+      id: item.id,
+    })
+
+    this.setState({
+      deletedSelector: YaxysClue.selectors.byClue(
+        props => ({ identity: "operatorprofile", query: queries.DELETE, id: item.id })
+      ),
+      deleteAttemptAt: new Date().getTime(),
+    })
+  }
+
+  onItemDeleted = item => {
+    this.state.deletedHash[item?.meta?.clue?.id] = true
+    this.forceUpdate()
   }
 
   render() {
@@ -76,6 +106,9 @@ export default class OperatorProfiles extends Component {
             identity="operatorprofile"
             url={profile => `/settings/operator-profiles/${profile.id}`}
             columns={["id", "name"]}
+            onDelete={this.onDeleteItem}
+            deletedHash={ this.state.deletedHash }
+            deletedKey="id"
           />
         </Paper>
         <br />
@@ -90,6 +123,12 @@ export default class OperatorProfiles extends Component {
         >
           Please provide name for the new operator profile.
         </ModelDialog>
+        <Request
+          selector={this.state.deletedSelector}
+          message={"Deleting the Operator profile"}
+          attemptAt={ this.state.deleteAttemptAt }
+          onSuccess={ this.onItemDeleted }
+        />
       </Wrapper>
     )
   }
