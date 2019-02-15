@@ -57,7 +57,6 @@ export default class User extends Component {
       user: this.props2UserState(props),
       forceValidation: false,
       profileOpen: false,
-      deletedBindingId: null,
       deletedHash: {},
       deleteAttemptAt: null,
     }
@@ -140,7 +139,6 @@ export default class User extends Component {
       deletedSelector: YaxysClue.selectors.byClue(
         props => ({ identity: "userprofilebinding", query: queries.DELETE, id })
       ),
-      deletedBindingId: id,
       deleteAttemptAt: new Date().getTime(),
     })
   }

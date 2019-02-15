@@ -61,3 +61,4 @@ module.exports = class PageRouter extends Router {
 </html>`
   }
 }
+

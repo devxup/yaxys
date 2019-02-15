@@ -11,6 +11,7 @@ import Wrapper from "../components/Wrapper.jsx"
 import Created from "../components/Created.jsx"
 import ModelTableLoader from "../components/ModelTableLoader.jsx"
 import ModelDialog from "../components/ModelDialog.jsx"
+import Request from "../components/Request.jsx"
 
 const CREATED_ACCESS_POINTS_MARKER = "accessPoints-page"
 const createdAccessPointsSelector = YaxysClue.selectors.byClue(
@@ -25,11 +26,13 @@ const createdAccessPointsSelector = YaxysClue.selectors.byClue(
   }),
   {
     createAccessPoint: YaxysClue.actions.byClue,
+    deleteAccessPoint: YaxysClue.actions.byClue,
   }
 )
 export default class AccessPoints extends Component {
   state = {
     addOpen: false,
+    deletedHash: {},
   }
 
   onAdd = event => {
@@ -51,6 +54,33 @@ export default class AccessPoints extends Component {
       },
       { marker: CREATED_ACCESS_POINTS_MARKER }
     )
+  }
+
+  onDeleteItem = item => {
+    if (this.state.deletedHash[item.id]) {
+      return
+    }
+    if (!confirm(`Are you sure to delete the Access Point #${item.id}?`)) {
+      return
+    }
+
+    this.props.deleteAccessPoint({
+      identity: "accesspoint",
+      query: queries.DELETE,
+      id: item.id,
+    })
+
+    this.setState({
+      deletedSelector: YaxysClue.selectors.byClue(
+        props => ({ identity: "accesspoint", query: queries.DELETE, id: item.id })
+      ),
+      deleteAttemptAt: new Date().getTime(),
+    })
+  }
+
+  onItemDeleted = item => {
+    this.state.deletedHash[item?.meta?.clue?.id] = true
+    this.forceUpdate()
   }
 
   render() {
@@ -81,6 +111,9 @@ export default class AccessPoints extends Component {
             url={accessPoint => `/access-points/${accessPoint.id}`}
             columns={["id", "name", "description", "door", "zoneTo"]}
             additionalClueProperties={{ populate: "zoneTo,door" }}
+            onDelete={this.onDeleteItem}
+            deletedHash={ this.state.deletedHash }
+            deletedKey="id"
           />
         </Paper>
         <br />
@@ -95,6 +128,12 @@ export default class AccessPoints extends Component {
         >
           Please provide name and description for the new access point.
         </ModelDialog>
+        <Request
+          selector={this.state.deletedSelector}
+          message={"Deleting the item"}
+          attemptAt={ this.state.deleteAttemptAt }
+          onSuccess={ this.onItemDeleted }
+        />
       </Wrapper>
     )
   }

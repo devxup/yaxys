@@ -41,8 +41,8 @@ const styles = theme => ({
     backgroundColor: yellow[100],
   },
   itemError: {
-    backgroundColor: theme.palette.error.light, //red[100]
-    color: theme.palette.error.contrastText, //red[100]
+    backgroundColor: theme.palette.error.main,
+    color: "white",
   },
   link: {
     color: "#333",

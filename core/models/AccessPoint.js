@@ -46,5 +46,11 @@ module.exports = {
         await ZoneService.checkDoorAccessPointsCount(updated.door, trx)
       }
     },
+    "delete:after": async (trx, old, updated) => {
+      const accessRights = await yaxys.db.find("accessright", { accessPoint: old.id }, {}, trx)
+      for (const accessRight of accessRights) {
+        await yaxys.db.delete("accessright", accessRight.id, trx)
+      }
+    },
   },
 }

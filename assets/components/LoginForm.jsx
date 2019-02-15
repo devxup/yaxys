@@ -63,6 +63,7 @@ const FORM_SCHEMA = {
     authenticate: YaxysClue.actions.byClue,
   }
 )
+
 export default class LoginForm extends Component {
   static propTypes = {
     auth: PropTypes.object,

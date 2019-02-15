@@ -48,6 +48,7 @@ const styles = theme => ({
   deletedCell: {
     color: theme.palette.grey[700],
     background: deepOrange[50],
+    cursor: "default",
   },
   trashButton: {
     visibility: "hidden",
@@ -132,11 +133,12 @@ export default class ModelTable extends Component {
       },
       bodyCellProps: data => {
         const { rowData } = data
+        const isDeleted = deletedHash?.[rowData[deletedKey || "id"]]
         return {
           className: classNames(
             classes.cell,
             { [classes.linkCell]: !!url },
-            { [classes.deletedCell]: deletedHash?.[rowData[deletedKey || "id"]] }
+            { [classes.deletedCell]: isDeleted }
           ),
         }
       },
@@ -157,7 +159,14 @@ export default class ModelTable extends Component {
               : (property && property.title) || column.name
         }
         column.cell = rowData => {
-          return this.renderPropertyCell(property, rowData[column.name], url ? url(rowData) : false)
+          const isDeleted = deletedHash?.[rowData[deletedKey || "id"]]
+          return this.renderPropertyCell(
+            property,
+            rowData[column.name],
+            (url && !isDeleted)
+              ? url(rowData)
+              : false
+          )
         }
 
         return column
