@@ -12,6 +12,7 @@ import Wrapper from "../components/Wrapper.jsx"
 import Created from "../components/Created.jsx"
 import ModelTableLoader from "../components/ModelTableLoader.jsx"
 import ModelDialog from "../components/ModelDialog.jsx"
+import Request from "../components/Request.jsx"
 
 const CREATED_DOORS_MARKER = "doors-page"
 const createdDoorsSelector = YaxysClue.selectors.byClue(
@@ -26,11 +27,13 @@ const createdDoorsSelector = YaxysClue.selectors.byClue(
   }),
   {
     createDoor: YaxysClue.actions.byClue,
+    deleteDoor: YaxysClue.actions.byClue,
   }
 )
 export default class Doors extends Component {
   state = {
     addOpen: false,
+    deletedHash: {},
   }
 
   onAdd = event => {
@@ -52,6 +55,33 @@ export default class Doors extends Component {
       },
       { marker: CREATED_DOORS_MARKER }
     )
+  }
+
+  onDeleteItem = item => {
+    if (this.state.deletedHash[item.id]) {
+      return
+    }
+    if (!confirm(`Are you sure to delete the Door #${item.id}?`)) {
+      return
+    }
+
+    this.props.deleteDoor({
+      identity: "door",
+      query: queries.DELETE,
+      id: item.id,
+    })
+
+    this.setState({
+      deletedSelector: YaxysClue.selectors.byClue(
+        props => ({ identity: "door", query: queries.DELETE, id: item.id })
+      ),
+      deleteAttemptAt: new Date().getTime(),
+    })
+  }
+
+  onItemDeleted = item => {
+    this.state.deletedHash[item?.meta?.clue?.id] = true
+    this.forceUpdate()
   }
 
   render() {
@@ -78,6 +108,9 @@ export default class Doors extends Component {
             url={door => `/doors/${door.id}`}
             columns={["id", "name", "description", "accessPoints", "zones"]}
             additionalClueProperties={{ populate: "accessPoints,zones" }}
+            onDelete={this.onDeleteItem}
+            deletedHash={ this.state.deletedHash }
+            deletedKey="id"
           />
         </Paper>
         <br />
@@ -92,6 +125,12 @@ export default class Doors extends Component {
         >
           Please provide name and description for the new door.
         </ModelDialog>
+        <Request
+          selector={this.state.deletedSelector}
+          message={"Deleting the Door"}
+          attemptAt={ this.state.deleteAttemptAt }
+          onSuccess={ this.onItemDeleted }
+        />
       </Wrapper>
     )
   }

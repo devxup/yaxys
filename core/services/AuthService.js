@@ -28,9 +28,9 @@ module.exports = {
    */
   getOperatorByCredentials: async (loginOrEmail, password) => {
     let operator = null
-    operator = await yaxys.db.findOne("operator", { email: loginOrEmail }, {})
+    operator = await yaxys.db.findOne(null, "operator", { email: loginOrEmail })
     if (!operator) {
-      operator = await yaxys.db.findOne("operator", { login: loginOrEmail }, {})
+      operator = await yaxys.db.findOne(null, "operator", { login: loginOrEmail })
     }
     if (operator && AuthService.checkPassword(password, operator.passwordHash)) {
       return operator
@@ -82,6 +82,7 @@ module.exports = {
     }
 
     const profileBindings = (await yaxys.db.find(
+      null,
       "operatorprofilebinding",
       { operator: operator.id },
       { populate: "operatorProfile" }

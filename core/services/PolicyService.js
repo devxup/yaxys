@@ -9,7 +9,7 @@ module.exports = {
   checkAndInjectOperator: async (ctx, next) => {
     try {
       const operatorFromToken = AuthService.checkAndDecodeToken(ctx.cookies.get("jwt"))
-      ctx.operator = await yaxys.db.findOne("operator", { id: operatorFromToken.id })
+      ctx.operator = await yaxys.db.findOne(null, "operator", { id: operatorFromToken.id })
       ctx.operator.exp = operatorFromToken.exp
     } catch (err) {
       ctx.throw(401, "unauthorized")

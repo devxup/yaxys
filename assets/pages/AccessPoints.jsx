@@ -130,7 +130,7 @@ export default class AccessPoints extends Component {
         </ModelDialog>
         <Request
           selector={this.state.deletedSelector}
-          message={"Deleting the item"}
+          message={"Deleting the Access Point"}
           attemptAt={ this.state.deleteAttemptAt }
           onSuccess={ this.onItemDeleted }
         />

@@ -106,61 +106,61 @@ describe("Adapter", () => {
       {
         title: "simple insert",
         method: "insert",
-        args: [tableNames[0], { a1: 1, a2: "v1" }],
+        args: [null, tableNames[0], { a1: 1, a2: "v1" }],
         result: { id: 1, a1: 1, a2: "v1", a3: null },
       },
       {
         title: "simple update",
         method: "update",
-        args: [tableNames[0], 1, { a1: 3, a3: { k: 1 } }],
+        args: [null, tableNames[0], 1, { a1: 3, a3: { k: 1 } }],
         result: { id: 1, a1: 3, a2: "v1", a3: { k: 1 } },
       },
       {
         title: "update unexisting item",
         method: "update",
-        args: [tableNames[0], 1000, { a1: 2, a3: { k: 1 } }],
+        args: [null, tableNames[0], 1000, { a1: 2, a3: { k: 1 } }],
         error: "Update failed – record with id 1000 not found",
       },
       {
         title: "insert another item",
         method: "insert",
-        args: [tableNames[0], { a1: 4 }],
+        args: [null, tableNames[0], { a1: 4 }],
         result: { id: 2, a2: null, a1: 4, a3: null },
       },
       {
         title: "findOne with back sort",
         method: "findOne",
-        args: [tableNames[0], {}, { limit: 2, sort: { id: -1 } }],
+        args: [null, tableNames[0], {}, { limit: 2, sort: { id: -1 } }],
         result: { id: 2, a2: null, a1: 4, a3: null },
       },
       {
         title: "find with direct sort",
         method: "find",
-        args: [tableNames[0], {}, { sort: { id: 1 } }],
+        args: [null, tableNames[0], {}, { sort: { id: 1 } }],
         result: [{ id: 1, a1: 3, a2: "v1", a3: { k: 1 } }, { id: 2, a2: null, a1: 4, a3: null }],
       },
       {
         title: "find with back sort",
         method: "find",
-        args: [tableNames[0], {}, { sort: { id: -1 } }],
+        args: [null, tableNames[0], {}, { sort: { id: -1 } }],
         result: [{ id: 2, a2: null, a1: 4, a3: null }, { id: 1, a1: 3, a2: "v1", a3: { k: 1 } }],
       },
       {
         title: "find with back sort and limit",
         method: "find",
-        args: [tableNames[0], {}, { sort: { id: -1 }, limit: 1 }],
+        args: [null, tableNames[0], {}, { sort: { id: -1 }, limit: 1 }],
         result: [{ id: 2, a2: null, a1: 4, a3: null }],
       },
       {
         title: "find with filter",
         method: "find",
-        args: [tableNames[0], { a1: 3 }, { sort: { id: -1 }, limit: 1 }],
+        args: [null, tableNames[0], { a1: 3 }, { sort: { id: -1 }, limit: 1 }],
         result: [{ id: 1, a1: 3, a2: "v1", a3: { k: 1 } }],
       },
       {
         title: "find with 1:m populate",
         method: "find",
-        args: [tableNames[1], {}, { populate: "fake_initial_field" }],
+        args: [null, tableNames[1], {}, { populate: "fake_initial_field" }],
         result: [
           {
             id: 1,
@@ -194,7 +194,7 @@ describe("Adapter", () => {
       {
         title: "find with m:m populate",
         method: "find",
-        args: [tableNames[2], {}, { populate: "relatedList" }],
+        args: [null, tableNames[2], {}, { populate: "relatedList" }],
         result: [
           {
             id: 1,
@@ -253,13 +253,13 @@ describe("Adapter", () => {
 
   describe("Delete", () => {
     it("Insert and then delete", async () => {
-      const inserted = await gAdapter.insert(tableNames[0], { "a1": 1, a2: "v1" })
-      const found = await gAdapter.findOne(tableNames[0], { id: inserted.id })
+      const inserted = await gAdapter.insert(null, tableNames[0], { "a1": 1, a2: "v1" })
+      const found = await gAdapter.findOne(null, tableNames[0], { id: inserted.id })
       expect(found).toStrictEqual(inserted)
-      const deleted = await gAdapter.delete(tableNames[0], inserted.id)
+      const deleted = await gAdapter.delete(null, tableNames[0], inserted.id)
       expect(deleted).toStrictEqual(inserted)
 
-      const foundItems = await gAdapter.find(tableNames[0], { id: inserted.id })
+      const foundItems = await gAdapter.find(null, tableNames[0], { id: inserted.id })
       expect(foundItems).toStrictEqual([])
     })
   })

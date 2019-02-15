@@ -31,7 +31,8 @@ module.exports = {
    * @returns {Promise<boolean>} hasCustomRights value
    */
   async updateUserHasCustomRights(trx, userId) {
-    const hasCustomRights = (await yaxys.db.count("accessright", { user: userId }, trx)) > 0
-    await yaxys.db.update("user", userId, { hasCustomRights }, trx)
+    const hasCustomRights = (await yaxys.db.count(trx, "accessright", { user: userId })) > 0
+
+    await yaxys.db.update(trx, "user", userId, { hasCustomRights })
   },
 }

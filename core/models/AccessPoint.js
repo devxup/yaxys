@@ -38,18 +38,18 @@ module.exports = {
   hooks: {
     "create:after": async (trx, item) => {
       if (item.door) {
-        await ZoneService.checkDoorAccessPointsCount(item.door, trx)
+        await ZoneService.checkDoorAccessPointsCount(trx, item.door)
       }
     },
     "update:after": async (trx, old, updated) => {
       if (updated.door) {
-        await ZoneService.checkDoorAccessPointsCount(updated.door, trx)
+        await ZoneService.checkDoorAccessPointsCount(trx, updated.door)
       }
     },
     "delete:after": async (trx, old, updated) => {
-      const accessRights = await yaxys.db.find("accessright", { accessPoint: old.id }, {}, trx)
+      const accessRights = await yaxys.db.find(trx, "accessright", { accessPoint: old.id })
       for (const accessRight of accessRights) {
-        await yaxys.db.delete("accessright", accessRight.id, trx)
+        await yaxys.db.delete(trx, "accessright", accessRight.id)
       }
     },
   },

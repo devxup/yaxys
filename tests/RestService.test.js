@@ -53,7 +53,7 @@ describe("RestService", () => {
           params: { id: 1 },
           query: {},
         }),
-        result: ["findOne", identity, { id: 1 }, { populate: undefined }],
+        result: ["findOne", null, identity, { id: 1 }, { populate: undefined }],
       },
       {
         title: "No id",
@@ -93,7 +93,7 @@ describe("RestService", () => {
             populate: "someModel,anotherModel",
           },
         }),
-        result: ["findOne", identity, { id: 1 }, { populate: ["someModel", "anotherModel"] }],
+        result: ["findOne", null, identity, { id: 1 }, { populate: ["someModel", "anotherModel"] }],
       },
       {
         title: "Query with m:m populate",
@@ -103,7 +103,7 @@ describe("RestService", () => {
             populate: "someModel:anotherModel:oneMoreModel",
           },
         }),
-        result: ["findOne", identity, { id: 1 }, { populate: ["someModel:anotherModel:oneMoreModel"] }],
+        result: ["findOne", null, identity, { id: 1 }, { populate: ["someModel:anotherModel:oneMoreModel"] }],
       },
     ],
     find: [
@@ -112,8 +112,8 @@ describe("RestService", () => {
         ctx: new CTXEmulator({
           query: {},
         }),
-        header: ["meta", `{"total":["count","${identity}",{}]}`],
-        result: ["find", identity, {}, {}],
+        header: ["meta", `{"total":["count",null,"${identity}",{}]}`],
+        result: ["find", null, identity, {}, {}],
       },
       {
         title: "Mixed filter and reserved keywords",
@@ -124,8 +124,8 @@ describe("RestService", () => {
             someAttribute: 3,
           },
         }),
-        header: ["meta", `{"total":["count","${identity}",{"someAttribute":3}]}`],
-        result: ["find", identity, { someAttribute: 3 }, { limit: 1, skip: 2 }],
+        header: ["meta", `{"total":["count",null,"${identity}",{"someAttribute":3}]}`],
+        result: ["find", null, identity, { someAttribute: 3 }, { limit: 1, skip: 2 }],
       },
       {
         title: "Direct sort",
@@ -134,8 +134,8 @@ describe("RestService", () => {
             sort: "someAttribute",
           },
         }),
-        header: ["meta", `{"total":["count","${identity}",{}]}`],
-        result: ["find", identity, {}, { sort: { someAttribute: 1 } }],
+        header: ["meta", `{"total":["count",null,"${identity}",{}]}`],
+        result: ["find", null, identity, {}, { sort: { someAttribute: 1 } }],
       },
       {
         title: "Negative sort",
@@ -144,8 +144,8 @@ describe("RestService", () => {
             sort: "-someAttribute",
           },
         }),
-        header: ["meta", `{"total":["count","${identity}",{}]}`],
-        result: ["find", identity, {}, { sort: { someAttribute: -1 } }],
+        header: ["meta", `{"total":["count",null,"${identity}",{}]}`],
+        result: ["find", null, identity, {}, { sort: { someAttribute: -1 } }],
       },
       {
         title: "Complicated sort",
@@ -154,8 +154,8 @@ describe("RestService", () => {
             sort: '{"a": 1, "b":-1}',
           },
         }),
-        header: ["meta", `{"total":["count","${identity}",{}]}`],
-        result: ["find", identity, {}, { sort: { a: 1, b: -1 } }],
+        header: ["meta", `{"total":["count",null,"${identity}",{}]}`],
+        result: ["find", null, identity, {}, { sort: { a: 1, b: -1 } }],
       },
       {
         title: "Query with 1:m populate",
@@ -164,8 +164,8 @@ describe("RestService", () => {
             populate: "someModel,anotherModel",
           },
         }),
-        header: ["meta", `{"total":["count","${identity}",{}]}`],
-        result: ["find", identity, {}, { populate: ["someModel", "anotherModel"] }],
+        header: ["meta", `{"total":["count",null,"${identity}",{}]}`],
+        result: ["find", null, identity, {}, { populate: ["someModel", "anotherModel"] }],
       },
       {
         title: "Query with m:m populate",
@@ -174,8 +174,8 @@ describe("RestService", () => {
             populate: "someModel:anotherModel:oneMoreModel",
           },
         }),
-        header: ["meta", `{"total":["count","${identity}",{}]}`],
-        result: ["find", identity, {}, { populate: ["someModel:anotherModel:oneMoreModel"] }],
+        header: ["meta", `{"total":["count",null,"${identity}",{}]}`],
+        result: ["find", null, identity, {}, { populate: ["someModel:anotherModel:oneMoreModel"] }],
       },
     ],
   }

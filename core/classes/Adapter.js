@@ -121,13 +121,13 @@ module.exports = class Adapter {
 
   /**
    * Insert new model into the table
+   * @param {Object} trx The transaction context
    * @param {String} identity The model's identity
    * @param {Object} data The model blank to insert
    * @param {Object} [options] The options to find
-   * @param {Object} [trx] The transaction context
    * @returns {Promise<Object>} The inserted model containing all of the fields, includeing id
    */
-  async insert(identity, data, options = {}, trx) {
+  async insert(trx, identity, data, options = {}) {
     const dataToInsert = data.id ? data : _.omit(data, "id")
 
     const fixedData = this._sanitize(identity, dataToInsert)
@@ -161,18 +161,18 @@ module.exports = class Adapter {
 
   /**
    * Update the model by it's id
+   * @param {Object} trx The transaction context
    * @param {String} identity The model's identity
    * @param {String|Integer} id  Model's id
    * @param {Object} data new The patch for the model's instance
-   * @param {Object} [trx] The transaction context
    * @returns {Promise<Object>} The inserted model containing all of the fields, includeing id
    */
-  async update(identity, id, data, trx) {
+  async update(trx, identity, id, data) {
     if (!id) {
       throw new Error("id is required")
     }
     const fixedData = this._sanitize(identity, data)
-    const old = await this.findOne(identity, { id }, {}, trx)
+    const old = await this.findOne(trx, identity, { id })
 
     if (!old) {
       throw new Error(`Update failed – record with id ${id} not found`)
@@ -199,17 +199,17 @@ module.exports = class Adapter {
 
   /**
    * Delete the model by it's id
+   * @param {Object} trx The transaction context
    * @param {String} identity The model's identity
    * @param {String|Integer} id  Model's id
-   * @param {Object} [trx] The transaction context
    * @returns {Promise<Object>} The deleted model instance
    */
-  async delete(identity, id, trx) {
+  async delete(trx, identity, id) {
     if (!id) {
       throw new Error("id is required")
     }
 
-    const old = await this.findOne(identity, { id }, {}, trx)
+    const old = await this.findOne(trx, identity, { id }, {})
     await this.emitter.emit(`${identity}:delete:before`, trx, old)
 
     const deleteQuery = this.knex(identity)
@@ -225,25 +225,25 @@ module.exports = class Adapter {
 
   /**
    * Find the first model matching the filter
+   * @param {Object} trx The transaction context
    * @param {String} identity The model's identity
    * @param {Object} filter The filter to match
    * @param {Object} [options] The options to find
-   * @param {Object} [trx] The transaction context
    * @returns {Promise<Object|undefined>} The model found or undefined
    */
-  async findOne(identity, filter, options = {}, trx) {
-    return (await this.find(identity, filter, Object.assign({ limit: 1 }, options), trx))[0]
+  async findOne(trx, identity, filter, options = {}) {
+    return (await this.find(trx, identity, filter, Object.assign({ limit: 1 }, options)))[0]
   }
 
   /**
    * Find models matching the criteria
+   * @param {Object} trx The transaction context
    * @param {String} identity The model's identity
    * @param {Object} filter The filter to match
    * @param {Object} [options] The options to find
-   * @param {Object} [trx] The transaction context
    * @returns {Promise<Array<Object>>} The array of found models
    */
-  async find(identity, filter, options = {}, trx) {
+  async find(trx, identity, filter, options = {}) {
     let query = this.knex(identity).where(filter)
     _.each(Object.assign({}, this.options, options), (value, key) => {
       switch (key) {
@@ -277,12 +277,15 @@ module.exports = class Adapter {
 
   /**
    * Count the number of models of some identity
+   * @param {Object} [trx] The transaction context
    * @param {String} identity The identity of model
    * @param {Object} filter The filter to match
    * @returns {Promise<number>} The number of models
    */
-  async count(identity, filter) {
-    return (await this.knex(identity).where(filter).count("*"))[0].count
+  async count(trx, identity, filter) {
+    const query = this.knex(identity).where(filter).count("*")
+    const result = await (trx ? query.transacting(trx) : query)
+    return result[0].count
   }
 
   /** Populates the given models with 1:m relation
