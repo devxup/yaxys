@@ -39,4 +39,13 @@ module.exports = {
   },
 
   api: RestService.buildStandardAPI("zone"),
+
+  hooks: {
+    "delete:after": async (trx, old, updated) => {
+      const accessRights = await yaxys.db.find(trx, "accessright", { zoneTo: old.id })
+      for (const accessRight of accessRights) {
+        await yaxys.db.delete(trx, "accessright", accessRight.id)
+      }
+    },
+  },
 }

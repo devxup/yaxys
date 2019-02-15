@@ -12,6 +12,7 @@ import Wrapper from "../components/Wrapper.jsx"
 import Created from "../components/Created.jsx"
 import ModelTableLoader from "../components/ModelTableLoader.jsx"
 import ModelDialog from "../components/ModelDialog.jsx"
+import Request from "../components/Request.jsx"
 
 const CREATED_ZONES_MARKER = "zones-page"
 const createdZonesSelector = YaxysClue.selectors.byClue(
@@ -26,11 +27,13 @@ const createdZonesSelector = YaxysClue.selectors.byClue(
   }),
   {
     createZone: YaxysClue.actions.byClue,
+    deleteZone: YaxysClue.actions.byClue,
   }
 )
 export default class Zones extends Component {
   state = {
     addOpen: false,
+    deletedHash: {},
   }
 
   onAdd = event => {
@@ -52,6 +55,33 @@ export default class Zones extends Component {
       },
       { marker: CREATED_ZONES_MARKER }
     )
+  }
+
+  onDeleteItem = item => {
+    if (this.state.deletedHash[item.id]) {
+      return
+    }
+    if (!confirm(`Are you sure to delete the Zone #${item.id}?`)) {
+      return
+    }
+
+    this.props.deleteZone({
+      identity: "zone",
+      query: queries.DELETE,
+      id: item.id,
+    })
+
+    this.setState({
+      deletedSelector: YaxysClue.selectors.byClue(
+        props => ({ identity: "zone", query: queries.DELETE, id: item.id })
+      ),
+      deleteAttemptAt: new Date().getTime(),
+    })
+  }
+
+  onItemDeleted = item => {
+    this.state.deletedHash[item?.meta?.clue?.id] = true
+    this.forceUpdate()
   }
 
   render() {
@@ -81,6 +111,9 @@ export default class Zones extends Component {
             identity="zone"
             url={zone => `/zones/${zone.id}`}
             columns={["id", "name", "description"]}
+            onDelete={this.onDeleteItem}
+            deletedHash={ this.state.deletedHash }
+            deletedKey="id"
           />
         </Paper>
         <br />
@@ -95,6 +128,12 @@ export default class Zones extends Component {
         >
           Please provide name and description for the new zone.
         </ModelDialog>
+        <Request
+          selector={this.state.deletedSelector}
+          message={"Deleting the Zone"}
+          attemptAt={ this.state.deleteAttemptAt }
+          onSuccess={ this.onItemDeleted }
+        />
       </Wrapper>
     )
   }
