@@ -6795,16 +6795,30 @@ redent@^1.0.0:
     indent-string "^2.1.0"
     strip-indent "^1.0.1"
 
-redux-clue@^0.0.16:
-  version "0.0.16"
-  resolved "https://registry.yarnpkg.com/redux-clue/-/redux-clue-0.0.16.tgz#02eaf20c75c268654079cc70f5fe1680af885316"
-  integrity sha512-UwfQQE2Lj/viuEecbBzRaaEFm0WnBYVhyWL5nFtkBAXjOSAYsDITGB8sG8EBv3amdGxjLs0IHOgX+3wLyRwb0Q==
+redux-clue@0.0.25:
+  version "0.0.25"
+  resolved "https://registry.yarnpkg.com/redux-clue/-/redux-clue-0.0.25.tgz#2675bfc0bb58a4d686f7b0254ef78e1e289b947f"
+  integrity sha512-+IviJymXcBWWidPjbP4lnl2bh3faSc0S/8K/E7t5mKo299GrhDuAxhwAWKSZeGD5psvL2ZqGRLt6qnCDHYB5dQ==
   dependencies:
     axios "^0.18.0"
     immutable "^3.8.2"
     lodash "^4.17.10"
     pluralize "^7.0.0"
     redux "^4.0.0"
+    redux-saga "^0.16.0"
+    reselect "^3.0.1"
+
+redux-clue@0.0.26:
+  version "0.0.26"
+  resolved "https://registry.yarnpkg.com/redux-clue/-/redux-clue-0.0.26.tgz#734bfef5aba497eaae0f799846153cc8bdabd639"
+  integrity sha512-7w7j+DsE/dVCUGluaB3YOwYSaIDzxlHH+lQkiiZlUK5BgczPznidNrem3z67bZe0SnNRoTb/ST2i1S1hMCywOQ==
+  dependencies:
+    axios "^0.18.0"
+    immutable "^3.8.2"
+    lodash "^4.17.10"
+    pluralize "^7.0.0"
+    redux "^4.0.0"
+    redux-clue "0.0.25"
     redux-saga "^0.16.0"
     reselect "^3.0.1"
 

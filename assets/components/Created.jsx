@@ -43,6 +43,7 @@ const styles = theme => ({
   itemError: {
     backgroundColor: theme.palette.error.main,
     color: "white",
+    cursor: "pointer",
   },
   link: {
     color: "#333",
@@ -107,19 +108,20 @@ class Created extends Component {
       errorDetailsOpen: true,
       itemForDetails: item,
     })
-  };
+  }
 
   onCloseDetails = () => {
     this.setState({ errorDetailsOpen: false })
-  };
+  }
 
   onRepeat = (event) => {
+    event.stopPropagation()
     const index = Number(event.currentTarget.getAttribute("data-index"))
     const { repeat, items } = this.props
     const item = items[index]
 
     repeat(item.meta.clue, { ...item.meta.options, index })
-  };
+  }
 
   renderItem = (item, index) => {
     const { classes, laterThan } = this.props

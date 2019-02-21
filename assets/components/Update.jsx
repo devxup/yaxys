@@ -10,6 +10,7 @@ import Button from "@material-ui/core/Button"
 
 import { isEqual, omit } from "lodash"
 import YaxysClue from "../services/YaxysClue"
+import ErrorDialog from "./ErrorDialog.jsx"
 
 const styles = theme => ({
   button: {
@@ -41,6 +42,7 @@ const styles = theme => ({
     backgroundColor: theme.palette.error.main,
     color: "white",
     fontWeight: 600,
+    cursor: "pointer",
   },
   errorButton: {
     "&:hover": {
@@ -153,7 +155,28 @@ export default class Update extends Component {
     })
   }
 
+  onRootClick = event => {
+    const { item } = this.props
+    const { status } = this.state
+
+    if (status !== "error") { return }
+
+    const lastUpdateKey = Object.keys(item?.updates || {}).pop()
+    const updateItem = item?.updates?.[lastUpdateKey]
+
+    this.setState({
+      errorDetailsOpen: true,
+      itemForDetails: updateItem,
+    })
+  }
+
+  onCloseDetails = () => {
+    this.setState({ errorDetailsOpen: false })
+  }
+
   onSave = event => {
+    event.stopPropagation()
+
     const action = YaxysClue.actions.update(
       this.props.clue.identity,
       this.props.current.id,
@@ -224,7 +247,14 @@ export default class Update extends Component {
     })
     return (
       <Fragment>
-        <div className={rootClassName}>{this.renderContents()}</div>
+        <div className={rootClassName} onClick={this.onRootClick}>
+          {this.renderContents()}
+        </div>
+        <ErrorDialog
+          open={ this.state.errorDetailsOpen }
+          item={ this.state.itemForDetails }
+          onClose={ this.onCloseDetails }
+        />
       </Fragment>
     )
   }
