@@ -20,7 +20,7 @@ const extractStateFromCookie = () => {
 
 export const meReducer = (state = extractStateFromCookie(), action) => {
   switch (action && action.type) {
-    case "clue:success:auth:create":
+    case "YaxysClue:success:auth:create":
     case "me:refresh":
       return extractStateFromCookie()
   }
@@ -42,7 +42,7 @@ export const meRefresh = () => ({
 })
 
 export const meSaga = function* saga() {
-  yield takeEvery(["me:refresh", "clue:success:auth:create"], workerSaga)
+  yield takeEvery(["me:refresh", "YaxysClue:success:auth:create"], workerSaga)
 }
 
 const delay = ms => new Promise(res => setTimeout(res, ms))

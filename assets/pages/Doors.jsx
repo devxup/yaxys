@@ -34,6 +34,7 @@ export default class Doors extends Component {
   state = {
     addOpen: false,
     deletedHash: {},
+    constructedAt: new Date().getTime(),
   }
 
   onAdd = event => {
@@ -101,6 +102,7 @@ export default class Doors extends Component {
           items={this.props.createdDoors}
           content={door => (door.name ? `#${door.id} ${door.name}` : `Door #${door.id}`)}
           url={door => `/doors/${door.id}`}
+          laterThan={ this.state.constructedAt }
         />
         <Paper>
           <ModelTableLoader

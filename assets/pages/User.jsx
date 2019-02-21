@@ -59,6 +59,7 @@ export default class User extends Component {
       profileOpen: false,
       deletedHash: {},
       deleteAttemptAt: null,
+      constructedAt: new Date().getTime(),
     }
   }
 
@@ -212,13 +213,14 @@ export default class User extends Component {
                   }"`
                 : `Profile #${binding.userProfile}`
             }
-            url={binding => `/settings/user-profiles/${binding.userProfile.id}`}
+            url={binding => `/user-profiles/${binding.userProfile.id}`}
+            laterThan={ this.state.constructedAt }
           />
           {!!user?.data?.profiles?.length && (
             <ModelTable
               schema={constants.schemas.userprofile}
               data={user?.data?.profiles}
-              url={profile => `/settings/user-profiles/${profile.id}`}
+              url={profile => `/user-profiles/${profile.id}`}
               onDelete={this.onDeleteProfile}
               columns={ ["id", "name"] }
               deletedHash={ this.state.deletedHash }

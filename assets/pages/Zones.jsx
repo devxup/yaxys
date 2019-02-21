@@ -34,6 +34,7 @@ export default class Zones extends Component {
   state = {
     addOpen: false,
     deletedHash: {},
+    constructedAt: new Date().getTime(),
   }
 
   onAdd = event => {
@@ -105,6 +106,7 @@ export default class Zones extends Component {
               : `Zone #${zone.id}`
           }
           url={zone => `/zones/${zone.id}`}
+          laterThan={ this.state.constructedAt }
         />
         <Paper>
           <ModelTableLoader

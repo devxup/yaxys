@@ -90,11 +90,13 @@ export default class AccessRights extends Component {
       deletedAccessRightId: null,
       deletedHash: {},
       deleteAttemptAt: null,
+
+      constructedAt: new Date().getTime(),
     }
   }
 
   componentDidMount() {
-    this.props.loadAccessRights(accessRightsClue(this.props))
+    this.props.loadAccessRights(accessRightsClue(this.props), { force: true })
   }
 
   onAdd = property => event => {
@@ -176,6 +178,7 @@ export default class AccessRights extends Component {
           items={createdAccessRights}
           content={AccessRights.accessRightToText}
           url={AccessRights.accessRightToURL}
+          laterThan={ this.state.constructedAt }
         />
         <Loader item={accessRights}>
           <Button

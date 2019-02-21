@@ -33,6 +33,7 @@ export default class UserProfiles extends Component {
   state = {
     addOpen: false,
     deletedHash: {},
+    constructedAt: new Date().getTime(),
   }
 
   onAdd = event => {
@@ -100,6 +101,7 @@ export default class UserProfiles extends Component {
           items={this.props.createdProfiles}
           content={profile => profile.name}
           url={profile => `/user-profiles/${profile.id}`}
+          laterThan={ this.state.constructedAt }
         />
         <Paper>
           <ModelTableLoader

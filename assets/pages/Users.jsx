@@ -35,6 +35,7 @@ export default class Users extends Component {
   state = {
     addOpen: false,
     deletedHash: {},
+    constructedAt: new Date().getTime(),
   }
 
   onAdd = event => {
@@ -106,6 +107,7 @@ export default class Users extends Component {
           items={this.props.createdUsers}
           content={user => user.name}
           url={user => `/users/${user.id}`}
+          laterThan={ this.state.constructedAt }
         />
         <Paper>
           <ModelTableLoader

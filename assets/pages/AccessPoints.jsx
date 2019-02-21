@@ -33,6 +33,7 @@ export default class AccessPoints extends Component {
   state = {
     addOpen: false,
     deletedHash: {},
+    constructedAt: new Date().getTime(),
   }
 
   onAdd = event => {
@@ -104,6 +105,7 @@ export default class AccessPoints extends Component {
               : `Access point #${accessPoint.id}`
           }
           url={accessPoint => `/access-points/${accessPoint.id}`}
+          laterThan={ this.state.constructedAt }
         />
         <Paper>
           <ModelTableLoader

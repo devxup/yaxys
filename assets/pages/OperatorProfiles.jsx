@@ -33,6 +33,7 @@ export default class OperatorProfiles extends Component {
   state = {
     addOpen: false,
     deletedHash: {},
+    constructedAt: new Date().getTime(),
   }
 
   onAdd = event => {
@@ -100,6 +101,7 @@ export default class OperatorProfiles extends Component {
           items={this.props.createdProfiles}
           content={profile => profile.name}
           url={profile => `/settings/operator-profiles/${profile.id}`}
+          laterThan={ this.state.constructedAt }
         />
         <Paper>
           <ModelTableLoader

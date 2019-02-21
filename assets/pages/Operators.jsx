@@ -35,6 +35,7 @@ export default class Operators extends Component {
   state = {
     addOpen: false,
     deletedHash: {},
+    constructedAt: new Date().getTime(),
   }
 
   onAdd = event => {
@@ -106,6 +107,7 @@ export default class Operators extends Component {
           items={this.props.createdOperators}
           content={operator => operator.email}
           url={operator => `/operators/${operator.id}`}
+          laterThan={ this.state.constructedAt }
         />
         <Paper>
           <ModelTableLoader

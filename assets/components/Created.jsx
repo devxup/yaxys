@@ -90,6 +90,7 @@ class Created extends Component {
     url: PropTypes.oneOfType([PropTypes.func, PropTypes.string]),
     pendingText: PropTypes.string,
     errorText: PropTypes.string,
+    laterThan: PropTypes.number,
   }
 
   constructor(props) {
@@ -121,7 +122,12 @@ class Created extends Component {
   };
 
   renderItem = (item, index) => {
-    const { classes } = this.props
+    const { classes, laterThan } = this.props
+
+    if (laterThan && item?.meta?.requestAt < laterThan) {
+      return false
+    }
+
     const liProps = {
       key: index,
       className: classNames(
