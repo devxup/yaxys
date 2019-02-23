@@ -125,6 +125,7 @@ export default class UserProfile extends Component {
             <Paper className={classes.rights}>
               <h5>The profile rights:</h5>
               <AccessRights
+                mode={"user"}
                 userProperty={"userProfile"}
                 userPropertyValue={ match.params.id }
               />

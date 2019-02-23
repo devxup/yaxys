@@ -14,6 +14,7 @@ import Wrapper from "../components/Wrapper.jsx"
 import Loader from "../components/Loader.jsx"
 import Update from "../components/Update.jsx"
 import ModelForm from "../components/ModelForm.jsx"
+import AccessRights from "../components/AccessRights.jsx"
 
 const accessPointClue = props => ({
   identity: "accesspoint",
@@ -134,6 +135,14 @@ export default class AccessPoint extends Component {
                 schema={constants.schemas.accesspoint}
                 margin="dense"
                 attributes={["door", "zoneTo"]}
+              />
+            </Paper>
+            <Paper className={classes.block}>
+              <h5>Users and profiles having access to this Point:</h5>
+              <AccessRights
+                mode={"hardware"}
+                hardwareProperty={"accessPoint"}
+                hardwarePropertyValue={ match.params.id }
               />
             </Paper>
           </Fragment>

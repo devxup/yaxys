@@ -15,6 +15,7 @@ import Loader from "../components/Loader.jsx"
 import Update from "../components/Update.jsx"
 import ModelForm from "../components/ModelForm.jsx"
 import Connection from "../components/Connection.jsx"
+import AccessRights from "../components/AccessRights.jsx"
 
 const doorClue = props => ({
   identity: "door",
@@ -131,6 +132,14 @@ export default class Door extends Component {
             canAddExisting={this.canAddAccessPoint}
             canCreateNew={this.canAddAccessPoint}
             url={accessPoint => `/access-points/${accessPoint.id}`}
+          />
+        </Paper>
+        <Paper className={classes.block}>
+          <h5>Users and profiles having access to this door:</h5>
+          <AccessRights
+            mode={"hardware"}
+            hardwareProperty={"door"}
+            hardwarePropertyValue={ match.params.id }
           />
         </Paper>
       </Wrapper>

@@ -231,6 +231,7 @@ export default class User extends Component {
         <Paper className={classes.block}>
           <h5>Custom access rights of the user</h5>
           <AccessRights
+            mode={"user"}
             userProperty={"user"}
             userPropertyValue={ match.params.id }
           />

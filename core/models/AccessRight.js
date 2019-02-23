@@ -11,6 +11,7 @@ module.exports = {
 
       // Side of the user
       user: {
+        title: "User",
         type: "integer",
         connection: {
           type: "m:1",
@@ -18,6 +19,7 @@ module.exports = {
         },
       },
       userProfile: {
+        title: "User profile",
         type: "integer",
         connection: {
           type: "m:1",
@@ -25,7 +27,7 @@ module.exports = {
         },
       },
 
-      // Side of the granted access right
+      // Side of the hardware
       accessPoint: {
         title: "Access point",
         type: "integer",

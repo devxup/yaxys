@@ -25,7 +25,7 @@ yaxys
           yaxys.logger.error("Password is required!")
           return
         }
-        await yaxys.db.insert("operator", {
+        await yaxys.db.insert(null, "operator", {
           ...(argv.email ? { email: argv.email } : {}),
           ...(argv.login ? { login: argv.login } : {}),
           passwordHash: AuthService.encryptPassword(String(argv.pwd)),

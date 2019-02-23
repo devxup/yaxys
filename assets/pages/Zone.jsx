@@ -15,6 +15,7 @@ import Loader from "../components/Loader.jsx"
 import Update from "../components/Update.jsx"
 import ModelForm from "../components/ModelForm.jsx"
 import Connection from "../components/Connection.jsx"
+import AccessRights from "../components/AccessRights.jsx"
 
 const zoneClue = props => ({
   identity: "zone",
@@ -130,6 +131,14 @@ export default class Zone extends Component {
             canAddExisting={this.canAddAccessPoint}
             canCreateNew={this.canAddAccessPoint}
             url={accessPoint => `/access-points/${accessPoint.id}`}
+          />
+        </Paper>
+        <Paper className={classes.block}>
+          <h5>Users and profiles having access to this zone:</h5>
+          <AccessRights
+            mode={"hardware"}
+            hardwareProperty={"zoneTo"}
+            hardwarePropertyValue={ match.params.id }
           />
         </Paper>
       </Wrapper>

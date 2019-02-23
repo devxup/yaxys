@@ -24,10 +24,15 @@ const createdAccessRightSelector = YaxysClue.selectors.byClue(
 const accessRightsClue = props => ({
   identity: "accessright",
   query: queries.FIND,
-  where: {
-    [props.userProperty]: props.userPropertyValue,
-  },
-  populate: "accessPoint,door,zoneTo",
+  where: props.mode === "user" ?
+    {
+      [props.userProperty]: props.userPropertyValue,
+    } : {
+      [props.hardwareProperty]: props.hardwarePropertyValue,
+    },
+  populate: props.mode === "user"
+    ? "accessPoint,door,zoneTo"
+    : "user,userProfile",
 })
 const accessRightsSelector = YaxysClue.selectors.byClue(accessRightsClue)
 
@@ -50,34 +55,20 @@ const accessRightsSelector = YaxysClue.selectors.byClue(accessRightsClue)
 )
 export default class AccessRights extends Component {
   static propTypes = {
+    mode: PropTypes.oneOf("hardware", "user"),
+    userProperty: PropTypes.string,
+    userPropertyValue: PropTypes.string,
+    hardwareProperty: PropTypes.string,
+    hardwarePropertyValue: PropTypes.string,
+
     // from HOCs
     constants: PropTypes.object,
     classes: PropTypes.object,
-    createdAccessRights: PropTypes.func,
-    accessRights: PropTypes.func,
+    createdAccessRights: PropTypes.object,
+    accessRights: PropTypes.object,
     loadAccessRights: PropTypes.func,
     createAccessRight: PropTypes.func,
     deleteAccessRight: PropTypes.func,
-
-    userProperty: PropTypes.string,
-    userPropertyValue: PropTypes.string,
-  }
-
-  static accessRightToURL(accessRight) {
-    const { accessPoint, door, zoneTo } = accessRight
-    if (accessPoint) { return `/access-points/${accessPoint.id || accessPoint}` }
-    if (door) { return `/doors/${door.id || door}` }
-    if (zoneTo) { return `/zones/${zoneTo.id || zoneTo}` }
-
-    return ""
-  }
-
-  static accessRightToText(accessRight) {
-    if (accessRight.accessPoint) { return `Granted access to Access Point #${accessRight.accessPoint}` }
-    if (accessRight.door) { return `Granted access to Door #${accessRight.door}` }
-    if (accessRight.zoneTo) { return `Granted access to Zone #${accessRight.zoneTo}` }
-
-    return `#${accessRight.id}`
   }
 
   constructor(props) {
@@ -99,6 +90,45 @@ export default class AccessRights extends Component {
     this.props.loadAccessRights(accessRightsClue(this.props), { force: true })
   }
 
+  accessRightToURL = (accessRight) => {
+    const { mode } = this.props
+    const { accessPoint, door, zoneTo, user, userProfile } = accessRight
+
+    switch (mode) {
+      case "hardware":
+        if (user) { return `/users/${user.id || user}` }
+        if (userProfile) { return `/user-profiles/${userProfile.id || userProfile}` }
+        break
+      case "user":
+        if (accessPoint) { return `/access-points/${accessPoint.id || accessPoint}` }
+        if (door) { return `/doors/${door.id || door}` }
+        if (zoneTo) { return `/zones/${zoneTo.id || zoneTo}` }
+        break
+    }
+
+    return ""
+  }
+
+  _titleIdAndName(accessRight, property) {
+    const { constants } = this.props
+    const propertySchema = constants.schemas.accessright.properties[property]
+    const schema = constants.schemas[propertySchema.connection.relatedModel.toLowerCase()]
+    return `${schema.title} #${accessRight[property].id} ${accessRight[property].name}`
+  }
+
+  accessRightToText = (accessRight) => {
+    const { mode } = this.props
+
+    const possibleProperties = mode === "hardware"
+      ? ["user", "userProfile"]
+      : ["accessPoint", "door", "zoneTo"]
+
+    const property = possibleProperties.find(candidate => !!accessRight[candidate])
+    return property
+      ? `Granted access to ${this._titleIdAndName(accessRight, property)}`
+      : `#${accessRight.id}`
+  }
+
   onAdd = property => event => {
     const { constants } = this.props
     const pickerIdentity = constants.schemas.accessright.properties[
@@ -118,7 +148,14 @@ export default class AccessRights extends Component {
   }
 
   onPick = item => {
-    const { userProperty, userPropertyValue, createAccessRight } = this.props
+    const {
+      mode,
+      userProperty,
+      userPropertyValue,
+      createAccessRight,
+      hardwareProperty,
+      hardwarePropertyValue,
+    } = this.props
 
     createAccessRight(
       {
@@ -126,8 +163,15 @@ export default class AccessRights extends Component {
         identity: "accessright",
         data: {
           [this.state.pickerProperty]: item.id,
-          [userProperty]: userPropertyValue,
+          ...(
+            mode === "hardware"
+              ? { [hardwareProperty]: hardwarePropertyValue }
+              : { [userProperty]: userPropertyValue }
+          ),
         },
+        populate: mode === "hardware"
+          ? "user,userProfile"
+          : "accessPoint,door,zoneTo",
       },
       { marker: CREATED_ACCESS_RIGHT_MARKER }
     )
@@ -169,47 +213,77 @@ export default class AccessRights extends Component {
   }
 
   render() {
-    const { constants, accessRights, createdAccessRights, classes } = this.props
+    const { constants, mode, accessRights, createdAccessRights, classes } = this.props
     const schema = constants.schemas.accessright
 
     return (
       <Fragment>
         <Created
           items={createdAccessRights}
-          content={AccessRights.accessRightToText}
-          url={AccessRights.accessRightToURL}
+          content={this.accessRightToText}
+          url={this.accessRightToURL}
           laterThan={ this.state.constructedAt }
         />
         <Loader item={accessRights}>
-          <Button
-            variant="text"
-            color="secondary"
-            onClick={this.onAdd("accessPoint")}
-            className={classes.button}
-          >
-            Add access point
-          </Button>
-          <Button
-            variant="text"
-            color="secondary"
-            onClick={this.onAdd("door")}
-            className={classes.button}
-          >
-            Add door
-          </Button>
-          <Button
-            variant="text"
-            color="secondary"
-            onClick={this.onAdd("zoneTo")}
-            className={classes.button}
-          >
-            Add zone
-          </Button>
+          {
+            mode === "hardware"
+              ? (
+                <Fragment>
+                  <Button
+                    variant="text"
+                    color="secondary"
+                    onClick={this.onAdd("user")}
+                    className={classes.button}
+                  >
+                    Add user
+                  </Button>
+                  <Button
+                    variant="text"
+                    color="secondary"
+                    onClick={this.onAdd("userProfile")}
+                    className={classes.button}
+                  >
+                    Add user profile
+                  </Button>
+                </Fragment>
+              ) : (
+                <Fragment>
+                  <Button
+                    variant="text"
+                    color="secondary"
+                    onClick={this.onAdd("accessPoint")}
+                    className={classes.button}
+                  >
+                    Add access point
+                  </Button>
+                  <Button
+                    variant="text"
+                    color="secondary"
+                    onClick={this.onAdd("door")}
+                    className={classes.button}
+                  >
+                    Add door
+                  </Button>
+                  <Button
+                    variant="text"
+                    color="secondary"
+                    onClick={this.onAdd("zoneTo")}
+                    className={classes.button}
+                  >
+                    Add zone
+                  </Button>
+                </Fragment>
+              )
+          }
           <ModelTable
             schema={schema}
             data={accessRights?.data || []}
-            columns={["accessPoint", "door", "zoneTo"]}
-            url={AccessRights.accessRightToURL}
+            columns={
+              mode === "hardware"
+                ? ["user", "userProfile"]
+                : ["accessPoint", "door", "zoneTo"]
+            }
+            url={this.accessRightToURL}
             onDelete={this.onDeleteAccessRight}
             deletedHash={ this.state.deletedHash }
             deletedKey="id"
