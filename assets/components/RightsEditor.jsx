@@ -10,7 +10,7 @@ import Switcher from "./Switcher.jsx"
 
 const styles = theme => ({
   switcherCommon: {
-    width: 190,
+    width: 200,
     marginRight: 10,
     background: grey["200"],
     "&:hover": {
@@ -61,20 +61,25 @@ class RightsEditor extends Component {
 
   renderRight(identity, right, rightTitle) {
     const { classes, type } = this.props
-    const rawValue = this.state.values[identity] && this.state.values[identity][right]
+    const rawValue =
+      right === "*"
+        ? this.state.values[identity] && this.state.values[identity].create
+        : this.state.values[identity] && this.state.values[identity][right]
+
+    const divider = rightTitle ? ": " : ""
     let choices
     switch (type) {
       case "operator":
         choices = [
           {
-            label: `${rightTitle}: denied`,
+            label: `${rightTitle}${divider}denied`,
             value: false,
             classes: {
               root: classNames(classes.switcherCommon, classes.switcherDenied),
             },
           },
           {
-            label: `${rightTitle}: allowed`,
+            label: `${rightTitle}${divider}allowed`,
             value: true,
             classes: {
               root: classNames(classes.switcherCommon, classes.switcherAllowed),
@@ -85,7 +90,7 @@ class RightsEditor extends Component {
       case "profile":
         choices = [
           {
-            label: `${rightTitle}: allowed`,
+            label: `${rightTitle}${divider}allowed`,
             value: true,
             classes: {
               root: classNames(classes.switcherCommon, classes.switcherAllowed),
@@ -99,8 +104,8 @@ class RightsEditor extends Component {
         emptyAllow={ true }
         emptyLabel={
           type === "profile"
-            ? `${rightTitle}: don't change`
-            : `${rightTitle}: untouched`
+            ? `${rightTitle}${divider}don't change`
+            : `${rightTitle}${divider}untouched`
         }
         classes={{ root: classes.switcherCommon }}
         choices={choices}
@@ -124,7 +129,11 @@ class RightsEditor extends Component {
     if (!this.state.values[identity]) {
       this.state.values[identity] = {}
     }
-    this.state.values[identity][right] = value
+    if ("*" === right) {
+      ["read", "create", "update", "delete"].forEach(right => this.state.values[identity][right] = value)
+    } else {
+      this.state.values[identity][right] = value
+    }
     if (this.props.onChange) {
       this.props.onChange(this.state.values)
     }
@@ -134,6 +143,14 @@ class RightsEditor extends Component {
   renderModel = (identity, index) => {
     const { constants, classes } = this.props
     const schema = constants.schemas[identity]
+    if (schema.bindingRightTitle) {
+      return (
+        <div key={index} className={classes.model}>
+          <h6>{ schema.bindingRightTitle }</h6>
+          {this.renderRight(identity, "*", "")}
+        </div>
+      )
+    }
     if (schema.hidden) {
       return false
     }

@@ -1,5 +1,6 @@
 module.exports = {
   schema: {
+    bindingRightTitle: "Assign profiles to operators",
     uniqueKeys: {
       operatorAndProfile: ["operator", "operatorProfile"],
     },

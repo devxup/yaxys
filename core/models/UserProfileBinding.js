@@ -1,5 +1,6 @@
 module.exports = {
   schema: {
+    bindingRightTitle: "Assign profiles to users",
     uniqueKeys: {
       userAndProfile: ["user", "userProfile"],
     },
