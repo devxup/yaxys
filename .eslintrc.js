@@ -77,6 +77,7 @@ module.exports = {
     "react/no-direct-mutation-state": 0,
     "react/no-multi-comp": 0,
     "react/no-set-state": 0,
+    "react/no-unescaped-entities": 0,
     "react/no-unknown-property": 1,
     "react/prefer-es6-class": 1,
     "react/prop-types": [2, { ignore: ["classes", "children"] }],

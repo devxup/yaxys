@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from "react"
+import { Link } from "react-router-dom"
 import PropTypes from "prop-types"
 import classNames from "classnames"
 
@@ -101,12 +102,8 @@ class RightsEditor extends Component {
     }
     return (
       <Switcher
-        emptyAllow={ true }
-        emptyLabel={
-          type === "profile"
-            ? `${rightTitle}${divider}don't change`
-            : `${rightTitle}${divider}untouched`
-        }
+        emptyAllow={true}
+        emptyLabel={`${rightTitle}${divider}not modified`}
         classes={{ root: classes.switcherCommon }}
         choices={choices}
         onChange={this.onChange(identity, right)}
@@ -166,7 +163,52 @@ class RightsEditor extends Component {
   }
 
   render() {
-    const { constants } = this.props
-    return <Fragment>{Object.keys(constants.schemas).map(this.renderModel)}</Fragment>
+    const { constants, type } = this.props
+    return (<Fragment>
+      {
+        type === "profile"
+          ? (
+            <Fragment>
+              <p>
+                Here you can grant rights to different actions for all of the operators having this profile.
+                Each right can have be in one of the two states: not modified (default) or allowed.
+              </p>
+              <p>
+                <b>Allowed</b> state means the operator having this profile is authorized to perform the action.
+                {" "}<b>Not modified</b> state means that this current profile doesn\'t care about the action.
+                It doesn\'t grant this right to the users, but also doesn\'t deny it. The operator still can have some
+                other profiles attached, and one of them can grant this right.
+              </p>
+              <p>
+                You can't deny some right from the operator profile. By default, all of the rights are already denied
+                (not granted) and you should explicitly grant them from here or from the specific operator.
+                {" "}But, you can also control the rights at the page of specific operator. You can grant or deny
+                any right from the operator's page and those rights would have higher priority than those given
+                by profiles.
+              </p>
+            </Fragment>
+          ) : (
+            <Fragment>
+              <p>
+                Here you can grant some specific rights to this operator.
+                {" "}Please note, that in general it is not recommended to grant rights directly from operators –
+                {" "}instead, think of grouping the operators into
+                <Link to={"/settings/operator-profiles"}>Operator profiles</Link> and grant all the rights
+                to that profiles.
+              </p>
+              <p>
+                Each right here can be in one of the three states: not modified (default), allowed and denied.
+              </p>
+              <p>
+                <b>Allowed</b> and <b>Denied</b> states mean the operator is authorized or denied to perform this
+                action correspondingly.
+                {" "}<b>Not modified</b> (default) state means that the right is not granted from here, but still
+                can be granted from one of the Operator profiles assigned to this operator.
+              </p>
+            </Fragment>
+          )
+      }
+      {Object.keys(constants.schemas).map(this.renderModel)}
+    </Fragment>)
   }
 }

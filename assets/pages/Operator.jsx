@@ -239,59 +239,69 @@ export default class Operator extends Component {
                     value="isAdministrator"
                   />
                 }
-                label="isAdministrator"
+                label="Is Administrator"
               />
             </Paper>
 
             {!this.state.operator.isAdministrator && (
-              <Fragment>
-                <Paper className={classes.profiles}>
-                  <h5>The operator profiles</h5>
-                  {!operator?.data?.profiles?.length && (
-                    <p>Here you can manage profiles of the operator</p>
-                  )}
-                  <Button
-                    variant="text"
-                    color="secondary"
-                    onClick={this.onProfileOpen}
-                    style={{ marginBottom: 10 }}
-                  >
-                    Add profile
-                  </Button>
-                  <Created
-                    items={this.props.createdBindings}
-                    content={binding =>
-                      binding.operatorProfile.name
-                        ? `Profile #${binding.operatorProfile.id} "${
-                            binding.operatorProfile.name
-                          }"`
-                        : `Profile #${binding.operatorProfile}`
-                    }
-                    url={binding => `/settings/operator-profiles/${binding.operatorProfile.id}`}
-                    laterThan={ this.state.constructedAt }
+              <Paper className={classes.profiles}>
+                <h5>The operator profiles</h5>
+                {!operator?.data?.profiles?.length && (
+                  <p>Here you can manage profiles of the operator</p>
+                )}
+                <Button
+                  variant="text"
+                  color="secondary"
+                  onClick={this.onProfileOpen}
+                  style={{ marginBottom: 10 }}
+                >
+                  Add profile
+                </Button>
+                <Created
+                  items={this.props.createdBindings}
+                  content={binding =>
+                    binding.operatorProfile.name
+                      ? `Profile #${binding.operatorProfile.id} "${
+                          binding.operatorProfile.name
+                        }"`
+                      : `Profile #${binding.operatorProfile}`
+                  }
+                  url={binding => `/settings/operator-profiles/${binding.operatorProfile.id}`}
+                  laterThan={ this.state.constructedAt }
+                />
+                {!!operator?.data?.profiles?.length && (
+                  <ModelTable
+                    schema={constants.schemas.operatorprofile}
+                    data={operator?.data?.profiles}
+                    url={profile => `/settings/operator-profiles/${profile.id}`}
+                    columns={ ["id", "name"] }
+                    deletedHash={ this.state.deletedHash }
+                    deletedKey="_binding_id"
+                    onDelete={this.onTrashClick}
                   />
-                  {!!operator?.data?.profiles?.length && (
-                    <ModelTable
-                      schema={constants.schemas.operatorprofile}
-                      data={operator?.data?.profiles}
-                      url={profile => `/settings/operator-profiles/${profile.id}`}
-                      columns={ ["id", "name"] }
-                      deletedHash={ this.state.deletedHash }
-                      deletedKey="_binding_id"
-                      onDelete={this.onTrashClick}
-                    />
-                  )}
-                </Paper>
-                <Paper className={classes.rights}>
-                  <h5>Custom operator&#39;s rights:</h5>
-                  <RightsEditor
-                    type="operator"
-                    values={(this.state.operator && this.state.operator.rights) || {}}
-                    onChange={this.onRightsChange}
-                  />
-                </Paper>
-              </Fragment>
+                )}
+              </Paper>
             )}
+            <Paper className={classes.rights}>
+              <h5>Custom operator&#39;s rights</h5>
+              {
+                this.state.operator.isAdministrator
+                  ? (
+                    <p>
+                      Please note: while the operator has Administrator rights
+                      {" "}(&laquo;Is administrator&raquo; checkbox is on), you can't assign operator
+                      {" "}profiles or grant specific rights to this operator since
+                      {" "}all of the possible rights are already granted to such operators.
+                    </p>
+                  ) : (
+                    <RightsEditor
+                      type="operator"
+                      values={(this.state.operator && this.state.operator.rights) || {}}
+                      onChange={this.onRightsChange}
+                    />
+                  )
+              }
+            </Paper>
             <ModelPicker
               open={this.state.profileOpen}
               identity="operatorprofile"
