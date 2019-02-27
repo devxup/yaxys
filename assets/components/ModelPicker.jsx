@@ -3,6 +3,8 @@ import React, { Component } from "react"
 import { connect } from "react-redux"
 import PropTypes from "prop-types"
 
+import { withStyles } from "@material-ui/core/styles"
+
 import Dialog from "@material-ui/core/Dialog"
 import DialogActions from "@material-ui/core/DialogActions"
 import DialogTitle from "@material-ui/core/DialogTitle"
@@ -22,6 +24,15 @@ const modelClue = props => ({
 })
 const modelSelector = YaxysClue.selectors.byClue(modelClue)
 
+@withStyles(theme => ({
+  dialogPaper: {
+    minWidth: theme.breakpoints.values.sm - theme.spacing.unit * 6,
+    [`@media (max-width: ${theme.breakpoints.values.sm}px)`]: {
+      minWidth: `calc(100% - ${theme.spacing.unit * 4}px)`,
+      margin: `${theme.spacing.unit * 6}px ${theme.spacing.unit * 2}px`,
+    },
+  },
+}))
 @withConstants
 @connect(
   (state, props) => ({
@@ -59,9 +70,9 @@ export default class ModelPicker extends Component {
   }
 
   render() {
-    const { open, identity, onClose, columns, title, constants, models } = this.props
+    const { classes, open, identity, onClose, columns, title, constants, models } = this.props
     return (
-      <Dialog open={open} onClose={onClose}>
+      <Dialog open={open} onClose={onClose} classes={{ paper: classes.dialogPaper }}>
         <DialogTitle>{title || `Select ${constants.schemas[identity].title}`}</DialogTitle>
         <Loader item={models}>
           <ModelTable

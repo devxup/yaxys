@@ -7,10 +7,9 @@ import MuiTable from "mui-table"
 import { omit } from "lodash"
 import { deepOrange } from "@material-ui/core/colors"
 import Checkbox from "@material-ui/core/Checkbox"
-import Chip from "@material-ui/core/Chip"
-import Avatar from "@material-ui/core/Avatar"
 import DeleteIcon from "@material-ui/icons/Delete"
 import IconButton from "@material-ui/core/IconButton"
+import ModelChip from "./ModelChip.jsx"
 
 const styles = theme => ({
   checkboxRoot: {
@@ -32,10 +31,6 @@ const styles = theme => ({
     display: "block",
     padding: "12px 56px 12px 24px",
     color: "#333",
-  },
-  chip: {
-    marginLeft: theme.spacing.unit / 2,
-    cursor: "inherit",
   },
   row: {
     "&:hover": {
@@ -74,23 +69,12 @@ export default class ModelTable extends Component {
   }
 
   _renderRelatedModel(model, props) {
-    const { classes } = this.props
-
     // it might be empty containing just _binding_id in case of m:m
     if (!model.id) {
       return true
     }
 
-    return (
-      <Chip
-        className={classes.chip}
-        avatar={<Avatar>#{model.id}</Avatar>}
-        label={model.name || ""}
-        color="primary"
-        variant="outlined"
-        {...props}
-      />
-    )
+    return <ModelChip id={ model.id } name={ model?.name || "" } />
   }
 
   renderPropertyCellContent(propertySchema, value) {
@@ -137,7 +121,7 @@ export default class ModelTable extends Component {
         return {
           className: classNames(
             classes.cell,
-            { [classes.linkCell]: !!url },
+            classes.linkCell,
             { [classes.deletedCell]: isDeleted }
           ),
         }

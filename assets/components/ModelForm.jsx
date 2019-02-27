@@ -1,7 +1,8 @@
 import React, { Component, Fragment } from "react"
 import PropTypes from "prop-types"
 import { withConstants } from "../services/Utils"
-import { TextField, Chip, Button } from "@material-ui/core"
+import { TextField, Button } from "@material-ui/core"
+import ModelChip from "./ModelChip.jsx"
 import ModelPicker from "./ModelPicker.jsx"
 import ModelCreator from "./ModelCreator.jsx"
 
@@ -210,12 +211,13 @@ export default class ModelForm extends Component {
     const value = this.state.values[attribute]
     const relatedSchema = constants.schemas[connection.relatedModel.toLowerCase()]
 
-    const chipLabel = value
-      ? `${relatedSchema.title} #${typeof value === "object" ? value.id : value} ${(value &&
-          value.name) ||
-          ""}`
-      : "Not selected"
-    const current = <Chip label={chipLabel} onDelete={ value && this.onDelete(attribute) } />
+    const current = (
+      <ModelChip
+        id={ value }
+        name={ value ? value.name || "" : "Not selected" }
+        onDelete={ value && this.onDelete(attribute) }
+      />
+    )
 
     return (
       <div key={index}>

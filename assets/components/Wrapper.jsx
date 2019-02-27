@@ -22,30 +22,31 @@ import ListItem from "@material-ui/core/ListItem"
 import ListItemIcon from "@material-ui/core/ListItemIcon"
 import ListItemText from "@material-ui/core/ListItemText"
 import SdCardIcon from "@material-ui/icons/SdCard"
-import PeopleIcon from "@material-ui/icons/People"
+import PersonIcon from "@material-ui/icons/Person"
 import PeopleOutlineIcon from "@material-ui/icons/PeopleOutline"
 import PersonOutlineIcon from "@material-ui/icons/PersonOutline"
 import MeetingRoomIcon from "@material-ui/icons/MeetingRoom"
 import PictureInPictureIcon from "@material-ui/icons/PictureInPicture"
 import SettingsIcon from "@material-ui/icons/Settings"
 import Avatar from "@material-ui/core/Avatar"
-import PersonIcon from "@material-ui/icons/Person"
 
 import { meSelector } from "../services/Me"
 
 const drawerWidth = 240
 const lists = {
-  primary: [
+  people: [
     {
-      icon: PeopleOutlineIcon,
+      icon: PersonOutlineIcon,
       title: "Users",
       url: "/users",
     },
     {
-      icon: PersonOutlineIcon,
+      icon: PeopleOutlineIcon,
       title: "User Profiles",
       url: "/user-profiles",
     },
+  ],
+  hardware: [
     {
       icon: SdCardIcon,
       title: "Access points",
@@ -62,9 +63,9 @@ const lists = {
       url: "/zones",
     },
   ],
-  secondary: [
+  adminZone: [
     {
-      icon: PeopleIcon,
+      icon: PersonIcon,
       title: "Operators",
       url: "/operators",
     },
@@ -342,9 +343,11 @@ export default class Wrapper extends Component {
             </IconButton>
           </div>
           <Divider />
-          {this.renderList("primary")}
+          {this.renderList("people")}
           <Divider />
-          {this.renderList("secondary")}
+          {this.renderList("hardware")}
+          <Divider />
+          {this.renderList("adminZone")}
         </Drawer>
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
