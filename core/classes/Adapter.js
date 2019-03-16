@@ -125,7 +125,7 @@ module.exports = class Adapter {
    * @param {String} identity The model's identity
    * @param {Object} data The model blank to insert
    * @param {Object} [options] The options to find
-   * @returns {Promise<Object>} The inserted model containing all of the fields, includeing id
+   * @returns {Promise<Object>} The inserted model containing all of the fields, including id
    */
   async insert(trx, identity, data, options = {}) {
     const dataToInsert = data.id ? data : _.omit(data, "id")

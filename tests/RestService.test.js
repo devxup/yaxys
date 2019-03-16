@@ -7,7 +7,7 @@ describe("RestService", () => {
   beforeAll(async () => {
     yaxysBuffer = global.yaxys
 
-    const adapterMethodsToEmulate = ["find", "findOne", "insert", "update", "count"]
+    const adapterMethodsToEmulate = ["find", "findOne", "insert", "update", "count", "delete"]
     global.yaxys = {
       db: _.reduce(
         adapterMethodsToEmulate,
@@ -17,7 +17,11 @@ describe("RestService", () => {
           }
           return memo
         },
-        {}
+        {
+          knex: {
+            transaction: callback => callback("trx"),
+          },
+        }
       ),
       models: {
         m1: {},
@@ -176,6 +180,71 @@ describe("RestService", () => {
         }),
         header: ["meta", `{"total":["count",null,"${identity}",{}]}`],
         result: ["find", null, identity, {}, { populate: ["someModel:anotherModel:oneMoreModel"] }],
+      },
+    ],
+    create: [
+      {
+        title: "Create with populate",
+        ctx: new CTXEmulator({
+          request: {
+            body: {
+              someProp: "someProperty",
+            },
+          },
+          query: {
+            populate: "one,two,three",
+          },
+        }),
+        result: ["insert", "trx", identity, { someProp: "someProperty" }, { "populate": ["one", "two", "three"] }],
+      },
+    ],
+    update: [
+      {
+        title: "Simple update",
+        ctx: new CTXEmulator({
+          request: {
+            body: {
+              someProp: "someProperty",
+            },
+          },
+          params: {
+            id: 5,
+          },
+        }),
+        result: ["update", "trx", identity, 5, { someProp: "someProperty" }],
+      },
+      {
+        title: "Update with no id",
+        ctx: new CTXEmulator({
+          request: {
+            body: {
+              someProp: "someProperty",
+            },
+          },
+          params: {},
+        }),
+        error: true,
+        result: [400, "id is required"],
+      },
+    ],
+    delete: [
+      {
+        title: "Simple delete",
+        ctx: new CTXEmulator({
+          params: {
+            id: 5,
+          },
+        }),
+        result: ["delete", "trx", identity, 5],
+      },
+      {
+        title: "Delete with no id",
+        ctx: new CTXEmulator({
+          request: {},
+          params: {},
+        }),
+        error: true,
+        result: [400, "id is required"],
       },
     ],
   }
