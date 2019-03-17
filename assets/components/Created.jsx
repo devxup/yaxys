@@ -126,7 +126,7 @@ class Created extends Component {
   }
 
   renderItem = (item, index) => {
-    const { classes, laterThan } = this.props
+    const { classes, laterThan, t } = this.props
 
     if (laterThan && item?.meta?.requestAt < laterThan) {
       return false
@@ -188,7 +188,7 @@ class Created extends Component {
             data-index={ index }
             onClick={ this.onRepeat }
           >
-            {this.props.t("RETRY")}
+            {t("RETRY")}
           </Button>
         </ListItemSecondaryAction>
       </ListItem>)
@@ -197,7 +197,7 @@ class Created extends Component {
     if (item.pending) {
       return (<ListItem { ...liProps }>
         <CircularProgress size={ 30 } className={ classes.loader } />
-        { this.props.pendingText || this.props.t("Created_CREATING") }
+        { this.props.pendingText || t("CREATE_PROCESS") }
       </ListItem>)
     }
   };

@@ -51,51 +51,55 @@ export default class ErrorDialog extends Component {
     rawData: false,
   }
 
-  _getModelTitle(item) {
-    const { constants } = this.props
+  _getModelTitle(item, context = "") {
+    const { constants, t } = this.props
     const clue = item?.meta?.clue || item?.clue
 
     const identity = clue?.identity
-    if (!identity) { return "unknown entity" }
+    if (!identity) { return t("ERROR_DIALOG.UNKNOWN_ENTITY") }
 
     const schema = constants.schemas[identity]
-    if (!schema) { return "unidentified entity" }
+    if (!schema) { return t("ERROR_DIALOG.UNIDENTIFIED_ENTITY") }
 
-    return schema.title || identity
+    return t(schema.i18Key, { context }) || schema.title || identity
   }
 
   _getRequestDetails(item) {
+    const { t } = this.props
     const clue = item?.meta?.clue || item?.clue
+    const modelTitle = this._getModelTitle(item)
+    const modelTitlePlural = this._getModelTitle(item, "PLURAL")
     switch (clue?.query) {
       case "create":
-        return `Creating new ${this._getModelTitle(item)}`
+        return `${t("CREATE_PROCESS")} ${modelTitle}`
       case "update":
-        return `Updating ${this._getModelTitle(item)} #${clue?.id}`
+        return `${t("UPDATE_PROCESS")} ${modelTitle} #${clue?.id}`
       case "delete":
-        return `Deleting ${this._getModelTitle(item)} #${clue?.id}`
+        return `${t("DELETE_PROCESS")} ${modelTitle} #${clue?.id}`
       case "findById":
-        return `Loading ${this._getModelTitle(item)} #${clue?.id}`
+        return `${t("ERROR_DIALOG.FIND_BY_ID_PROCESS")} ${modelTitle} #${clue?.id}`
       case "findOne":
-        return `Looking for specific ${this._getModelTitle(item)}`
+        return `${t("ERROR_DIALOG.FIND_ONE_PROCESS")} ${modelTitle}`
       case "find":
-        return `Loading a list of ${this._getModelTitle(item)}s`
+        return `${t("ERROR_DIALOG.FIND_PROCESS")} ${modelTitlePlural}`
       default:
-        return `Performing unknown action ${item?.meta?.clue?.query} with ${this._getModelTitle(item)}`
+        return t("ERROR_DIALOG.UNKNOWN_ACTION_PROCESS", { query: item?.meta?.clue?.query, model: modelTitle })
     }
   }
 
   _getData(item) {
+    const { t } = this.props
     const data = [
       {
-        title: "Request type",
+        title: t("ERROR_DIALOG.REQUEST_TYPE"),
         value: this._getRequestDetails(item),
       },
       {
-        title: "Requested at:",
+        title: t("ERROR_DIALOG.REQUESTED_AT"),
         value: moment.tz(item?.meta?.requestAt, moment.tz.guess()).format("HH:mm:ss:SSSS"),
       },
       {
-        title: "Response received at:",
+        title: t("ERROR_DIALOG.RESPONSE_RECEIVED_AT"),
         value: moment.tz(item?.meta?.responseAt, moment.tz.guess()).format("HH:mm:ss:SSSS"),
       },
     ]
@@ -105,54 +109,54 @@ export default class ErrorDialog extends Component {
       return [
         ...data,
         {
-          title: "Problem",
-          value: "Network connection error",
+          title: t("ERROR_DIALOG.PROBLEM"),
+          value: t("ERROR_DIALOG.PROBLEM_NETWORK"),
         },
         {
-          title: "Recommendation",
-          value: "Ensure you have stable network connection and try again",
+          title: t("ERROR_DIALOG.RECOMMENDATION"),
+          value: t("ERROR_DIALOG.RECOMMENDATION_NETWORK"),
         },
       ]
     }
 
     data.push({
-      title: "Response code",
+      title: t("ERROR_DIALOG.RESPONSE_CODE"),
       value: item?.meta.responseMeta?.status,
     })
     const message = item?.data?.message || item?.data
     if (message) {
       data.push({
-        title: "Response message",
+        title: t("ERROR_DIALOG.RESPONSE_MESSAGE"),
         value: message,
       })
     }
 
-    switch (Number(item?.meta.responseMeta?.statusCode)) {
+    switch (Number(item?.meta.responseMeta?.status)) {
       case 401:
         data.push({
-          title: "Problem",
-          value: "You are not authenticated. Your authorization probably expired",
+          title: t("ERROR_DIALOG.PROBLEM"),
+          value: t("ERROR_DIALOG.PROBLEM_AUTHENTICATION"),
         }, {
-          title: "Recommendation",
-          value: "Try to re-login (on this or another browser tab) and repeat the attempt",
+          title: t("ERROR_DIALOG.RECOMMENDATION"),
+          value: t("ERROR_DIALOG.RECOMMENDATION_AUTHENTICATION"),
         })
         break
       case 403:
         data.push({
-          title: "Problem",
-          value: "You are not authorized to perform this action",
+          title: t("ERROR_DIALOG.PROBLEM"),
+          value: t("ERROR_DIALOG.PROBLEM_AUTHORIZATION"),
         }, {
-          title: "Recommendation",
-          value: "Ask the supervisor to grant you additional rights",
+          title: t("ERROR_DIALOG.RECOMMENDATION"),
+          value: t("ERROR_DIALOG.RECOMMENDATION_AUTHORIZATION"),
         })
         break
       default:
         data.push({
-          title: "Problem",
-          value: "Something is wrong the the Yaxys or it's configuration",
+          title: t("ERROR_DIALOG.PROBLEM"),
+          value: t("ERROR_DIALOG.PROBLEM_YAXYS"),
         }, {
-          title: "Recommendation",
-          value: "Report the situation to your system administrator",
+          title: t("ERROR_DIALOG.RECOMMENDATION"),
+          value: t("ERROR_DIALOG.RECOMMENDATION_YAXYS"),
         })
         break
     }
@@ -165,14 +169,14 @@ export default class ErrorDialog extends Component {
   }
 
   render() {
-    const { open, item, onClose, title, classes } = this.props
+    const { open, item, onClose, title, classes, t } = this.props
     const { displayRawData } = this.state
 
     return (<Dialog
       open={ open }
       onClose={ onClose }
     >
-      <DialogTitle>{ title || this.props.t("ErrorDialog_DETAILS") }</DialogTitle>
+      <DialogTitle>{ title || t("ERROR_DIALOG.TITLE") }</DialogTitle>
       <DialogContent>
         <MuiTable
           includeHeaders={false}
@@ -193,14 +197,14 @@ export default class ErrorDialog extends Component {
                       color="primary"
                       variant="contained"
               >
-                Display raw data
+                {t("ERROR_DIALOG.DISPLAY_RAW_DATA")}
               </Button>
             )
         }
       </DialogContent>
       <DialogActions>
         <Button onClick={ onClose } color="primary">
-          {this.props.t("CLOSE")}
+          {t("CLOSE")}
         </Button>
       </DialogActions>
     </Dialog>)

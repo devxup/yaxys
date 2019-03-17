@@ -91,11 +91,43 @@
   "ACCESS_RIGHTS_COMPONENT": {
     "GRANTED_RIGHT": "Granted access to {{TARGET}}"
   },
+  "ERROR_DIALOG": {
+    "TITLE": "The error details",
+    "DISPLAY_RAW_DATA": "Display raw data",
+    "UNKNOWN_ENTITY": "unknown entity",
+    "UNIDENTIFIED_ENTITY": "unidentified entity",
+    "FIND_BY_ID_PROCESS": "Loading",
+    "FIND_ONE_PROCESS": "Looking for specific",
+    "FIND_PROCESS": "Loading a list of",
+    "UNKNOWN_ACTION_PROCESS": "Performing unknown action {{query}} with {{model}}",
+
+    "REQUEST_TYPE": "Request type",
+
+    "REQUESTED_AT": "Requested at:",
+    "RESPONSE_RECEIVED_AT": "Response received at:",
+
+    "PROBLEM": "Problem",
+    "RECOMMENDATION": "Recommendation",
+    "PROBLEM_NETWORK": "Network connection error",
+    "RECOMMENDATION_NETWORK": "Ensure you have stable network connection and try again",
+
+    "RESPONSE_CODE": "Response code",
+    "RESPONSE_MESSAGE": "Response message",
+
+    "PROBLEM_AUTHENTICATION": "You are not authenticated. Your authorization probably expired",
+    "RECOMMENDATION_AUTHENTICATION": "Try to re-login (on this or another browser tab) and repeat the attempt",
+    "PROBLEM_AUTHORIZATION": "You are not authorized to perform this action",
+    "RECOMMENDATION_AUTHORIZATION": "Ask the supervisor to grant you additional rights",
+    "PROBLEM_YAXYS": "Something is wrong the the Yaxys or it's configuration",
+    "RECOMMENDATION_YAXYS": "Report the situation to your system administrator"
+  },
+
+  "CREATE_NEW": "Create new",
+  "ADD_EXISTING": "Add existing",
 
   "CREATE": "Create",
-  "CREATE_NEW": "Create new",
+  "CREATE_PROCESS": "Creating",
   "ADD": "Add",
-  "ADD_EXISTING": "Add existing",
   "ADD_PROCESS": "Adding",
   "DELETE": "Delete",
   "DELETE_PROCESS": "Deleting",
@@ -104,7 +136,9 @@
   "UPDATE": "Update",
   "UPDATE_PROCESS": "Updating",
 
+  "RETRY": "Retry",
   "CANCEL": "Cancel",
+  "CLOSE": "Close",
   "DEFINITE_ARTICLE": "the",
   "ARE_YOU_SURE_TO": "Are you sure want to"
 }
