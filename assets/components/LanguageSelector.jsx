@@ -13,15 +13,26 @@ const extractLanguageFromCookie = () => {
 	}
 }
 
-const StyledSelect = withStyles({
-	root: {
-		color: "#fff",
-	},
-})(Select)
-
+@withStyles({
+  root: {
+    margin: "0 20px 0 10px",
+    // padding: "2px 0 0 10px",
+    borderRadius: 4,
+    backgroundColor: "#fff",
+    height:32,
+    "&>div>div>div": {
+      paddingLeft: 10,
+      paddingTop: 8,
+    },
+    "&>div:before": {
+      border: "none !important",
+    },
+  },
+})
 @withConstants
 @withNamespaces()
 export default class LanguageSelector extends React.Component {
+  static displayName = "LanguageSelector"
 	static propTypes = {
 		constants: PropTypes.object,
 		i18n: PropTypes.object,
@@ -50,15 +61,15 @@ export default class LanguageSelector extends React.Component {
 	}
 
 	render() {
-		return (<React.Fragment>
-			<h6>{this.props.t("LanguageSelector_LANG_SEL_TITLE")}</h6>
-			<div style={{ margin: "0 40px 0 10px" }}>
-				<StyledSelect value={this.state.currentLang} onChange={this.handleChange}>
-					{this.props.constants.languages.map((language, index) => (
-						<MenuItem key={index} value={language.code}>{language.name}</MenuItem>
-					))}
-				</StyledSelect>
-			</div>
-		</React.Fragment>)
+    const { classes } = this.props
+		return (
+      <div class={ classes.root }>
+        <Select value={this.state.currentLang} onChange={this.handleChange}>
+          {this.props.constants.languages.map((language, index) => (
+            <MenuItem key={index} value={language.code}>{language.name}</MenuItem>
+          ))}
+        </Select>
+      </div>
+    )
 	}
 }

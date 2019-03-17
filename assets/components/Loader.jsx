@@ -74,7 +74,7 @@ export default class Loader extends Component {
       return (
         <Paper className={classNames(classes.root, classes.pending)}>
           <CircularProgress className={classes.progress} size={30} />
-          <div className={classes.message}>{loadingText || t("Loader_LOADING")}</div>
+          <div className={classes.message}>{loadingText || t("LOAD_PROCESS")}</div>
         </Paper>
       )
     }
@@ -86,7 +86,7 @@ export default class Loader extends Component {
         <div className={classes.message}>
           {item?.data?.message ||
             item?.data?.toString() ||
-            (item?.meta?.responseMeta?.status === 403 ? t("PERM_DENIED") : t("ERROR"))}
+            (item?.meta?.responseMeta?.status === 403 ? t("PERMiSSION_DENIED") : t("ERROR"))}
         </div>
         <Button classes={{ root: classes.button }} onClick={this.onRetry}>
           {retryText || t("RETRY")}

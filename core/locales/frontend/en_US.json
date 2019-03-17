@@ -121,6 +121,18 @@
     "PROBLEM_YAXYS": "Something is wrong the the Yaxys or it's configuration",
     "RECOMMENDATION_YAXYS": "Report the situation to your system administrator"
   },
+  "LOGIN_DIALOG": {
+    "TITLE": "Login"
+  },
+  "LOGIN_FORM": {
+    "SHOULD_NOT_BE_EMPTY": "Should not be empty",
+    "LOGIN_OR_EMAIL": "Login or email",
+    "PASSWORD": "Password",
+    "CHECKING": "Checking credentials...",
+    "BUTTON": "Log in",
+    "WRONG_CREDENTIALS": "Wrong credentials",
+    "OTHER_ERROR": "An error occured"
+  },
 
   "CREATE_NEW": "Create new",
   "ADD_EXISTING": "Add existing",
@@ -135,10 +147,15 @@
   "DETACH_PROCESS": "Detaching",
   "UPDATE": "Update",
   "UPDATE_PROCESS": "Updating",
+  "LOAD": "Load",
+  "LOAD_PROCESS": "Loading",
 
   "RETRY": "Retry",
   "CANCEL": "Cancel",
   "CLOSE": "Close",
   "DEFINITE_ARTICLE": "the",
-  "ARE_YOU_SURE_TO": "Are you sure want to"
+  "ARE_YOU_SURE_TO": "Are you sure want to",
+
+  "ERROR": "Ошибка",
+  "PERMiSSION_DENIED": "Permission Denied"
 }

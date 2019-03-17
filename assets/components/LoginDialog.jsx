@@ -22,7 +22,7 @@ class LoginDialog extends Component {
     const { open, onClose } = this.props
     return (
       <Dialog open={open} onClose={onClose}>
-        <DialogTitle>{this.props.t("LOGIN")}</DialogTitle>
+        <DialogTitle>{this.props.t("LOGIN_DIALOG.TITLE")}</DialogTitle>
         <DialogContent>
           <LoginForm />
         </DialogContent>

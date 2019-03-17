@@ -110,7 +110,7 @@ export default class LoginForm extends Component {
         label={property.title}
         margin={"normal"}
         error={error}
-        helperText={error ? t("LoginForm_NOT_EMPTY") : ""}
+        helperText={error ? t("LOGIN_FORM.SHOULD_NOT_BE_EMPTY") : ""}
         value={this.state.form[propertyKey] || ""}
         onChange={this.onChange}
         onKeyPress={this.onKeyPress}
@@ -127,10 +127,10 @@ export default class LoginForm extends Component {
     const FORM_SCHEMA = {
       properties: {
         loginOrEmail: {
-          title: t("LOGIN_OR_EMAIL"),
+          title: t("LOGIN_FORM.LOGIN_OR_EMAIL"),
         },
         password: {
-          title: t("PASSWORD"),
+          title: t("LOGIN_FORM.PASSWORD"),
           password: true,
         },
       },
@@ -144,21 +144,21 @@ export default class LoginForm extends Component {
           <Fragment>
             <CircularProgress className={classes.progress} size={30} />
             <span className={classNames(classes.message, classes.pending)}>
-              {t("LoginForm_CHECKING")}
+              {t("LOGIN_FORM.CHECKING")}
             </span>
           </Fragment>
         ) : (
           <Fragment>
             <Button classes={{ root: classes.button }} variant="text" onClick={this.onLogin}>
-              {t("LOG_IN")}
+              {t("LOGIN_FORM.BUTTON")}
             </Button>
             {lastAttempt?.error && (
               <span className={classNames(classes.message, classes.error)}>
                 {lastAttempt?.data?.message ||
                   lastAttempt?.data?.toString() ||
                   (lastAttempt?.meta?.responseMeta?.status === 403
-                    ? t("LoginForm_WRONG_CREDS")
-                    : t("ERROR"))}
+                    ? t("LOGIN_FORM.WRONG_CREDENTIALS")
+                    : t("LOGIN_FORM.OTHER_ERROR"))}
               </span>
             )}
           </Fragment>
