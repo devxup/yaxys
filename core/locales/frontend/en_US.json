@@ -16,12 +16,13 @@
   "USER_PROFILE": "User profile",
   "USER_PROFILE_PLURAL": "User profiles",
   "ZONE": "Zone",
+  "ZONE_PLURAL": "Zones",
 
   "USERS_PAGE": {
     "PROFILES_DESC": "Also, you can control users' rights by ",
     "PROFILES_DESC_LINK": "managing their profiles",
     "CREATE_DLG_TITLE": "Create new User",
-    "CREATE_DLG_DESC": "Please provide name for the new user."
+    "CREATE_DLG_DESC": "Please provide name for the new User."
   },
   "USER_PAGE": {
     "PROFILES_HEADER": "$t(USER_PROFILE_PLURAL)",
@@ -30,14 +31,14 @@
   },
   "USER_PROFILES_PAGE": {
     "CREATE_DLG_TITLE": "Create new User profileęęeėe",
-    "CREATE_DLG_DESC": "Please provide name for the new user profile."
+    "CREATE_DLG_DESC": "Please provide name for the new User profile."
   },
   "USER_PROFILE_PAGE": {
     "RIGHTS_HEADER": "The profile rights"
   },
   "APS_PAGE": {
     "CREATE_DLG_TITLE": "Create new Access point",
-    "CREATE_DLG_DESC": "Please provide name and description for the new access point."
+    "CREATE_DLG_DESC": "Please provide name and description for the new Access point."
   },
   "AP_PAGE": {
     "DOOR_AND_ZONE_HEADER": "Door and Zone",
@@ -45,10 +46,18 @@
   },
   "DOORS_PAGE": {
     "CREATE_DLG_TITLE": "Create new Door",
-    "CREATE_DLG_DESC": "Please provide name and description for the new door."
+    "CREATE_DLG_DESC": "Please provide name and description for the new Door."
   },
   "DOOR_PAGE": {
     "USERS_AND_PROFILES_HEADER": "Users and profiles having access to this door:",
+    "TOO_MUCH_APS_MESSAGE": "The door can't have more than 2 access points!"
+  },
+  "ZONES_PAGE": {
+    "CREATE_DLG_TITLE": "Create new Zone",
+    "CREATE_DLG_DESC": "Please provide name and description for the new Zone."
+  },
+  "ZONE_PAGE": {
+    "USERS_AND_PROFILES_HEADER": "Users and profiles having access to this zone:",
     "TOO_MUCH_APS_MESSAGE": "The door can't have more than 2 access points!"
   },
 

@@ -75,22 +75,15 @@ export default class Zone extends Component {
     })
   }
 
-  onRightsChange = rights => {
-    this.setState({
-      zone: { ...this.state.zone, rights: Object.assign({}, rights) },
-      modifiedAt: new Date().getTime(),
-    })
-  }
-
-  handleSingleChange = name => event => {
-    this.state.zone[name] = event.target.checked
-    this.state.modifiedAt = new Date().getTime()
-    this.forceUpdate()
-  }
-
   render() {
     const { constants, zone, match, classes, t } = this.props
-    const entityAndId = t("ENTITY_ZONE", { id: match.params.id, item: zone })
+    const entityInstance = t("ENTITY_INSTANCE", {
+      entity: "$t(ZONE)",
+      info: {
+        id: match.params.id,
+        item: zone,
+      },
+    })
     const update = (
       <Update
         clue={zoneClue(this.props)}
@@ -103,14 +96,13 @@ export default class Zone extends Component {
       <Wrapper
         bottom={update}
         breadcrumbs={[
-          { title: t("ZONES"), url: "/zones" },
-          entityAndId,
+          { title: t("ZONE_PLURAL"), url: "/zones" },
+          entityInstance,
         ]}
       >
-        <h1 style={{ marginTop: 0 }}>{entityAndId}</h1>
+        <h1 style={{ marginTop: 0 }}>{entityInstance}</h1>
         <Loader item={zone}>
           <Paper className={classes.block}>
-            <h5>{t("PROPERTIES")}</h5>
             <ModelForm
               autoFocus={true}
               values={this.state.zone}
@@ -124,7 +116,7 @@ export default class Zone extends Component {
           </Paper>
         </Loader>
         <Paper className={classes.block}>
-          <h5>{t("APS")}</h5>
+          <h5>{t("AP_PLURAL")}</h5>
           <Connection
             relatedIdentity="accesspoint"
             relatedProperty="zoneTo"
@@ -137,7 +129,7 @@ export default class Zone extends Component {
           />
         </Paper>
         <Paper className={classes.block}>
-          <h5>Users and profiles having access to this zone:</h5>
+          <h5>{t("ZONE_PAGE.USERS_AND_PROFILES_HEADER")}</h5>
           <AccessRights
             mode={"hardware"}
             hardwareProperty={"zoneTo"}

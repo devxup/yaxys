@@ -61,10 +61,18 @@ export default class Zones extends Component {
   }
 
   onDeleteItem = item => {
+    const { t } = this.props
     if (this.state.deletedHash[item.id]) {
       return
     }
-    if (!confirm(`Are you sure to delete the Zone #${item.id}?`)) {
+    const entityInstance = t("ENTITY_INSTANCE", {
+      entity: "$t(ZONE)",
+      info: {
+        id: item.id,
+        data: item,
+      },
+    })
+    if (!confirm(`${t("ARE_YOU_SURE_TO")} ${t("DELETE").toLowerCase()} ${entityInstance}?`)) {
       return
     }
 
@@ -90,20 +98,25 @@ export default class Zones extends Component {
   render() {
     const { constants, t } = this.props
     return (
-      <Wrapper breadcrumbs={[t("ZONES")]}>
-        <h1 style={{ marginTop: 0 }}>{t("ZONES")}</h1>
+      <Wrapper breadcrumbs={[t("ZONE_PLURAL")]}>
+        <h1 style={{ marginTop: 0 }}>{t("ZONE_PLURAL")}</h1>
         <Button
           variant="text"
           color="secondary"
           onClick={this.onAdd}
-          title={t("Zones_CREATE")}
         >
-          {t("Zones_ADD_ZONE")}
+          { `${t("CREATE")} ${t("ZONE", { "context": "ACCUSATIVE" })}`}
         </Button>
         <Created
           items={this.props.createdZones}
-          content={zone =>
-            t("ENTITY_ZONE", { id: zone.id, data: zone })
+          content={
+            zone => t("ENTITY_INSTANCE", {
+              entity: "$t(ZONE)",
+              info: {
+                id: zone.id,
+                data: zone,
+              },
+            })
           }
           url={zone => `/zones/${zone.id}`}
           laterThan={ this.state.constructedAt }
@@ -120,7 +133,7 @@ export default class Zones extends Component {
         </Paper>
         <br />
         <ModelDialog
-          title={t("Zones_CREATE")}
+          title={t("ZONES_PAGE.CREATE_DLG_TITLE")}
           open={this.state.addOpen}
           onClose={this.onAddClose}
           onReady={this.onAddReady}
@@ -128,11 +141,11 @@ export default class Zones extends Component {
           attributes={["name", "description"]}
           btnReady={t("CREATE")}
         >
-          {t("Zones_CREATE_DESC")}
+          {t("ZONES_PAGE.CREATE_DLG_DESC")}
         </ModelDialog>
         <Request
           selector={this.state.deletedSelector}
-          message={"Deleting the Zone"}
+          message={ `${t("DELETE_PROCESS")} ${t("DEFINITE_ARTICLE")} ${t("ZONE", { context: "GENITIVE" })}`}
           attemptAt={ this.state.deleteAttemptAt }
           onSuccess={ this.onItemDeleted }
         />
