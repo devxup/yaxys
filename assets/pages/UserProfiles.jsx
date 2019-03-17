@@ -89,19 +89,18 @@ export default class UserProfiles extends Component {
   render() {
     const { constants, t } = this.props
     return (
-      <Wrapper breadcrumbs={[t("USER_PROFILES")]}>
-        <h1 style={{ marginTop: 0 }}>{ t("USER_PROFILES")}</h1>
+      <Wrapper breadcrumbs={[t("USER_PROFILE_PLURAL")]}>
+        <h1 style={{ marginTop: 0 }}>{ t("USER_PROFILE_PLURAL")}</h1>
         <Button
           variant="text"
           color="secondary"
           onClick={this.onAdd}
-          title={t("UserProfiles_CREATE_NEW")}
         >
-          {t("ADD_USER_PROFILE")}
+          { `${t("ADD")} ${t("USER_PROFILE", { "context": "ACCUSATIVE" })}`}
         </Button>
         <Created
           items={this.props.createdProfiles}
-          content={profile => profile.name}
+          content={profile => `#${profile.id} ${profile.name}`}
           url={profile => `/user-profiles/${profile.id}`}
           laterThan={ this.state.constructedAt }
         />
@@ -117,7 +116,7 @@ export default class UserProfiles extends Component {
         </Paper>
         <br />
         <ModelDialog
-          title={t("UserProfiles_CREATE_NEW")}
+          title={t("USER_PROFILES_PAGE.CREATE_DLG_TITLE")}
           open={this.state.addOpen}
           onClose={this.onAddClose}
           onReady={this.onAddReady}
@@ -125,11 +124,11 @@ export default class UserProfiles extends Component {
           attributes={["name"]}
           btnReady={t("CREATE")}
         >
-          {t("UserProfiles_CREATE_DESC")}
+          {t("USER_PROFILES_PAGE.CREATE_DLG_DESC")}
         </ModelDialog>
         <Request
           selector={this.state.deletedSelector}
-          message={"Deleting the User profile"}
+          message={ `${t("DELETE_PROCESS")} ${t("DEFINITE_ARTICLE")} ${t("USER_PROFILE", { context: "ACCUSATIVE" })}`}
           attemptAt={ this.state.deleteAttemptAt }
           onSuccess={ this.onItemDeleted }
         />

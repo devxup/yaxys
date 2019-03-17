@@ -27,7 +27,12 @@
     "PROFILES_DESC": "Here you can manage profiles of the user",
     "CUSTOM_RIGHTS_HEADER": "Custom access rights of the user"
   },
+  "USER_PROFILES_PAGE": {
+    "CREATE_DLG_TITLE": "Create new User PROFILE",
+    "CREATE_DLG_DESC": "Please provide name for the new user profile."
+  },
 
+  "CREATE": "Create",
   "ADD": "Add",
   "ADD_PROCESS": "Adding",
   "DELETE": "Delete",
@@ -35,6 +40,7 @@
   "DETACH": "Detach",
   "DETACH_PROCESS": "Detaching",
 
+  "CANCEL": "Cancel",
   "DEFINITE_ARTICLE": "the",
   "ARE_YOU_SURE_TO": "Are you sure to"
 }
