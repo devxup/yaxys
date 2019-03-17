@@ -25,14 +25,14 @@ export default class Settings extends Component {
   render() {
     const { classes, t } = this.props
     return (
-      <Wrapper breadcrumbs={[t("SETTINGS")]}>
-        <h1 style={{ marginTop: 0 }}>{t("SETTINGS")}</h1>
+      <Wrapper breadcrumbs={[t("SETTINGS_PAGE.BREADCRUMB")]}>
+        <h1 style={{ marginTop: 0 }}>{t("SETTINGS_PAGE.HEADER")}</h1>
 
-        <p>{t("SETTINGS_desc")}</p>
+        <p>{t("SETTINGS_PAGE.DESC")}</p>
 
         <Paper className={classes.root} elevation={1}>
           <ul className={classes.list}>
-            <li><Link to={"/settings/operator-profiles"}>{t("OPERATOR_PROFILES")}</Link></li>
+            <li><Link to={"/settings/operator-profiles"}>{t("OPERATOR_PROFILE_PLURAL")}</Link></li>
           </ul>
         </Paper>
       </Wrapper>

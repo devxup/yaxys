@@ -97,9 +97,12 @@ export default class OperatorProfile extends Component {
 
   render() {
     const { operatorProfile, match, classes, constants, t } = this.props
-    const entityAndId = t("ENTITY_OPERATOR_PROFILE", {
-      id: match.params.id,
-      item: operatorProfile,
+    const entityInstance = t("ENTITY_INSTANCE", {
+      entity: "$t(OPERATOR_PROFILE)",
+      info: {
+        id: match.params.id,
+        item: operatorProfile,
+      },
     })
     const update = (
       <Update
@@ -114,13 +117,13 @@ export default class OperatorProfile extends Component {
         bottom={update}
         breadcrumbs={
           [
-            { title: t("SETTINGS"), url: "/settings" },
-            { title: t("OPERATOR_PROFILES"), url: "/settings/operator-profiles" },
-            entityAndId,
+            { title: t("SETTINGS_PAGE.BREADCRUMB"), url: "/settings" },
+            { title: t("OPERATOR_PROFILE_PLURAL"), url: "/settings/operator-profiles" },
+            entityInstance,
           ]
         }
       >
-        <h1 style={{ marginTop: 0 }}>{t("OPERATOR_PROFILE_#", { number: match.params.id })}</h1>
+        <h1 style={{ marginTop: 0 }}>{entityInstance}</h1>
         <Loader item={operatorProfile}>
           <Fragment>
             <Paper className={classes.block}>
@@ -135,7 +138,7 @@ export default class OperatorProfile extends Component {
               />
             </Paper>:
             <Paper className={classes.rights}>
-              <h5>{t("OperatorProfile_RIGHTS")}</h5>
+              <h5>{t("OPERATOR_PROFILE_PAGE.RIGHTS_HEADER")}</h5>
               <RightsEditor
                 type="profile"
                 values={(this.state.operatorProfile && this.state.operatorProfile.rights) || {}}

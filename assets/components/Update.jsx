@@ -203,18 +203,18 @@ export default class Update extends Component {
       case "modified":
         return (
           <Button variant="text" className={classes.button} onClick={this.onSave}>
-            {t("Update_SAVE_CHANGES")}
+            {t("UPDATE_COMPONENT.SAVE_CHANGES")}
           </Button>
         )
       case "pending":
         return (
           <Fragment>
             <CircularProgress size={30} className={classes.progress} />
-            {this.props.t("Update_SAVING_CHANGES")}
+            {t("UPDATE_COMPONENT.PENDING")}
           </Fragment>
         )
       case "success":
-        return <div className={classes.message}>{this.props.t("Update_SAVED_CHANGES")}</div>
+        return <div className={classes.message}>{t("UPDATE_COMPONENT.CHANGES_SAVED")}</div>
       case "error":
         return (
           <Fragment>
@@ -222,14 +222,14 @@ export default class Update extends Component {
               className={classNames(classes.button, classes.errorButton)}
               onClick={this.onSave}
             >
-              {this.props.t("RETRY")}
+              {t("RETRY")}
             </Button>
             <div className={classes.message}>
               {updateItem?.data?.message ||
                 updateItem?.data?.toString() ||
                 (updateItem?.meta?.responseMeta?.status === 403
-                  ? this.props.t("PERM_DENIED")
-                  : this.props.t("ERROR"))}
+                  ? t("PERMISSION_DENIED")
+                  : t("ERROR"))}
             </div>
           </Fragment>
         )

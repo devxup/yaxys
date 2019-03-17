@@ -91,7 +91,7 @@ export default class Switcher extends Component {
         )}
         {...this.state.valueObject && this.state.valueObject.props}
       >
-        {(this.state.valueObject && this.state.valueObject.label) || this.props.t("Switcher_UNKNOWN_VALUE")}
+        {(this.state.valueObject && this.state.valueObject.label) || this.props.t("SWITCHER.UNKNOWN_VALUE")}
       </Button>
     )
   }

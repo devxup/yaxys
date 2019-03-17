@@ -60,10 +60,19 @@ export default class OperatorProfiles extends Component {
   }
 
   onDeleteItem = item => {
+    const { t } = this.props
     if (this.state.deletedHash[item.id]) {
       return
     }
-    if (!confirm(`Are you sure to delete the Operator Profile #${item.id}?`)) {
+    const entityInstance = t("ENTITY_INSTANCE", {
+      entity: "$t(OPERATOR_PROFILE)",
+      case: "ACCUSATIVE",
+      info: {
+        id: item.id,
+        data: item,
+      },
+    })
+    if (!confirm(`${t("ARE_YOU_SURE_TO")} ${t("DELETE").toLowerCase()} ${entityInstance}?`)) {
       return
     }
 
@@ -89,13 +98,15 @@ export default class OperatorProfiles extends Component {
   render() {
     const { constants, t } = this.props
     return (
-      <Wrapper breadcrumbs={[{ title: t("SETTINGS"), url: "/settings" }, t("OPERATOR_PROFILES")]}>
-        <h1 style={{ marginTop: 0 }}>{t("OPERATOR_PROFILES")}</h1>
+      <Wrapper breadcrumbs={[
+        { title: t("SETTINGS_PAGE.BREADCRUMB"), url: "/settings" },
+        t("OPERATOR_PROFILE_PLURAL"),
+      ]}>
+        <h1 style={{ marginTop: 0 }}>{t("OPERATOR_PROFILE_PLURAL")}</h1>
         <Button
           variant="text"
           color="secondary"
           onClick={this.onAdd}
-          title="Create new profile"
         >
           { `${t("CREATE")} ${t("OPERATOR_PROFILE", { "context": "ACCUSATIVE" })}`}
         </Button>
@@ -117,7 +128,7 @@ export default class OperatorProfiles extends Component {
         </Paper>
         <br />
         <ModelDialog
-          title={t("OperatorProfiles_CREATE_NEW")}
+          title={t("OPERATOR_PROFILES_PAGE.CREATE_DLG_TITLE")}
           open={this.state.addOpen}
           onClose={this.onAddClose}
           onReady={this.onAddReady}
@@ -125,7 +136,7 @@ export default class OperatorProfiles extends Component {
           attributes={["name"]}
           btnReady={t("CREATE")}
         >
-          {t("OperatorProfiles_CREATE_DESC")}
+          {t("OPERATOR_PROFILES_PAGE.CREATE_DLG_DESC")}
         </ModelDialog>
         <Request
           selector={this.state.deletedSelector}

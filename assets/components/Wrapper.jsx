@@ -39,41 +39,41 @@ const lists = {
   people: [
     {
       icon: PersonOutlineIcon,
-      title: "Users",
+      title: "USER_PLURAL",
       url: "/users",
     },
     {
       icon: PeopleOutlineIcon,
-      title: "User Profiles",
+      title: "USER_PROFILE_PLURAL",
       url: "/user-profiles",
     },
   ],
   hardware: [
     {
       icon: SdCardIcon,
-      title: "Access points",
+      title: "AP_PLURAL",
       url: "/access-points",
     },
     {
       icon: MeetingRoomIcon,
-      title: "Doors",
+      title: "DOOR_PLURAL",
       url: "/doors",
     },
     {
       icon: PictureInPictureIcon,
-      title: "Zones",
+      title: "ZONE_PLURAL",
       url: "/zones",
     },
   ],
   adminZone: [
     {
       icon: PersonIcon,
-      title: "Operators",
+      title: "OPERATOR_PLURAL",
       url: "/operators",
     },
     {
       icon: SettingsIcon,
-      title: "Settings",
+      title: "SETTINGS_PAGE.HEADER",
       url: "/settings",
     },
   ],
@@ -245,7 +245,7 @@ export default class Wrapper extends Component {
   }
 
   renderAuth() {
-    const { classes } = this.props
+    const { classes, t } = this.props
     if (this.props.me) {
       return (
         <Link to="/me" className={classes.authMe}>
@@ -255,7 +255,7 @@ export default class Wrapper extends Component {
     }
     return (
       <div className={classes.authLogin} onClick={this.openLoginDialog}>
-        <span className={classes.authLoginSpan}>{this.props.t("LOG_IN")}</span>
+        <span className={classes.authLoginSpan}>{t("LOGIN_FORM.BUTTON")}</span>
         <Avatar className={classes.avatar}>
           <PersonIcon />
         </Avatar>
@@ -264,7 +264,7 @@ export default class Wrapper extends Component {
   }
 
   renderList(key) {
-    const { classes, location } = this.props
+    const { classes, location, t } = this.props
     const url = location.pathname
     return (
       <List>
@@ -282,7 +282,7 @@ export default class Wrapper extends Component {
               </ListItemIcon>
               <ListItemText
                 classes={{ primary: classes.drawerItemInheritColor }}
-                primary={item.title}
+                primary={t(item.title)}
               />
             </ListItem>
           </Link>

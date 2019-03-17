@@ -1,6 +1,7 @@
 module.exports = {
   schema: {
     bindingRightTitle: "Assign profiles to operators",
+    bindingRightI18Key: "RIGHT_FOR_OPERATOR_PROFILE_BINDING",
     uniqueKeys: {
       operatorAndProfile: ["operator", "operatorProfile"],
     },
