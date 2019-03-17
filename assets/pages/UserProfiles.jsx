@@ -60,10 +60,18 @@ export default class UserProfiles extends Component {
   }
 
   onDeleteItem = item => {
+    const { t } = this.props
     if (this.state.deletedHash[item.id]) {
       return
     }
-    if (!confirm(`Are you sure to delete the User Profile #${item.id}?`)) {
+    const entityInstance = t("ENTITY_INSTANCE", {
+      entity: "$t(USER_PROFILE)",
+      info: {
+        id: item.id,
+        data: item,
+      },
+    })
+    if (!confirm(`${t("ARE_YOU_SURE_TO")} ${t("DELETE").toLowerCase()} ${entityInstance}?`)) {
       return
     }
 
@@ -96,7 +104,7 @@ export default class UserProfiles extends Component {
           color="secondary"
           onClick={this.onAdd}
         >
-          { `${t("ADD")} ${t("USER_PROFILE", { "context": "ACCUSATIVE" })}`}
+          { `${t("CREATE")} ${t("USER_PROFILE", { "context": "ACCUSATIVE" })}`}
         </Button>
         <Created
           items={this.props.createdProfiles}

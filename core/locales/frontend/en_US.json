@@ -28,8 +28,19 @@
     "CUSTOM_RIGHTS_HEADER": "Custom access rights of the user"
   },
   "USER_PROFILES_PAGE": {
-    "CREATE_DLG_TITLE": "Create new User PROFILE",
+    "CREATE_DLG_TITLE": "Create new User profileęęeėe",
     "CREATE_DLG_DESC": "Please provide name for the new user profile."
+  },
+  "USER_PROFILE_PAGE": {
+    "RIGHTS_HEADER": "The profile rights"
+  },
+  "APS_PAGE": {
+    "CREATE_DLG_TITLE": "Create new Access point",
+    "CREATE_DLG_DESC": "Please provide name and description for the new access point."
+  },
+  "AP_PAGE": {
+    "DOOR_AND_ZONE_HEADER": "Door and Zone",
+    "USERS_AND_PROFILES_HEADER": "Users and profiles having access to this Point:"
   },
 
   "CREATE": "Create",

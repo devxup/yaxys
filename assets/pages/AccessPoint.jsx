@@ -79,24 +79,15 @@ export default class AccessPoint extends Component {
     })
   }
 
-  onRightsChange = rights => {
-    this.setState({
-      accessPoint: { ...this.state.accessPoint, rights: Object.assign({}, rights) },
-      modifiedAt: new Date().getTime(),
-    })
-  }
-
-  handleSingleChange = name => event => {
-    this.state.accessPoint[name] = event.target.checked
-    this.state.modifiedAt = new Date().getTime()
-    this.forceUpdate()
-  }
-
   render() {
     const { constants, accessPoint, match, classes, t } = this.props
-    // const idAndName = `#${match.params.id}${ accessPoint?.success ? ` ${accessPoint.data.name}` : "" }`
-    const entityAndId = t("AP_#", { ap: match.params.id, item: accessPoint })
-      // `#${match.params.id}${ accessPoint?.success ? ` ${accessPoint.data.name}` : "" }`
+    const entityInstance = t("ENTITY_INSTANCE", {
+      entity: "$t(AP)",
+      info: {
+        id: match.params.id,
+        item: accessPoint,
+      },
+    })
     const update = (
       <Update
         clue={accessPointClue(this.props)}
@@ -111,15 +102,14 @@ export default class AccessPoint extends Component {
       <Wrapper
         bottom={update}
         breadcrumbs={[
-          { title: t("AP"), url: "/access-points" },
-          entityAndId,
+          { title: t("AP_PLURAL"), url: "/access-points" },
+          entityInstance,
         ]}
       >
-        <h1 style={{ marginTop: 0 }}>{ entityAndId }</h1>
+        <h1 style={{ marginTop: 0 }}>{ entityInstance }</h1>
         <Loader item={accessPoint}>
           <Fragment>
             <Paper className={classes.block}>
-              <h5>{t("PROPERTIES")}</h5>
               <ModelForm
                 autoFocus={true}
                 values={this.state.accessPoint}
@@ -131,7 +121,7 @@ export default class AccessPoint extends Component {
               />
             </Paper>
             <Paper className={classes.block}>
-              <h5>{t("AccessPoint_DOOR_AND_ZONE")}</h5>
+              <h5>{t("AP_PAGE.DOOR_AND_ZONE_HEADER")}</h5>
               <ModelForm
                 autoFocus={true}
                 values={this.state.accessPoint}
@@ -143,7 +133,7 @@ export default class AccessPoint extends Component {
               />
             </Paper>
             <Paper className={classes.block}>
-              <h5>{t("AccessPoint_USERS_AND_PROFILES")}</h5>
+              <h5>{t("AP_PAGE.USERS_AND_PROFILES_HEADER")}</h5>
               <AccessRights
                 mode={"hardware"}
                 hardwareProperty={"accessPoint"}

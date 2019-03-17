@@ -60,10 +60,18 @@ export default class AccessPoints extends Component {
   }
 
   onDeleteItem = item => {
+    const { t } = this.props
     if (this.state.deletedHash[item.id]) {
       return
     }
-    if (!confirm(`Are you sure to delete the Access Point #${item.id}?`)) {
+    const entityInstance = t("ENTITY_INSTANCE", {
+      entity: "$t(AP)",
+      info: {
+        id: item.id,
+        data: item,
+      },
+    })
+    if (!confirm(`${t("ARE_YOU_SURE_TO")} ${t("DELETE").toLowerCase()} ${entityInstance}?`)) {
       return
     }
 
@@ -89,22 +97,25 @@ export default class AccessPoints extends Component {
   render() {
     const { constants, t } = this.props
     return (
-      <Wrapper breadcrumbs={[t("APS")]}>
-        <h1 style={{ marginTop: 0 }}>{t("APS")}</h1>
+      <Wrapper breadcrumbs={[t("AP_PLURAL")]}>
+        <h1 style={{ marginTop: 0 }}>{t("AP_PLURAL")}</h1>
         <Button
           variant="text"
           color="secondary"
           onClick={this.onAdd}
-          title={t("AccessPoints_CREATE_AP")}
         >
-          {t("AccessPoints_ADD_AP")}
+          { `${t("CREATE")} ${t("AP", { "context": "ACCUSATIVE" })}`}
         </Button>
         <Created
           items={this.props.createdAccessPoints}
-          content={accessPoint =>
-            accessPoint.name
-              ? `#${accessPoint.id} ${accessPoint.name}`
-              : t("AP_#", { ap: accessPoint.id })
+          content={
+            accessPoint => t("ENTITY_INSTANCE", {
+              entity: "$t(AP)",
+              info: {
+                id: accessPoint.id,
+                data: accessPoint,
+              },
+            })
           }
           url={accessPoint => `/access-points/${accessPoint.id}`}
           laterThan={ this.state.constructedAt }
@@ -122,7 +133,7 @@ export default class AccessPoints extends Component {
         </Paper>
         <br />
         <ModelDialog
-          title={t("AccessPoints_CREATE_AP")}
+          title={t("APS_PAGE.CREATE_DLG_TITLE")}
           open={this.state.addOpen}
           onClose={this.onAddClose}
           onReady={this.onAddReady}
@@ -130,11 +141,11 @@ export default class AccessPoints extends Component {
           attributes={["name", "description"]}
           btnReady={t("CREATE")}
         >
-          {t("AccessPoints_CREATE_DESC")}
+          {t("APS_PAGE.CREATE_DLG_DESC")}
         </ModelDialog>
         <Request
           selector={this.state.deletedSelector}
-          message={"Deleting the Access Point"}
+          message={ `${t("DELETE_PROCESS")} ${t("DEFINITE_ARTICLE")} ${t("AP", { context: "ACCUSATIVE" })}`}
           attemptAt={ this.state.deleteAttemptAt }
           onSuccess={ this.onItemDeleted }
         />

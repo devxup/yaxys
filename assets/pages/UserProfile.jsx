@@ -130,7 +130,7 @@ export default class UserProfile extends Component {
               />
             </Paper>
             <Paper className={classes.rights}>
-              <h5>{t("UserProfile_RIGHTS")}</h5>
+              <h5>{t("USER_PROFILE_PAGE.RIGHTS_HEADER")}</h5>
               <AccessRights
                 mode={"user"}
                 userProperty={"userProfile"}
