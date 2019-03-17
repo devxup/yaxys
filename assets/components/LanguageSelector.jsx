@@ -63,7 +63,7 @@ export default class LanguageSelector extends React.Component {
 	render() {
     const { classes } = this.props
 		return (
-      <div class={ classes.root }>
+      <div className={ classes.root }>
         <Select value={this.state.currentLang} onChange={this.handleChange}>
           {this.props.constants.languages.map((language, index) => (
             <MenuItem key={index} value={language.code}>{language.name}</MenuItem>
