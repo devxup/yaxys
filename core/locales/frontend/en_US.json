@@ -10,7 +10,9 @@
   "DOOR": "Door",
   "DOOR_PLURAL": "Doors",
   "OPERATOR": "Operator",
+  "OPERATOR_PLURAL": "Operators",
   "OPERATOR_PROFILE": "Operator profile",
+  "OPERATOR_PROFILE_PLURAL": "Operator profiles",
   "USER": "User",
   "USER_PLURAL": "Users",
   "USER_PROFILE": "User profile",
@@ -59,6 +61,31 @@
   "ZONE_PAGE": {
     "USERS_AND_PROFILES_HEADER": "Users and profiles having access to this zone:",
     "TOO_MUCH_APS_MESSAGE": "The door can't have more than 2 access points!"
+  },
+  "OPERATORS_PAGE": {
+    "PROFILES_DESC": "Also, you can control operators' rights by ",
+    "PROFILES_DESC_LINK": "managing their profiles",
+    "CREATE_DLG_TITLE": "Create new Operator",
+    "CREATE_DLG_DESC": "Please provide email address and password for the new operator."
+  },
+  "OPERATOR_PAGE": {
+    "PROFILES_HEADER": "$t(OPERATOR_PROFILE_PLURAL)",
+    "PROFILES_DESC": "Here you can manage profiles of the operator",
+    "CUSTOM_RIGHTS_HEADER": "Custom operator's rights",
+    "CUSTOM_RIGHTS_IS_ADMIN_DESC": "Please note: while the operator has Administrator rights («Is administrator» checkbox is on), you can't assign operator profiles or grant specific rights to this operator since all of the possible rights are already granted to such operators."
+  },
+  "INDEX_PAGE": {
+    "WELCOME_HEADER": "Welcome to yaxys"
+  },
+  "LOGIN_PAGE": {
+    "HEADER": "Login to Yaxys",
+    "BREADCRUMB": "Login"
+  },
+  "ME_PAGE": {
+    "HEADER": "Your account",
+    "BREADCRUMB": "Account",
+    "AUTH_UNTIL": "You are authenticated until {{ moment }}",
+    "LOGOUT": "Logout"
   },
 
   "CREATE": "Create",

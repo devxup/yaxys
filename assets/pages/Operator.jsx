@@ -188,19 +188,19 @@ export default class Operator extends Component {
     this.forceUpdate()
   }
 
-  onProfileDeleteRepeat = () => {
-    if (this.state.deletedBindingId) {
-      this._deleteProfile(this.state.deletedBindingId)
-    }
-  }
-
   onTrashClick = data => {
     this.onDeleteProfile(data)
   }
 
   render() {
     const { operator, match, classes, constants, t } = this.props
-    const entityAndId = t("ENTITY_OPERATOR", { id: match.params.id, item: operator })
+    const entityInstance = t("ENTITY_INSTANCE", {
+      entity: "$t(OPERATOR)",
+      info: {
+        id: match.params.id,
+        item: operator,
+      },
+    })
     const update = (
       <Update
         clue={operatorClue(this.props)}
@@ -214,11 +214,11 @@ export default class Operator extends Component {
       <Wrapper
         bottom={update}
         breadcrumbs={[
-          { title: t("OPERATORS"), url: "/operators" },
-          entityAndId,
+          { title: t("OPERATOR_PLURAL"), url: "/operators" },
+          entityInstance,
         ]}
       >
-        <h1 style={{ marginTop: 0 }}>{entityAndId}</h1>
+        <h1 style={{ marginTop: 0 }}>{entityInstance}</h1>
         <Loader item={operator}>
           <Fragment>
             <Paper className={classes.block}>
@@ -241,15 +241,15 @@ export default class Operator extends Component {
                     value="isAdministrator"
                   />
                 }
-                label="Is Administrator"
+                label={ constants.schemas.operator.properties.isAdministrator.title }
               />
             </Paper>
 
             {!this.state.operator.isAdministrator && (
               <Paper className={classes.profiles}>
-                <h5>{t("Operator_PROFILES")}</h5>
+                <h5>{t("OPERATOR_PAGE.PROFILES_HEADER")}</h5>
                 {!operator?.data?.profiles?.length && (
-                  <p>{t("Operator_PROFILES_DESC")}</p>
+                  <p>{t("OPERATOR_PAGE.PROFILES_DESC")}</p>
                 )}
                 <Button
                   variant="text"
@@ -257,12 +257,18 @@ export default class Operator extends Component {
                   onClick={this.onProfileOpen}
                   style={{ marginBottom: 10 }}
                 >
-                  {t("ADD_OPERATOR_PROFILE")}
+                  { `${t("ADD")} ${t("OPERATOR_PROFILE", { "context": "ACCUSATIVE" })}`}
                 </Button>
                 <Created
                   items={this.props.createdBindings}
-                  content={binding =>
-                    t("ENTITY_OPERATOR", { id: binding.operatorProfile.id, data: binding.operatorProfile })
+                  content={
+                    binding => t("ENTITY_INSTANCE", {
+                      entity: "$t(OPERATOR_PROFILE)",
+                      info: {
+                        id: binding.userProfile.id,
+                        data: binding.userProfile,
+                      },
+                    })
                   }
                   url={binding => `/settings/operator-profiles/${binding.operatorProfile.id}`}
                   laterThan={ this.state.constructedAt }
@@ -281,15 +287,12 @@ export default class Operator extends Component {
               </Paper>
             )}
             <Paper className={classes.rights}>
-              <h5>{t("Operator_CUSTOM_RIGHTS")}</h5>
+              <h5>{t("OPERATOR_PAGE.CUSTOM_RIGHTS_HEADER")}</h5>
               {
                 this.state.operator.isAdministrator
                   ? (
                     <p>
-                      Please note: while the operator has Administrator rights
-                      {" "}(&laquo;Is administrator&raquo; checkbox is on), you can't assign operator
-                      {" "}profiles or grant specific rights to this operator since
-                      {" "}all of the possible rights are already granted to such operators.
+                      {t("OPERATOR_PAGE.CUSTOM_RIGHTS_IS_ADMIN_DESC")}
                     </p>
                   ) : (
                     <RightsEditor
@@ -309,7 +312,7 @@ export default class Operator extends Component {
             />
             <Request
               selector={this.state.deletedSelector}
-              message={t("Operator_DETACHING")}
+              message={`${t("DETACH_PROCESS")} ${t("DEFINITE_ARTICLE")} ${t("OPERATOR_PROFILE", { context: "GENITIVE" })}`}
               attemptAt={ this.state.deleteAttemptAt }
               onSuccess={ this.onProfileDeleted }
             />

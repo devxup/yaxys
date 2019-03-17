@@ -31,7 +31,7 @@
     "login": "Login",
     "name": "Name",
     "passwordHash": "Password",
-    "isAdministrator": "Is administrator",
+    "isAdministrator": "Is Administrator",
     "hasCustomRights": "Has custom rights",
     "profiles": "Operator profiles"
   },

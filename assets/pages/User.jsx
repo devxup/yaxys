@@ -266,7 +266,7 @@ export default class User extends Component {
         />
         <Request
           selector={this.state.deletedSelector}
-          message={`${t("DETACH_PROCESS")} ${t("DEFINITE_ARTICLE")} ${t("USER_PROFILE", { context: "ACCUSATIVE" })}`}
+          message={`${t("DETACH_PROCESS")} ${t("DEFINITE_ARTICLE")} ${t("USER_PROFILE", { context: "GENITIVE" })}`}
           attemptAt={ this.state.deleteAttemptAt }
           onSuccess={ this.onProfileDeleted }
         />

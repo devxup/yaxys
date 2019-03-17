@@ -62,10 +62,18 @@ export default class Operators extends Component {
   }
 
   onDeleteItem = item => {
+    const { t } = this.props
     if (this.state.deletedHash[item.id]) {
       return
     }
-    if (!confirm(`Are you sure to delete the Operator #${item.id}?`)) {
+    const entityInstance = t("ENTITY_INSTANCE", {
+      entity: "$t(OPERATOR)",
+      info: {
+        id: item.id,
+        data: item,
+      },
+    })
+    if (!confirm(`${t("ARE_YOU_SURE_TO")} ${t("DELETE").toLowerCase()} ${entityInstance}?`)) {
       return
     }
 
@@ -91,23 +99,22 @@ export default class Operators extends Component {
   render() {
     const { constants, t } = this.props
     return (
-      <Wrapper breadcrumbs={[t("OPERATORS")]}>
-        <h1 style={{ marginTop: 0 }}>{t("OPERATORS")}</h1>
+      <Wrapper breadcrumbs={[t("OPERATOR_PLURAL")]}>
+        <h1 style={{ marginTop: 0 }}>{t("OPERATOR_PLURAL")}</h1>
         <p>
-          {t("Operators_CONTROL_OPERATOR_RIGHTS")}
-          <Link to={"/settings/operator-profiles"}>{t("Operators_CONTROL_OPERATOR_RIGHTS_LINK")}</Link>
+          {t("OPERATORS_PAGE.PROFILES_DESC")}
+          <Link to={"/settings/operator-profiles"}>{t("OPERATORS_PAGE.PROFILES_DESC_LINK")}</Link>
         </p>
         <Button
           variant="text"
           color="secondary"
           onClick={this.onAdd}
-          title="Create operator"
         >
-          {t("Operators_ADD_OPER")}
+          { `${t("CREATE")} ${t("OPERATOR", { "context": "ACCUSATIVE" })}`}
         </Button>
         <Created
           items={this.props.createdOperators}
-          content={operator => operator.email}
+          content={user => `#${user.id} ${user.name || user.email || user.login}`}
           url={operator => `/operators/${operator.id}`}
           laterThan={ this.state.constructedAt }
         />
@@ -124,7 +131,7 @@ export default class Operators extends Component {
         </Paper>
         <br />
         <ModelDialog
-          title={t("Operators_ADD_OPER")}
+          title={t("OPERATORS_PAGE.CREATE_DLG_TITLE")}
           open={this.state.addOpen}
           onClose={this.onAddClose}
           onReady={this.onAddReady}
@@ -132,11 +139,11 @@ export default class Operators extends Component {
           attributes={["email", "passwordHash"]}
           btnReady={t("CREATE")}
         >
-          {t("Operators_CREATE_DESC")}
+          {t("OPERATORS_PAGE.CREATE_DLG_DESC")}
         </ModelDialog>
         <Request
           selector={this.state.deletedSelector}
-          message={"Deleting the Operator"}
+          message={ `${t("DELETE_PROCESS")} ${t("DEFINITE_ARTICLE")} ${t("OPERATOR", { context: "GENITIVE" })}`}
           attemptAt={ this.state.deleteAttemptAt }
           onSuccess={ this.onItemDeleted }
         />

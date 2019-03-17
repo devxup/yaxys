@@ -51,15 +51,14 @@ class Me extends Component {
 	render() {
 		const { classes, constants, t } = this.props
 		return (
-			<Wrapper breadcrumbs={[t("Me_TITLE")]}>
-				<h1 className={ classes.h1 }>{t("Me_HEADER")}</h1>
-				{ JSON.stringify(commonClasses) }
-				<p>{t("Me_AUTH_UNTIL", { moment: moment.tz(this.props.me.exp * 1000, constants.timezone).format("MMMM DD HH:mm") })}</p>
+			<Wrapper breadcrumbs={[t("ME_PAGE.BREADCRUMB")]}>
+				<h1 className={ classes.h1 }>{t("ME_PAGE.HEADER")}</h1>
+				<p>{t("ME_PAGE.AUTH_UNTIL", { moment: moment.tz(this.props.me.exp * 1000, constants.timezone).format("MMMM DD HH:mm") })}</p>
 				<p>
           {
             this.props.me?.email
-              ? <p>{`${t("EMAIL")}: ${this.props.me?.email}`}</p>
-              : <p>{`${t("LOGIN")}: ${this.props.me?.login}`}</p>
+              ? <p>{`${constants.schemas.operator.properties.email.title}: ${this.props.me?.email}`}</p>
+              : <p>{`${constants.schemas.operator.properties.login.title}: ${this.props.me?.login}`}</p>
           }
         </p>
 				<Button
@@ -67,7 +66,7 @@ class Me extends Component {
 					variant="text"
 					className={classes.logoutButton}
 				>
-					{t("Me_LOGOUT")}
+					{t("ME_PAGE.LOGOUT")}
 				</Button>
 			</Wrapper>
 		)

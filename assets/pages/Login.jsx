@@ -26,8 +26,8 @@ export default class Login extends Component {
     }
 
     return (
-      <Wrapper breadcrumbs={[t("LOGIN")]}>
-        <h1 className={classes.h1}>{t("Login_TITLE")}</h1>
+      <Wrapper breadcrumbs={[t("LOGIN_PAGE.BREADCRUMB")]}>
+        <h1 className={classes.h1}>{t("LOGIN_PAGE.HEADER")}</h1>
         <Grid container>
           <Grid item xs={12} sm={10} md={8} lg={6}>
             <Paper className={classes.block}>
