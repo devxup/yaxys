@@ -11,7 +11,11 @@
   "AuthService": {
     "WRONG_CREDENTIALS": "Неверный email или пароль"
   },
-  "zoneService": {
+  "PolicyService": {
+    "UNAUTHORIZED": "Вы не авторизованы",
+    "NO_RIGHTS": "У вас нет прав на выполнение этой операции"
+  },
+  "ZoneService": {
     "TOO_MUCH_APS": "Дверь не может иметь больше двух точек доступа!"
   }
 }

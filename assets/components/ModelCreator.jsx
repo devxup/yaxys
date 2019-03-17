@@ -88,7 +88,7 @@ export default class ModelCreator extends Component {
         <Request
           selector={this.state.createSelector}
           message={
-            `${t("CREATE_PROCESS")} ${t("DEFINITE_ARTICLE")} ${t(schema.i18Key, { context: "ACCUSATIVE" })}`
+            `${t("CREATE_PROCESS")} ${t("DEFINITE_ARTICLE")} ${t(schema.i18Key, { context: "GENITIVE" })}`
           }
           attemptAt={ this.state.createAttemptAt }
           onSuccess={ this.onCreated }

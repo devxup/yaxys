@@ -1,115 +1,218 @@
 {
-  "LANG_NAME": "Русский",
-  "ADD_AP": "Добавить точку доступа",
-  "ADD_DOOR": "Добавить дверь",
-  "ADD_EXISTING": "Добавить существующую {{item}}",
-  "ADD_OPERATOR_PROFILE": "Добавить профиль оператора",
-  "ADD_USER_PROFILE": "Добавить профиль пользователя",
-  "ADD_ZONE": "Добавить зону",
+  "LANG_NAME": "Русский (RU)",
+  "ENTITY_INSTANCE": "$t({{entity}}, {'context': '{{ case }}'}) {{ info, EXTRACT_INFO }}",
+
   "AP": "Точка доступа",
-  "AP_#": "Точка доступа #{{ap}}",
-  "APS": "Точки доступа",
+  "AP_PLURAL": "Точки доступа",
+  "AP_GENITIVE": "точки доступа",
+  "AP_ACCUSATIVE": "точку доступа",
+  "AR": "Доступ",
+  "CREDENTIAL": "Реквизит",
+  "CREDENTIAL_PLURAL": "Реквизиты",
+  "CREDENTIAL_GENITIVE": "реквизита",
+  "CREDENTIAL_ACCUSATIVE": "реквизит",
+  "DOOR": "Дверь",
+  "DOOR_PLURAL": "Двери",
+  "DOOR_GENITIVE": "двери",
+  "DOOR_ACCUSATIVE": "дверь",
+  "OPERATOR": "Оператор",
+  "OPERATOR_PLURAL": "Операторы",
+  "OPERATOR_GENITIVE": "оператора",
+  "OPERATOR_ACCUSATIVE": "оператора",
+  "OPERATOR_PROFILE": "Профиль оператора",
+  "OPERATOR_PROFILE_PLURAL": "Профили операторов",
+  "OPERATOR_PROFILE_GENITIVE": "профиля оператора",
+  "OPERATOR_PROFILE_ACCUSATIVE": "профиль оператора",
+  "USER": "Пользователь",
+  "USER_PLURAL": "Пользователи",
+  "USER_GENITIVE": "пользователя",
+  "USER_ACCUSATIVE": "пользователя",
+  "USER_PROFILE": "Профиль пользователя",
+  "USER_PROFILE_PLURAL": "Профили пользователей",
+  "USER_PROFILE_GENITIVE": "профиля пользователя",
+  "USER_PROFILE_ACCUSATIVE": "профиль пользователя",
+  "ZONE": "Зона",
+  "ZONE_PLURAL": "Зоны",
+  "ZONE_GENITIVE": "Зоны",
+  "ZONE_ACCUSATIVE": "Зону",
+
+  "USERS_PAGE": {
+    "PROFILES_DESC": "Права доступа можно задавать через ",
+    "PROFILES_DESC_LINK": "пользовательские профили",
+    "CREATE_DLG_TITLE": "Создать нового пользователя",
+    "CREATE_DLG_DESC": "Задайте имя для нового пользователя"
+  },
+  "USER_PAGE": {
+    "PROFILES_HEADER": "$t(USER_PROFILE_PLURAL)",
+    "PROFILES_DESC": "Здесь можно управлять профилями пользователя",
+    "CUSTOM_RIGHTS_HEADER": "Персональные права доступа"
+  },
+  "USER_PROFILES_PAGE": {
+    "CREATE_DLG_TITLE": "Создать пользовательский профиль",
+    "CREATE_DLG_DESC": "Задайте название для нового профиля."
+  },
+  "USER_PROFILE_PAGE": {
+    "RIGHTS_HEADER": "Права доступа пользователей с этим профилем"
+  },
+  "APS_PAGE": {
+    "CREATE_DLG_TITLE": "Создать новую точку доступа",
+    "CREATE_DLG_DESC": "Задайте название и описание для новой точки доступа"
+  },
+  "AP_PAGE": {
+    "DOOR_AND_ZONE_HEADER": "Дверь и зона",
+    "USERS_AND_PROFILES_HEADER": "Пользователи и профили, имеющие права на доступ к точке:"
+  },
+  "DOORS_PAGE": {
+    "CREATE_DLG_TITLE": "Создать новую дверь",
+    "CREATE_DLG_DESC": "Задайте название и описание для новой двери"
+  },
+  "DOOR_PAGE": {
+    "USERS_AND_PROFILES_HEADER": "Пользователи и профили, имеющие права на доступ к двери:",
+    "TOO_MUCH_APS_MESSAGE": "К двери нельзя присоединить больше 2 точек доступа!"
+  },
+  "ZONES_PAGE": {
+    "CREATE_DLG_TITLE": "Создать новую зону",
+    "CREATE_DLG_DESC": "Задайте название и описание для новой зоны"
+  },
+  "ZONE_PAGE": {
+    "USERS_AND_PROFILES_HEADER": "Пользователи и профили, имеющие права на доступ к зоне:"
+  },
+  "OPERATORS_PAGE": {
+    "PROFILES_DESC": "Also, you can control operators' rights by ",
+    "PROFILES_DESC_LINK": "managing their profiles",
+    "CREATE_DLG_TITLE": "Create new Operator",
+    "CREATE_DLG_DESC": "Please provide email address and password for the new operator."
+  },
+  "OPERATOR_PAGE": {
+    "PROFILES_HEADER": "$t(OPERATOR_PROFILE_PLURAL)",
+    "PROFILES_DESC": "Здесь можно управлять профилями (группами) операторов",
+    "CUSTOM_RIGHTS_HEADER": "Персональные права оператора",
+    "CUSTOM_RIGHTS_IS_ADMIN_DESC": "Обратите внимание: пока оператору установлен признак Администратора, вы не можете назначать ему профили или задавать отдельные права, т.к. такой оператор уже обладает всеми возможными правами."
+  },
+  "OPERATOR_PROFILES_PAGE": {
+    "CREATE_DLG_TITLE": "Создать новый операторский профиль",
+    "CREATE_DLG_DESC": "Задайте название для нового профиля"
+  },
+  "OPERATOR_PROFILE_PAGE": {
+    "RIGHTS_HEADER": "Права профиля:"
+  },
+  "INDEX_PAGE": {
+    "WELCOME_HEADER": "Добро пожаловать в Yaxys!"
+  },
+  "LOGIN_PAGE": {
+    "HEADER": "Войти в Yaxys",
+    "BREADCRUMB": "Вход"
+  },
+  "ME_PAGE": {
+    "HEADER": "Ваш аккаунт",
+    "BREADCRUMB": "Аккаунт",
+    "AUTH_UNTIL": "Вы авторизованы до {{ moment }}",
+    "LOGOUT": "Выйти"
+  },
+  "SETTINGS_PAGE": {
+    "BREADCRUMB": "Настройки",
+    "HEADER": "Настройки",
+    "DESC": "Глобальные настройки вашего экземпляра системы Yaxys"
+  },
+
+  "ACCESS_RIGHTS_COMPONENT": {
+    "GRANTED_RIGHT": "Выдан доступ к: {{TARGET}}"
+  },
+  "ERROR_DIALOG": {
+    "TITLE": "ПОдробности ошибки",
+    "DISPLAY_RAW_DATA": "Показать сырые данные",
+    "UNKNOWN_ENTITY": "неизвестная сущность",
+    "UNIDENTIFIED_ENTITY": "неидентифицированная сущность",
+    "FIND_BY_ID_PROCESS": "Загрузка",
+    "FIND_ONE_PROCESS": "Поиск отдельной модели",
+    "FIND_PROCESS": "Загрузка списка моделей",
+    "UNKNOWN_ACTION_PROCESS": "Неизвестное действие {{query}} с моделью {{model}}",
+
+    "REQUEST_TYPE": "Тип запроса",
+
+    "REQUESTED_AT": "Запрошено в:",
+    "RESPONSE_RECEIVED_AT": "Получен ответ в:",
+
+    "PROBLEM": "Проблема",
+    "RECOMMENDATION": "Рекомендация",
+    "PROBLEM_NETWORK": "Нет доступа к сети",
+    "RECOMMENDATION_NETWORK": "Обеспечьте доступ к сети и повторите попытку",
+
+    "RESPONSE_CODE": "Код ответа",
+    "RESPONSE_MESSAGE": "Ответ",
+
+    "PROBLEM_AUTHENTICATION": "Вы не залогинены. Возможно, срок вашей сессии истек",
+    "RECOMMENDATION_AUTHENTICATION": "Попробуйте перелогиниться (в этой или другой вкладке) и повторить попытку",
+    "PROBLEM_AUTHORIZATION": "У вас нет разрешения на данную операцию",
+    "RECOMMENDATION_AUTHORIZATION": "Попросите администратора выдать вам дополнительные права",
+    "PROBLEM_YAXYS": "Что-то не так с Yaxys или его конфигурацией",
+    "RECOMMENDATION_YAXYS": "Обратитесь к вашему системному администратору"
+  },
+  "LOGIN_DIALOG": {
+    "TITLE": "Вход"
+  },
+  "LOGIN_FORM": {
+    "SHOULD_NOT_BE_EMPTY": "Не должно быть пустым",
+    "LOGIN_OR_EMAIL": "Логин или email",
+    "PASSWORD": "Пароль",
+    "CHECKING": "Проверка пароля...",
+    "BUTTON": "Войти",
+    "WRONG_CREDENTIALS": "Неверный логин или пароль",
+    "OTHER_ERROR": "Произошла неизвестная ошибка"
+  },
+  "AJV": {
+    "required": "Обязательное поле",
+    "format": "Неверный формат"
+  },
+  "MODEL_FORM": {
+    "NOT_SELECTED": "Не выбрано"
+  },
+  "RIGHTS_EDITOR": {
+    "GRANT_DENIED": "запрещено",
+    "GRANT_ALLOWED": "разрешено",
+    "GRANT_NOT_MODIFIED": "не изменено",
+
+    "RIGHT_READ": "Чтение",
+    "RIGHT_CREATE": "Создание",
+    "RIGHT_UPDATE": "Изменение",
+    "RIGHT_DELETE": "Удаление"
+  },
+  "SWITCHER" : {
+    "UNKNOWN_VALUE": "Неизвестное значение"
+  },
+  "UPDATE_COMPONENT": {
+    "SAVE_CHANGES": "Сохранить изменения",
+    "CHANGES_SAVED": "Изменения успешно сохранены",
+    "PENDING": "Сохранение изменений..."
+  },
+
+  "RIGHT_FOR_OPERATOR_PROFILE_BINDING": "Назначать профили операторам",
+  "RIGHT_FOR_USER_PROFILE_BINDING": "Назначать профили пользователям",
+
+  "CREATE_NEW": "Создать",
+  "ADD_EXISTING": "Добавить",
+  "PICK_EXISTING": "Выбрать",
+
+  "CREATE": "Создать",
+  "CREATE_PROCESS": "Создание",
+  "ADD": "Добавить",
+  "ADD_PROCESS": "Добавление",
+  "DELETE": "Удалить",
+  "DELETE_PROCESS": "Удаление",
+  "DETACH": "Открепить",
+  "DETACH_PROCESS": "Открепление",
+  "UPDATE": "Сохранить",
+  "UPDATE_PROCESS": "Сохранение",
+  "LOAD": "Загрузить",
+  "LOAD_PROCESS": "Загрузка",
+
+  "RETRY": "Еще раз",
+  "PICK": "Выбрать",
   "CANCEL": "Отмена",
   "CLOSE": "Закрыть",
-  "CREATE": "Создать",
-  "CREATE_NEW": "Создать новую {{item}}",
-  "CREDENTIALS": "Реквизиты",
-  "DESCRIPTION": "Описание",
-  "DOOR_#": "Дверь #{{door}}",
-  "DOORS": "Двери",
-  "EMAIL": "E-mail",
-  "ERROR": "Произошла ошибка",
-  "LOGIN": "Логин",
-  "LOG_IN": "Войти",
-  "OK": "OK",
-  "OPERATOR_#": "Оператор #{{operator}}",
-  "OPERATOR_PROFILES": "Профили операторов",
-  "OPERATOR_PROFILE_#": "Профиль оператора #{{number}} {{name}}",
-  "OPERATORS": "Операторы",
-  "PASSWORD": "Пароль",
-  "PERM_DENIED": "Доступ запрещен",
-  "PROPERTIES": "Свойства",
-  "RETRY": "Повторить",
-  "SETTINGS": "Настройки",
-  "TITLE": "Название",
-  "USER_#": "Пользователь #{{user}}",
-  "USER_PROFILE_#": "Профиль пользователя #{{number}} {{name}}",
-  "USER_PROFILES": "Профили пользователей",
-  "USERS": "Пользователи",
-  "ZONE_#": "Зона # {{zone}}",
-  "ZONES": "Зоны",
-  "Connection_CONFIRM": "Вы действительно хотите отсоединить {{title}}?",
-  "Connection_UPDATING": "Обновляем {{title}}",
-  "Created_ERROR": "Произошла ошибка. Нажмите для получения подробностей или повторите действие",
-  "Created_CREATING": "Создаем...",
-  "ErrorDialog_DETAILS": "Детали ошибки",
-  "LanguageSelector_LANG_SEL_TITLE": "Язык:",
-  "Loader_LOADING": "Загрузка ...",
-  "LoginForm_CHECKING": "Проверяем e-mail и пароль...",
-  "LoginForm_NOT_EMPTY": "Необходимо ввести значение",
-  "LoginForm_WRONG_CREDS": "Неправильное имя пользователя или пароль",
-  "ModelCreator_CREATING": "Создаем {{model}}",
-  "ModelForm_NOT_SELECTED": "Не выбрано",
-  "ModelForm_AJV_required": "Обязательное поле",
-  "ModelForm_AJV_format": "Неверный формат",
-  "ModelPicker_SELECT": "Выбрать {{model}}",
-  "RightsEditor_ALLOWED": "{{rightTitle}}: разрешено",
-  "RightsEditor_DENIED": "{{rightTitle}}: запрещено",
-  "RightsEditor_DONT_CHANGE": "{{rightTitle}}: по умолчанию",
-  "RightsEditor_UNTOUCHED": "{{rightTitle}}: без изменений",
-  "Switcher_UNKNOWN_VALUE": "Неизвестное значение",
-  "Update_NOT_MODIFIED": "Не изменено",
-  "Update_SAVE_CHANGES": "Сохранить изменения",
-  "Update_SAVED_CHANGES": "Изменения сохранены",
-  "Update_SAVING_CHANGES": "Сохраняем изменения...",
-  "AccessRights_GRANTED_AP": "Открыт доступ к точке доступа #{{ap}}",
-  "AccessRights_GRANTED_DOOR": "Открыт доступ к двери #{{door}}",
-  "AccessRights_GRANTED_ZONE": "Открыт доступ к зоне #{{zone}}",
-  "AccessRights_CONFIRM_DELETE": "Вы действительно хотите удалить право доступа #{{ar}} ?",
-  "AccessRights_DELETING": "Удаляем право доступа",
-  "AccessPoints_CREATE_AP": "Создать точку доступа",
-  "AccessPoints_ADD_AP": "Добавить точку доступа",
-  "AccessPoints_CREATE_DESC": "Пожалуйста, введите название и описание для новой точки доступа.",
-  "AccessPoint_DOOR_AND_ZONE": "Дверь и зона",
-  "Credential_CREDENTIAL_#": "Реквизит #{{user}}",
-  "Door_TOO_MUCH_APS": "Дверь может иметь не более 2х точек доступа!",
-  "Doors_ADD_DOOR": "Добавить дверь",
-  "Doors_CREATE_NEW": "Создать новую дверь",
-  "Doors_CREATE_DESC": "Пожалуйста, введите название и описание для новой двери.",
-  "Index_TITLE": "Yaxys: панель управления",
-  "Index_WELCOME": "Добро пожаловать в yaxys!",
-  "Index_GREETING": "Мы вас очень любим",
-  "Login_TITLE": "Вход в yaxys",
-  "Me_TITLE": "Аккаунт",
-  "Me_HEADER": "Ваш аккаунт",
-  "Me_AUTH_UNTIL": "Вы авторизованы до {{moment}}",
-  "Me_LOGOUT": "Выйти",
-  "Operator_DETACH": "Вы действительно хотите отсоединить профиль #{{profile}} от оператора?",
-  "Operator_PROFILES": "Профили операторов",
-  "Operator_PROFILES_DESC": "Здесь вы можете управлять профилями операторов",
-  "Operator_CUSTOM_RIGHTS": "Нестандартные права оператора:",
-  "Operator_DETACHING": "Отсоединяем профиль оператора",
-  "OperatorProfile_RIGHTS": "Права профиля:",
-  "OperatorProfiles_CREATE_NEW": "Создать новый профиль оператора",
-  "OperatorProfiles_CREATE_DESC": "Пожалуйста, введите имя для нового профиля оператора",
-  "Operators_CONTROL_OPERATOR_RIGHTS": "Также вы можете управлять правами операторов через ",
-  "Operators_CONTROL_OPERATOR_RIGHTS_LINK": "управление их профилями",
-  "Operators_ADD_OPER": "Добавить оператора",
-  "Operators_CREATE": "Создать нового оператора",
-  "Operators_CREATE_DESC": "Пожалуйста, введите e-mail и пароль для нового оператора",
-  "User_DETACH": "Вы действительно хотите отсоединить профиль #{{profile}} от пользователя?",
-  "User_MANAGE_PROFILES": "Здесь вы можете управлять профилями пользователей",
-  "User_CUSTOM_RIGHTS": "Нестандартные права пользователя:",
-  "User_DETACHING": "Отсоединяем профиль пользователя",
-  "UserProfile_RIGHTS": "Права профиля:",
-  "UserProfiles_CREATE_NEW": "Создать новый профиль пользователя",
-  "UserProfiles_CREATE_DESC": "Пожалуйста, введите название для нового профиля пользователя.",
-  "Users_CONTROL_OPERATOR_RIGHTS": "Также вы можете управлять правами пользователей через ",
-  "Users_CONTROL_OPERATOR_RIGHTS_LINK": "управление их профилями",
-  "Users_ADD_USER": "Добавить пользователя",
-  "Users_CREATE": "Создать нового пользователя",
-  "Users_CREATE_DESC": "Пожалуйста, введите имя нового пользователя",
-  "Zones_ADD_ZONE": "Добавить зону",
-  "Zones_CREATE": "Создать новую зону",
-  "Zones_CREATE_DESC": "Пожалуйста, введите описание для новой зоны."
+  "DEFINITE_ARTICLE": "",
+  "ARE_YOU_SURE_TO": "Уверены, что хотите",
+
+  "ERROR": "Ошибка",
+  "PERMiSSION_DENIED": "Операция не разрешена"
 }

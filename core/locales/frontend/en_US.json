@@ -59,8 +59,7 @@
     "CREATE_DLG_DESC": "Please provide name and description for the new Zone."
   },
   "ZONE_PAGE": {
-    "USERS_AND_PROFILES_HEADER": "Users and profiles having access to this zone:",
-    "TOO_MUCH_APS_MESSAGE": "The door can't have more than 2 access points!"
+    "USERS_AND_PROFILES_HEADER": "Users and profiles having access to this zone:"
   },
   "OPERATORS_PAGE": {
     "PROFILES_DESC": "Also, you can control operators' rights by ",
@@ -130,7 +129,7 @@
     "RECOMMENDATION_AUTHENTICATION": "Try to re-login (on this or another browser tab) and repeat the attempt",
     "PROBLEM_AUTHORIZATION": "You are not authorized to perform this action",
     "RECOMMENDATION_AUTHORIZATION": "Ask the supervisor to grant you additional rights",
-    "PROBLEM_YAXYS": "Something is wrong the the Yaxys or it's configuration",
+    "PROBLEM_YAXYS": "Something is wrong with the Yaxys or it's configuration",
     "RECOMMENDATION_YAXYS": "Report the situation to your system administrator"
   },
   "LOGIN_DIALOG": {
