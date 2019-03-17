@@ -11,14 +11,14 @@ describe("ModelService", () => {
       },
     }
     describe("encryptPasswordProperties()", () => {
-      let authServiceBuffer
+      let AuthServiceBuffer
       beforeAll(() => {
-        authServiceBuffer = global.AuthService
+        AuthServiceBuffer = global.AuthService
         global.AuthService = {
           encryptPassword: password => `hash_of_${password}`,
         }
       })
-      afterAll(() => (global.AuthService = authServiceBuffer))
+      afterAll(() => (global.AuthService = AuthServiceBuffer))
 
       const testCases = [
         {
@@ -56,14 +56,14 @@ describe("ModelService", () => {
       )
     })
     describe("removePasswordProperties()", () => {
-      let authServiceBuffer
+      let AuthServiceBuffer
       beforeAll(() => {
-        authServiceBuffer = global.AuthService
+        AuthServiceBuffer = global.AuthService
         global.AuthService = {
           encryptPassword: password => `hash_of_${password}`,
         }
       })
-      afterAll(() => (global.AuthService = authServiceBuffer))
+      afterAll(() => (global.AuthService = AuthServiceBuffer))
 
       const testCases = [
         {

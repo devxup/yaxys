@@ -53,7 +53,7 @@ module.exports = {
       case "delete":
         return `delete ${identity}/:id`
     }
-    throw Object.assign(new Error("restService.UNKNOWN_METHOD"), { i18nData: { method } })
+    throw Object.assign(new Error("RestService.UNKNOWN_METHOD"), { i18nData: { method } })
   },
 
   /**
@@ -103,7 +103,7 @@ module.exports = {
      */
     return async ctx => {
       if (!ctx.params.id) {
-        ctx.throw(400, "restService.ID_REQUIRED")
+        ctx.throw(400, "RestService.ID_REQUIRED")
       }
       const populateArgs = ctx.query.populate && ctx.query.populate.split(",")
       const instance = await yaxys.db.findOne(
@@ -113,7 +113,7 @@ module.exports = {
         { populate: populateArgs }
       )
       if (!instance) {
-        ctx.throw(404, "restService.NOT_FOUND", { identity, number: ctx.params.id })
+        ctx.throw(404, "RestService.NOT_FOUND", { identity, number: ctx.params.id })
       }
       ctx.body = instance
     }
@@ -181,7 +181,7 @@ module.exports = {
      */
     return async ctx => {
       if (!ctx.params.id) {
-        ctx.throw(400, "restService.ID_REQUIRED")
+        ctx.throw(400, "RestService.ID_REQUIRED")
       }
 
       ctx.body = await yaxys.db.knex.transaction(trx =>
@@ -204,7 +204,7 @@ module.exports = {
      */
     return async ctx => {
       if (!ctx.params.id) {
-        ctx.throw(400, "restService.ID_REQUIRED")
+        ctx.throw(400, "RestService.ID_REQUIRED")
       }
 
       ctx.body = await yaxys.db.knex.transaction(trx => yaxys.db.delete(trx, identity, ctx.params.id))

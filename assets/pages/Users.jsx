@@ -143,7 +143,7 @@ export default class Users extends Component {
         </ModelDialog>
         <Request
           selector={this.state.deletedSelector}
-          message={ `${t("DELETE_PROCESS")} ${t("DEFINITE_ARTICLE")} ${t("USER", { context: "ACCUSATIVE" })}`}
+          message={ `${t("DELETE_PROCESS")} ${t("DEFINITE_ARTICLE")} ${t("USER", { context: "GENITIVE" })}`}
           attemptAt={ this.state.deleteAttemptAt }
           onSuccess={ this.onItemDeleted }
         />

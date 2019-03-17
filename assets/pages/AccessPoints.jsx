@@ -145,7 +145,7 @@ export default class AccessPoints extends Component {
         </ModelDialog>
         <Request
           selector={this.state.deletedSelector}
-          message={ `${t("DELETE_PROCESS")} ${t("DEFINITE_ARTICLE")} ${t("AP", { context: "ACCUSATIVE" })}`}
+          message={ `${t("DELETE_PROCESS")} ${t("DEFINITE_ARTICLE")} ${t("AP", { context: "GENITIVE" })}`}
           attemptAt={ this.state.deleteAttemptAt }
           onSuccess={ this.onItemDeleted }
         />

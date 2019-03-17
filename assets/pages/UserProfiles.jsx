@@ -136,7 +136,7 @@ export default class UserProfiles extends Component {
         </ModelDialog>
         <Request
           selector={this.state.deletedSelector}
-          message={ `${t("DELETE_PROCESS")} ${t("DEFINITE_ARTICLE")} ${t("USER_PROFILE", { context: "ACCUSATIVE" })}`}
+          message={ `${t("DELETE_PROCESS")} ${t("DEFINITE_ARTICLE")} ${t("USER_PROFILE", { context: "GENITIVE" })}`}
           attemptAt={ this.state.deleteAttemptAt }
           onSuccess={ this.onItemDeleted }
         />

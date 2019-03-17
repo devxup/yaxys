@@ -80,22 +80,22 @@ export default class Door extends Component {
     })
   }
 
-  handleSingleChange = name => event => {
-    this.state.door[name] = event.target.checked
-    this.state.modifiedAt = new Date().getTime()
-    this.forceUpdate()
-  }
-
   canAddAccessPoint = accessPoints => {
     if (accessPoints?.data?.length >= 2) {
-      alert(this.props.t("Door_TOO_MUCH_APS"))
+      alert(this.props.t("DOOR_PAGE.TOO_MUCH_APS_MESSAGE"))
       return false
     }
   }
 
   render() {
     const { constants, door, match, classes, t } = this.props
-    const entityAndId = t("ENTITY_DOOR", { id: match.params.id, item: door })
+    const entityInstance = t("ENTITY_INSTANCE", {
+      entity: "$t(DOOR)",
+      info: {
+        id: match.params.id,
+        item: door,
+      },
+    })
     const update = (
       <Update
         clue={doorClue(this.props)}
@@ -108,14 +108,13 @@ export default class Door extends Component {
       <Wrapper
         bottom={update}
         breadcrumbs={[
-          { title: t("DOORS"), url: "/doors" },
-          entityAndId,
+          { title: t("DOOR_PLURAL"), url: "/doors" },
+          entityInstance,
         ]}
       >
-        <h1 style={{ marginTop: 0 }}>{entityAndId}</h1>
+        <h1 style={{ marginTop: 0 }}>{entityInstance}</h1>
         <Loader item={door}>
           <Paper className={classes.block}>
-            <h5>{t("PROPERTIES")}</h5>
             <ModelForm
               autoFocus={true}
               values={this.state.door}
@@ -128,7 +127,7 @@ export default class Door extends Component {
           </Paper>
         </Loader>
         <Paper className={classes.block}>
-          <h5>{t("AP")}</h5>
+          <h5>{t("AP_PLURAL")}</h5>
           <Connection
             relatedIdentity="accesspoint"
             relatedProperty="door"
@@ -141,7 +140,7 @@ export default class Door extends Component {
           />
         </Paper>
         <Paper className={classes.block}>
-          <h5>Users and profiles having access to this door:</h5>
+          <h5>{ t("DOOR_PAGE.USERS_AND_PROFILES_HEADER") }</h5>
           <AccessRights
             mode={"hardware"}
             hardwareProperty={"door"}

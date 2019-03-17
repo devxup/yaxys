@@ -61,10 +61,18 @@ export default class Doors extends Component {
   }
 
   onDeleteItem = item => {
+    const { t } = this.props
     if (this.state.deletedHash[item.id]) {
       return
     }
-    if (!confirm(`Are you sure to delete the Door #${item.id}?`)) {
+    const entityInstance = t("ENTITY_INSTANCE", {
+      entity: "$t(DOOR)",
+      info: {
+        id: item.id,
+        data: item,
+      },
+    })
+    if (!confirm(`${t("ARE_YOU_SURE_TO")} ${t("DELETE").toLowerCase()} ${entityInstance}?`)) {
       return
     }
 
@@ -90,19 +98,26 @@ export default class Doors extends Component {
   render() {
     const { constants, t } = this.props
     return (
-      <Wrapper breadcrumbs={[t("DOORS")]}>
-        <h1 style={{ marginTop: 0 }}>{t("DOORS")}</h1>
+      <Wrapper breadcrumbs={[t("DOOR_PLURAL")]}>
+        <h1 style={{ marginTop: 0 }}>{t("DOOR_PLURAL")}</h1>
         <Button
           variant="text"
           color="secondary"
           onClick={this.onAdd}
-          title="Create door"
         >
-          {t("Doors_ADD_DOOR")}
+          { `${t("CREATE")} ${t("DOOR", { "context": "ACCUSATIVE" })}`}
         </Button>
         <Created
           items={this.props.createdDoors}
-          content={door => t("ENTITY_DOOR", { id:door.id, data: door })}
+          content={
+            door => t("ENTITY_INSTANCE", {
+              entity: "$t(DOOR)",
+              info: {
+                id: door.id,
+                data: door,
+              },
+            })
+          }
           url={door => `/doors/${door.id}`}
           laterThan={ this.state.constructedAt }
         />
@@ -119,7 +134,7 @@ export default class Doors extends Component {
         </Paper>
         <br />
         <ModelDialog
-          title={t("Doors_CREATE_NEW")}
+          title={t("DOORS_PAGE.CREATE_DLG_TITLE")}
           open={this.state.addOpen}
           onClose={this.onAddClose}
           onReady={this.onAddReady}
@@ -127,11 +142,11 @@ export default class Doors extends Component {
           attributes={["name", "description"]}
           btnReady={t("CREATE")}
         >
-          {t("Doors_CREATE_DESC")}
+          {t("DOORS_PAGE.CREATE_DLG_DESC")}
         </ModelDialog>
         <Request
           selector={this.state.deletedSelector}
-          message={"Deleting the Door"}
+          message={ `${t("DELETE_PROCESS")} ${t("DEFINITE_ARTICLE")} ${t("DOOR", { context: "GENITIVE" })}`}
           attemptAt={ this.state.deleteAttemptAt }
           onSuccess={ this.onItemDeleted }
         />

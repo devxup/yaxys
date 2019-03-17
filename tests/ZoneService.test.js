@@ -9,9 +9,13 @@ describe("ZoneService", () => {
         count: 1,
       },
       {
-        title: "2 or more",
+        title: "exactly 2",
+        count: 2,
+      },
+      {
+        title: "more than two",
         count: 3,
-        error: "zoneService.TOO_MUCH_APS",
+        error: "ZoneService.TOO_MUCH_APS",
       },
     ]
 

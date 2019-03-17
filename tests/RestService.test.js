@@ -66,7 +66,7 @@ describe("RestService", () => {
           query: {},
         }),
         error: true,
-        result: [400, "restService.ID_REQUIRED"],
+        result: [400, "RestService.ID_REQUIRED"],
       },
       {
         title: "Zero id",
@@ -75,7 +75,7 @@ describe("RestService", () => {
           query: {},
         }),
         error: true,
-        result: [400, "restService.ID_REQUIRED"],
+        result: [400, "RestService.ID_REQUIRED"],
       },
       {
         title: "404",
@@ -87,7 +87,7 @@ describe("RestService", () => {
           findOne: () => null,
         },
         error: true,
-        result: [404, "restService.NOT_FOUND", { "identity": "m1", "number": 1 }],
+        result: [404, "RestService.NOT_FOUND", { "identity": "m1", "number": 1 }],
       },
       {
         title: "Query with 1:m populate",
@@ -224,7 +224,7 @@ describe("RestService", () => {
           params: {},
         }),
         error: true,
-        result: [400, "restService.ID_REQUIRED"],
+        result: [400, "RestService.ID_REQUIRED"],
       },
     ],
     delete: [
@@ -244,7 +244,7 @@ describe("RestService", () => {
           params: {},
         }),
         error: true,
-        result: [400, "restService.ID_REQUIRED"],
+        result: [400, "RestService.ID_REQUIRED"],
       },
     ],
   }
@@ -290,9 +290,9 @@ describe("RestService", () => {
           removePasswordsFromResponse: (identity) => `removePasswordsFromResponse(${identity})`,
           sanitizeRequest: (identity) => `sanitizeRequest(${identity})`,
         }
-        const restServicePatchedMethods = ["find", "findOne", "create", "update"]
-        RestServiceBuffer = _.pick(RestService, restServicePatchedMethods)
-        restServicePatchedMethods.forEach(method => {
+        const RestServicePatchedMethods = ["find", "findOne", "create", "update"]
+        RestServiceBuffer = _.pick(RestService, RestServicePatchedMethods)
+        RestServicePatchedMethods.forEach(method => {
           RestService[method] = identity => `${method}(${identity})`
         })
       })

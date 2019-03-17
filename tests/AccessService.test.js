@@ -17,21 +17,21 @@ describe("AccessService", () => {
           user: 1,
           userProfile: 1,
         },
-        error: "accessService.SHOULD_NOT_HAVE_BOTH_USER_AND_PROFILE",
+        error: "AccessService.SHOULD_NOT_HAVE_BOTH_USER_AND_PROFILE",
       },
       {
         title: "No user and userProfile",
         accessRight: {
           zoneTo: 1,
         },
-        error: "accessService.SHOULD_HAVE_USER_OR_PROFILE",
+        error: "AccessService.SHOULD_HAVE_USER_OR_PROFILE",
       },
       {
         title: "No accessPoint, zoneTo and door",
         accessRight: {
           user: 1,
         },
-        error: "accessService.SHOULD_HAVE_AP_OR_ZONE_OR_DOOR",
+        error: "AccessService.SHOULD_HAVE_AP_OR_ZONE_OR_DOOR",
       },
       {
         title: "door and zoneTo",
@@ -40,7 +40,7 @@ describe("AccessService", () => {
           door: 1,
           zoneTo: 1,
         },
-        error: "accessService.SHOULD_NOT_HAVE_BOTH",
+        error: "AccessService.SHOULD_NOT_HAVE_BOTH",
       },
       {
         title: "accessPoint and zoneTo",
@@ -49,7 +49,7 @@ describe("AccessService", () => {
           accessPoint: 1,
           zoneTo: 1,
         },
-        error: "accessService.SHOULD_NOT_HAVE_BOTH",
+        error: "AccessService.SHOULD_NOT_HAVE_BOTH",
       },
       {
         title: "accessPoint and door",
@@ -58,7 +58,7 @@ describe("AccessService", () => {
           accessPoint: 1,
           door: 1,
         },
-        error: "accessService.SHOULD_NOT_HAVE_BOTH",
+        error: "AccessService.SHOULD_NOT_HAVE_BOTH",
       },
     ]
 

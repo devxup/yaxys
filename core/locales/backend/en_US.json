@@ -18,27 +18,27 @@
     "INVALID_CONNECTION": "Invalid connection type",
     "SCHEMA_NOT_FOUND": "schema {{identity}} not found",
     "VALIDATION_FAIL": "Property {{property}} validation fail: {{message}}"
-  },1
-  "accessService": {
+  },
+  "AccessService": {
     "SHOULD_HAVE_USER_OR_PROFILE": "AccessRight should have user or userProfile",
     "SHOULD_NOT_HAVE_BOTH_USER_AND_PROFILE": "AccessRight should not have user and userProfile simultaneously",
     "SHOULD_HAVE_AP_OR_ZONE_OR_DOOR": "AccessRight should have accessPoint, zoneTo or door property",
     "SHOULD_NOT_HAVE_BOTH": "AccessRight should not have {{alreadyHas}} and {{key}} simultaneously"
   },
-  "authService": {
+  "AuthService": {
     "WRONG_CREDENTIALS": "No such operator or wrong password provided"
   },
-  "policyService": {
+  "PolicyService": {
     "UNAUTHORIZED": "unauthorized",
     "TEST": "Test exception",
     "NO_RIGHTS": "You don't have rights to perform this action"
   },
-  "restService": {
+  "RestService": {
     "ID_REQUIRED": "id is required",
     "NOT_FOUND": "{{identity}} #{{number}} not found",
     "UNKNOWN_METHOD": "Unknown API method {{method}} detected"
   },
-  "zoneService": {
+  "ZoneService": {
     "TOO_MUCH_APS": "Integrity violation: amount of accessPoints should not be more than 2"
   }
 }

@@ -70,7 +70,7 @@ describe("AuthService", () => {
           email: "example@gmail.com",
           passwordHash: AuthService.encryptPassword("heDK4src4w"),
         },
-        error: "authService.WRONG_CREDENTIALS",
+        error: "AuthService.WRONG_CREDENTIALS",
       },
     ]
 

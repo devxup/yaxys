@@ -8,6 +8,7 @@
   "CREDENTIAL": "Credential",
   "CREDENTIAL_PLURAL": "Credentials",
   "DOOR": "Door",
+  "DOOR_PLURAL": "Doors",
   "OPERATOR": "Operator",
   "OPERATOR_PROFILE": "Operator profile",
   "USER": "User",
@@ -42,6 +43,14 @@
     "DOOR_AND_ZONE_HEADER": "Door and Zone",
     "USERS_AND_PROFILES_HEADER": "Users and profiles having access to this Point:"
   },
+  "DOORS_PAGE": {
+    "CREATE_DLG_TITLE": "Create new Door",
+    "CREATE_DLG_DESC": "Please provide name and description for the new door."
+  },
+  "DOOR_PAGE": {
+    "USERS_AND_PROFILES_HEADER": "Users and profiles having access to this door:",
+    "TOO_MUCH_APS_MESSAGE": "The door can't have more than 2 access points!"
+  },
 
   "CREATE": "Create",
   "ADD": "Add",
@@ -53,5 +62,5 @@
 
   "CANCEL": "Cancel",
   "DEFINITE_ARTICLE": "the",
-  "ARE_YOU_SURE_TO": "Are you sure to"
+  "ARE_YOU_SURE_TO": "Are you sure want to"
 }
