@@ -68,26 +68,28 @@ export default class ModelCreator extends Component {
   }
 
   render() {
-    const { title, constants, identity, initial, attributes, onClose } = this.props
+    const { title, constants, identity, initial, attributes, onClose, t } = this.props
     const { open } = this.state
     const schema = constants.schemas[identity?.toLowerCase?.()]
     return (
       <Fragment>
         <ModelDialog
-          title={ title || this.props.t("CREATE_NEW", { item: schema.title || identity }) }
+          title={ title || `${t("CREATE_NEW")} ${t(schema.i18Key, { context: "ACCUSATIVE" })}`}
           open={open}
           onClose={onClose}
           onReady={this.onBlankReady}
           schema={schema}
           values={initial}
           attributes={attributes || without(schema.defaultProperties, "id")}
-          btnReady={this.props.t("CREATE")}
+          btnReady={t("CREATE")}
         >
           { this.props.children }
         </ModelDialog>
         <Request
           selector={this.state.createSelector}
-          message={this.props.t("ModelCreator_CREATING", { model: schema.title || identity })}
+          message={
+            `${t("CREATE_PROCESS")} ${t("DEFINITE_ARTICLE")} ${t(schema.i18Key, { context: "ACCUSATIVE" })}`
+          }
           attemptAt={ this.state.createAttemptAt }
           onSuccess={ this.onCreated }
         />

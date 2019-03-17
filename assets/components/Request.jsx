@@ -114,7 +114,7 @@ export default class Request extends Component {
   }
 
   render() {
-    const { classes, message } = this.props
+    const { classes, message, t } = this.props
     const { autoHideDuration, open } = this.state
 
     const item = this._processedItem()
@@ -138,7 +138,7 @@ export default class Request extends Component {
           item?.success && <Done />,
           item?.error && (
             <Button key="undo" className={classes.button} size="small" onClick={this.handleRepeat}>
-              {this.props.t("REPEAT")}
+              {t("RETRY")}
             </Button>
           ),
         ]}

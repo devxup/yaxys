@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from "react"
 import PropTypes from "prop-types"
 import { withConstants } from "../services/Utils"
+import { withStyles } from "@material-ui/core/styles"
 import { TextField, Button } from "@material-ui/core"
 import ModelChip from "./ModelChip.jsx"
 import ModelPicker from "./ModelPicker.jsx"
@@ -10,6 +11,11 @@ import Ajv from "ajv"
 
 const ajv = new Ajv({ allErrors: true, format: "full" })
 
+@withStyles(theme => ({
+  m1PropertyLabel: {
+    minWidth: 80,
+  },
+}))
 @withConstants
 @withNamespaces()
 export default class ModelForm extends Component {
@@ -101,6 +107,7 @@ export default class ModelForm extends Component {
   }
 
   validateAttribute(attribute) {
+    const { t } = this.props
     if (this.props.forceValidation) {
       this.validateAll()
       return
@@ -117,7 +124,7 @@ export default class ModelForm extends Component {
             ? item.params.missingProperty
             : item.dataPath.slice(1)
         if (name === attribute) {
-          this.state.valuesMeta[name].error = this.props.t(`ModelForm_AJV_${item.keyword}`)
+          this.state.valuesMeta[name].error = t(`AJV.${item.keyword}`)
         }
       }
     }
@@ -204,7 +211,7 @@ export default class ModelForm extends Component {
   }
 
   renderM1Connection(attribute, index) {
-    const { schema, constants, t } = this.props
+    const { schema, constants, classes, t } = this.props
     const property = schema.properties[attribute]
     const connection = property.connection
     if (connection.type !== "m:1") {
@@ -217,20 +224,20 @@ export default class ModelForm extends Component {
     const current = (
       <ModelChip
         id={ value }
-        name={ value ? value.name || "" : t("ModelForm_NOT_SELECTED") }
+        name={ value ? value.name || "" : t("MODEL_FORM.NOT_SELECTED") }
         onDelete={ value && this.onDelete(attribute) }
       />
     )
 
     return (
       <div key={index}>
-        <label>{property.title || attribute}: </label>
+        <label className={classes.m1PropertyLabel}>{property.title || attribute}: </label>
         {current}
         <Button variant="text" onClick={this.onPickerOpen(attribute, connection.relatedModel)}>
-          {t("ADD_EXISTING", { item: relatedSchema.title })}
+          { `${t("PICK_EXISTING")} ${t(relatedSchema.i18Key, { context: "ACCUSATIVE" })}` }
         </Button>
         <Button variant="text" onClick={this.onCreatorOpen(attribute, connection.relatedModel)}>
-          {t("CREATE_NEW", { item: relatedSchema.title })}
+          { `${t("CREATE_NEW")} ${t(relatedSchema.i18Key, { context: "ACCUSATIVE" })}` }
         </Button>
       </div>
     )

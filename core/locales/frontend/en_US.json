@@ -133,9 +133,17 @@
     "WRONG_CREDENTIALS": "Wrong credentials",
     "OTHER_ERROR": "An error occured"
   },
+  "AJV": {
+    "required": "Required field",
+    "format": "Wrong format"
+  },
+  "MODEL_FORM": {
+    "NOT_SELECTED": "Not selected"
+  },
 
   "CREATE_NEW": "Create new",
   "ADD_EXISTING": "Add existing",
+  "PICK_EXISTING": "Pick existing",
 
   "CREATE": "Create",
   "CREATE_PROCESS": "Creating",
@@ -151,6 +159,7 @@
   "LOAD_PROCESS": "Loading",
 
   "RETRY": "Retry",
+  "PICK": "Pick",
   "CANCEL": "Cancel",
   "CLOSE": "Close",
   "DEFINITE_ARTICLE": "the",

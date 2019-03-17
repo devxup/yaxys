@@ -68,7 +68,7 @@ export default class ModelDialog extends Component {
   };
 
   render() {
-    const { open, onClose, title, children, schema, btnReady, btnClose, attributes } = this.props
+    const { open, onClose, title, children, schema, btnReady, btnClose, attributes, t } = this.props
     return (<Dialog
       open={ open }
       onClose={ onClose }
@@ -91,10 +91,10 @@ export default class ModelDialog extends Component {
       </DialogContent>
       <DialogActions>
         <Button onClick={ onClose } color="primary">
-          { btnClose || this.props.t("CANCEL") }
+          { btnClose || t("CANCEL") }
         </Button>
         <Button onClick={this.onReady} color="primary">
-          { btnReady || this.props.t("OK") }
+          { btnReady || t("OK") }
         </Button>
       </DialogActions>
     </Dialog>)

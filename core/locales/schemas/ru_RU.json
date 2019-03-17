@@ -1,31 +1,26 @@
 {
   "accesspoint": {
-    "schemaTitle": "Точка доступа",
     "name": "Название",
     "description": "Описание",
     "door": "Дверь",
     "zoneTo": "В зону"
   },
   "accessright": {
-    "schemaTitle": "Право доступа",
     "accessPoint": "Точка доступа",
     "door": "Дверь",
     "zoneTo": "Зона"
   },
   "credential": {
-    "schemaTitle": "Идентификатор",
     "user": "Пользователь",
     "code": "Код"
   },
   "door": {
-    "schemaTitle": "Дверь",
     "name": "Название",
     "description": "Описание",
     "accessPoints": "Точки доступа",
     "zones": "Зоны"
   },
   "operator": {
-    "schemaTitle": "Оператор",
     "email": "E-mail",
     "login": "Логин",
     "name": "Имя",
@@ -35,26 +30,22 @@
     "profiles": "Профили операторов"
   },
   "operatorprofile": {
-    "schemaTitle": "Профиль оператора",
     "name": "Название",
     "description": "Описание",
     "operators": "Операторы"
   },
   "user": {
-    "schemaTitle": "Пользователь",
     "name": "Имя",
     "profiles": "Профили пользователей",
     "hasCustomRights": "Есть нестандартные права",
     "credentials": "Идентификаторы"
   },
   "userprofile": {
-    "schemaTitle": "Профиль пользователя",
     "name": "Название",
     "description": "Описание",
     "users": "Пользователи"
   },
   "zone": {
-    "schemaTitle": "Зона",
     "name": "Название",
     "description": "Описание",
     "accessPoints": "Точки доступа",

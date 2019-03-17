@@ -26,12 +26,15 @@ module.exports = {
     const localizedSchemas = {}
     for (let language in yaxys.schemaLocales) {
       localizedSchemas[language] = _.cloneDeep(schemas)
-      for (let schema in yaxys.schemaLocales[language]) {
-        for (let property in yaxys.schemaLocales[language][schema]) {
-          property === "schemaTitle"
-            ? localizedSchemas[language][schema].title = yaxys.schemaLocales[language][schema][property]
-            : localizedSchemas[language][schema].properties[property].title
-              = yaxys.schemaLocales[language][schema][property]
+      for (let schemaKey in yaxys.schemaLocales[language]) {
+        const realSchema = yaxys.models[schemaKey].schema
+        const i18Key = realSchema.i18Key
+        localizedSchemas[language][schemaKey].title =
+          (i18Key && yaxys.locales[language][i18Key])
+          || realSchema.title
+        for (let property in yaxys.schemaLocales[language][schemaKey]) {
+          localizedSchemas[language][schemaKey].properties[property].title
+            = yaxys.schemaLocales[language][schemaKey][property]
         }
       }
     }
