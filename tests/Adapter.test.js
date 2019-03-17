@@ -7,7 +7,7 @@ let yaxysBuffer
 beforeAll(() => {
   yaxysBuffer = global.yaxys
   global.yaxys = {
-    i18n: key => key,
+    t: key => key,
   }
 })
 
@@ -132,7 +132,7 @@ describe("Adapter", () => {
         title: "update unexisting item",
         method: "update",
         args: [null, tableNames[0], 1000, { a1: 2, a3: { k: 1 } }],
-        error: "Adapter.ID_NOT_FOUND",
+        error: "adapter.ID_NOT_FOUND",
       },
       {
         title: "insert another item",
@@ -356,7 +356,7 @@ describe("Adapter", () => {
             },
           },
         ],
-        error: "Adapter.INCORRECT_DATA_TYPE",
+        error: "adapter.INCORRECT_DATA_TYPE",
       },
       {
         title: "get sql for create table with id field and without required array",
@@ -470,7 +470,7 @@ describe("Adapter", () => {
             },
           },
         ],
-        error: "Adapter.INCORRECT_DATA_TYPE",
+        error: "adapter.INCORRECT_DATA_TYPE",
       },
       {
         title: "create table with id field, without required array and with uniqueKeys constraint",

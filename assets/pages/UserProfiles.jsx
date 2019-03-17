@@ -89,7 +89,7 @@ export default class UserProfiles extends Component {
   render() {
     const { constants, t } = this.props
     return (
-      <Wrapper breadcrumbs={[{ title: t("SETTINGS"), url: "/settings" }, t("USER_PROFILES")]}>
+      <Wrapper breadcrumbs={[t("USER_PROFILES")]}>
         <h1 style={{ marginTop: 0 }}>{ t("USER_PROFILES")}</h1>
         <Button
           variant="text"

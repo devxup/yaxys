@@ -19,6 +19,26 @@ import Backend from "i18next-xhr-backend"
 i18next
 	.use(Backend)
 	.init({
+    interpolation: {
+      format: (info, format, lang) => {
+        switch (format) {
+          case "EXTRACT_INFO": {
+            let suffix = ""
+            if (info?.property !== "none") {
+              if (info.item?.success) {
+                suffix = info.item.data[info.property || "name"]
+              } else if (info.data) {
+                suffix = info.data[info.property || "name"]
+              }
+            }
+            if (suffix) {
+              suffix = ` ${suffix}`
+            }
+            return `#${info.id}${suffix}`
+          }
+        }
+      },
+    },
 		backend: {
 			loadPath: "/api/language/{{lng}}",
 		},

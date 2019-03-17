@@ -133,7 +133,7 @@ export default class OperatorProfile extends Component {
                 margin="dense"
                 attributes={["name", "description"]}
               />
-            </Paper>
+            </Paper>:
             <Paper className={classes.rights}>
               <h5>{t("OperatorProfile_RIGHTS")}</h5>
               <RightsEditor

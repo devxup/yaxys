@@ -26,7 +26,7 @@ module.exports = class App extends Koa {
 			],
 		})
 
-		this.locales = this._requireFolder("locales/frontend")
+    this._requireLocales()
 		this.languages = []
 		for (let locale in this.locales){
 			this.languages.push({
@@ -47,7 +47,7 @@ module.exports = class App extends Koa {
 				fallbackLng: "en_US",
 			})
 			.then(t => {
-				this.i18n = t
+				this.t = t
 			})
 			.catch(err => {
 				console.log("Error while loading locales: ", err) //eslint-disable-line
@@ -106,6 +106,17 @@ module.exports = class App extends Koa {
 		this.use(this.apiRouter.routes())
 		this.use(this.pageRouter.routes())
 	}
+
+	_requireLocales() {
+    this.locales = this._requireFolder("locales/frontend")
+  }
+
+  refreshLocales() {
+    for (const lang of this.languages) {
+      delete require.cache[require.resolve(`../locales/frontend/${lang.code}.json`)]
+    }
+    this._requireLocales()
+  }
 
 	/**
 	 * Requires the whole folder of Node.js modules and assign them into the global

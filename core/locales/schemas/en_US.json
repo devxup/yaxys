@@ -1,7 +1,7 @@
 {
   "accesspoint": {
     "schemaTitle": "Access point",
-    "title": "Title",
+    "name": "Name",
     "description": "Description",
     "door": "Door",
     "zoneTo": "Zone To"
@@ -14,13 +14,13 @@
   },
   "credential": {
     "schemaTitle": "Credential",
-    "title": "Title",
     "user": "User",
-    "code": "Code"
+    "code": "Code",
+    "note": "Note"
   },
   "door": {
     "schemaTitle": "Door",
-    "title": "Title",
+    "name": "Name",
     "description": "Description",
     "accessPoints": "Access points",
     "zones": "Zones"
@@ -28,6 +28,8 @@
   "operator": {
     "schemaTitle": "Operator",
     "email": "E-mail",
+    "login": "Login",
+    "name": "Name",
     "passwordHash": "Password",
     "isAdministrator": "Is administrator",
     "hasCustomRights": "Has custom rights",
@@ -35,7 +37,7 @@
   },
   "operatorprofile": {
     "schemaTitle": "Operator Profile",
-    "title": "Title",
+    "name": "Name",
     "description": "Description",
     "operators": "Operators"
   },
@@ -48,13 +50,13 @@
   },
   "userprofile": {
     "schemaTitle": "User profile",
-    "title": "Title",
+    "name": "Name",
     "description": "Description",
     "users": "Users"
   },
   "zone": {
     "schemaTitle": "Zone",
-    "title": "Title",
+    "name": "Name",
     "description": "Description",
     "accessPoints": "Access points",
     "doors": "Doors"

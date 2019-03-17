@@ -90,7 +90,13 @@ export default class UserProfile extends Component {
 
   render() {
     const { userProfile, match, classes, constants, t } = this.props
-    const entityAndId = t("ENTITY_USER_PROFILE", { id: match.params.id, item: userProfile })
+    const entityInstance = t("ENTITY_INSTANCE", {
+      entity: "$t(USER_PROFILE)",
+      info: {
+        id: match.params.id,
+        item: userProfile,
+      },
+    })
     const update = (
       <Update
         clue={userProfileClue(this.props)}
@@ -104,13 +110,12 @@ export default class UserProfile extends Component {
         bottom={update}
         breadcrumbs={
           [
-            { title: t("SETTINGS"), url: "/settings" },
             { title: t("USER_PROFILES"), url: "/settings/user-profiles" },
-            entityAndId,
+            entityInstance,
           ]
         }
       >
-        <h1 style={{ marginTop: 0 }}>{entityAndId}</h1>
+        <h1 style={{ marginTop: 0 }}>{entityInstance}</h1>
         <Loader item={userProfile}>
           <Fragment>
             <Paper className={classes.block}>

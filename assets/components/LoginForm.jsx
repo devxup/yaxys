@@ -120,7 +120,6 @@ export default class LoginForm extends Component {
 
   render() {
     const { classes, auth, t } = this.props
-    const propertyKeys = Object.keys(FORM_SCHEMA.properties)
 
     const authJSON = auth?.toJSON?.() || auth
     const lastAttempt = this.state.hasAttempt && authJSON?.[authJSON?.length - 1]
@@ -136,6 +135,7 @@ export default class LoginForm extends Component {
         },
       },
     }
+    const propertyKeys = Object.keys(FORM_SCHEMA.properties)
 
     return (
       <Fragment>

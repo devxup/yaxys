@@ -91,23 +91,22 @@ export default class Users extends Component {
   render() {
     const { constants, t } = this.props
     return (
-      <Wrapper breadcrumbs={[t("USERS")]}>
-        <h1 style={{ marginTop: 0 }}>{t("USERS")}</h1>
+      <Wrapper breadcrumbs={[t("USER_PLURAL")]}>
+        <h1 style={{ marginTop: 0 }}>{t("USER_PLURAL")}</h1>
         <p>
-          {t("Users_CONTROL_OPERATOR_RIGHTS")}
-          <Link to={"/user-profiles"}>{t("Users_CONTROL_OPERATOR_RIGHTS_LINK")}</Link>
+          {t("USERS_PAGE.PROFILES_DESC")}
+          <Link to={"/user-profiles"}>{t("USERS_PAGE.PROFILES_DESC_LINK")}</Link>
         </p>
         <Button
           variant="text"
           color="secondary"
           onClick={this.onAdd}
-          title={t("Users_CREATE")}
         >
-          {t("Users_ADD_USER")}
+          { `${t("ADD")} ${t("USER", { "context": "ACCUSATIVE" })}`}
         </Button>
         <Created
           items={this.props.createdUsers}
-          content={user => user.name}
+          content={user => `#${user.id} ${user.name}`}
           url={user => `/users/${user.id}`}
           laterThan={ this.state.constructedAt }
         />
@@ -124,7 +123,7 @@ export default class Users extends Component {
         </Paper>
         <br />
         <ModelDialog
-          title={t("Users_CREATE")}
+          title={t("USERS_PAGE.CREATE_DLG_TITLE")}
           open={this.state.addOpen}
           onClose={this.onAddClose}
           onReady={this.onAddReady}
@@ -132,11 +131,11 @@ export default class Users extends Component {
           attributes={["name"]}
           btnReady={t("CREATE")}
         >
-          {t("Users_CREATE_DESC")}
+          {t("USERS_PAGE.CREATE_DLG_DESC")}
         </ModelDialog>
         <Request
           selector={this.state.deletedSelector}
-          message={"Deleting the User"}
+          message={ `${t("DELETE_PROCESS")} ${t("DEFINITE_ARTICLE")} ${t("USER", { context: "ACCUSATIVE" })}`}
           attemptAt={ this.state.deleteAttemptAt }
           onSuccess={ this.onItemDeleted }
         />

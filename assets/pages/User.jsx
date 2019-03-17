@@ -66,7 +66,7 @@ export default class User extends Component {
   }
 
   componentDidMount() {
-    this.props.loadUser(userClue(this.props))
+    this.props.loadUser(userClue(this.props), { force: true })
   }
 
   componentDidUpdate(prevProps) {
@@ -88,12 +88,6 @@ export default class User extends Component {
       user: { ...this.state.user, ...data.values },
       modifiedAt: new Date().getTime(),
     })
-  }
-
-  handleSingleChange = name => event => {
-    this.state.user[name] = event.target.checked
-    this.state.modifiedAt = new Date().getTime()
-    this.forceUpdate()
   }
 
   onProfileOpen = () => {
@@ -143,10 +137,18 @@ export default class User extends Component {
   }
 
   onDeleteProfile = (profile) => {
+    const { t } = this.props
     if (this.state.deletedHash[profile._binding_id]) {
       return
     }
-    if (!confirm(this.props.t("User_DETACH", { profile: profile.id }))) {
+    const entityInstance = t("ENTITY_INSTANCE", {
+      entity: "$t(USER_PROFILE)",
+      info: {
+        id: profile.id,
+        data: profile,
+      },
+    })
+    if (!confirm(`${t("ARE_YOU_SURE_TO")} ${t("DETACH").toLowerCase()} ${entityInstance}?`)) {
       return
     }
     this._deleteProfile(profile._binding_id)
@@ -159,7 +161,13 @@ export default class User extends Component {
 
   render() {
     const { user, match, classes, constants, t } = this.props
-    const entityAndId = t("ENTITY_USER", { id: match.params.id, item: user })
+    const entityInstance = t("ENTITY_INSTANCE", {
+      entity: "$t(USER)",
+      info: {
+        id: match.params.id,
+        item: user,
+      },
+    })
     const schema = constants.schemas.user
     const update = (
       <Update
@@ -174,11 +182,11 @@ export default class User extends Component {
       <Wrapper
         bottom={update}
         breadcrumbs={[
-          { title: t("USERS"), url: "/users" },
-          entityAndId,
+          { title: t("USER_PLURAL"), url: "/users" },
+          entityInstance,
         ]}
       >
-        <h1 style={{ marginTop: 0 }}>{entityAndId}</h1>
+        <h1 style={{ marginTop: 0 }}>{entityInstance}</h1>
         <Loader item={user}>
           <Paper className={classes.block}>
             <ModelForm
@@ -193,9 +201,9 @@ export default class User extends Component {
           </Paper>
         </Loader>
         <Paper className={classes.block}>
-          <h5>{t("USER_PROFILES")}</h5>
+          <h5>{t("USER_PAGE.PROFILES_HEADER")}</h5>
           {!user?.data?.profiles?.length && (
-            <p>{t("User_MANAGE_PROFILES")}</p>
+            <p>{t("USER_PAGE.PROFILES_DESC")}</p>
           )}
           <Button
             variant="text"
@@ -203,12 +211,18 @@ export default class User extends Component {
             onClick={this.onProfileOpen}
             style={{ marginBottom: 10 }}
           >
-            {t("ADD_USER_PROFILE")}
+            { `${t("ADD")} ${t("USER_PROFILE", { "context": "ACCUSATIVE" })}`}
           </Button>
           <Created
             items={this.props.createdBindings}
-            content={binding =>
-              t("ENTITY_USER_PROFILE", { id: binding.userProfile.id, data: binding.userProfile })
+            content={
+              binding => t("ENTITY_INSTANCE", {
+                entity: "$t(USER_PROFILE)",
+                info: {
+                  id: binding.userProfile.id,
+                  data: binding.userProfile,
+                },
+              })
             }
             url={binding => `/user-profiles/${binding.userProfile.id}`}
             laterThan={ this.state.constructedAt }
@@ -226,7 +240,7 @@ export default class User extends Component {
           )}
         </Paper>
         <Paper className={classes.block}>
-          <h5>{t("User_CUSTOM_RIGHTS")}</h5>
+          <h5>{t("USER_PAGE.CUSTOM_RIGHTS_HEADER")}</h5>
           <AccessRights
             mode={"user"}
             userProperty={"user"}
@@ -234,7 +248,7 @@ export default class User extends Component {
           />
         </Paper>
         <Paper className={classes.block}>
-          <h5>{t("CREDENTIALS")}</h5>
+          <h5>{t("CREDENTIAL_PLURAL")}</h5>
           <Connection
             relatedIdentity="credential"
             relatedProperty="user"
@@ -252,7 +266,7 @@ export default class User extends Component {
         />
         <Request
           selector={this.state.deletedSelector}
-          message={t("User_DETACHING")}
+          message={`${t("DETACH_PROCESS")} ${t("DEFINITE_ARTICLE")} ${t("USER_PROFILE", { context: "ACCUSATIVE" })}`}
           attemptAt={ this.state.deleteAttemptAt }
           onSuccess={ this.onProfileDeleted }
         />

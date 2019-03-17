@@ -18,7 +18,7 @@
     "INVALID_CONNECTION": "Invalid connection type",
     "SCHEMA_NOT_FOUND": "schema {{identity}} not found",
     "VALIDATION_FAIL": "Property {{property}} validation fail: {{message}}"
-  },
+  },1
   "accessService": {
     "SHOULD_HAVE_USER_OR_PROFILE": "AccessRight should have user or userProfile",
     "SHOULD_NOT_HAVE_BOTH_USER_AND_PROFILE": "AccessRight should not have user and userProfile simultaneously",

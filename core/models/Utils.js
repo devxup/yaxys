@@ -1,3 +1,5 @@
+const config = require("config")
+
 module.exports = {
   api: {
     constants: [
@@ -9,6 +11,10 @@ module.exports = {
       ctx.body = JSON.stringify(UtilService.localizedSchemas[ctx.params.lng])
     },
     "language/:lng": ctx => {
+      if (config.util.getEnv("NODE_ENV") === "development") {
+        yaxys.refreshLocales()
+      }
+
       if (!yaxys.locales[ctx.params.lng]) {
         ctx.throw(400, "No such language")
       }
