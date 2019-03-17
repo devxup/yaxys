@@ -14,6 +14,7 @@ import Wrapper from "../components/Wrapper.jsx"
 import Loader from "../components/Loader.jsx"
 import Update from "../components/Update.jsx"
 import ModelForm from "../components/ModelForm.jsx"
+import { withNamespaces } from "react-i18next"
 
 const credentialClue = props => ({
   identity: "credential",
@@ -29,6 +30,7 @@ const PROPS_2_WATCH = ["id", "user", "code", "note"]
   ...commonClasses(theme),
 }))
 @withConstants
+@withNamespaces()
 @connect(
   (state, props) => ({
     credential: credentialSelector(state, props),
@@ -90,8 +92,8 @@ export default class Credential extends Component {
   }
 
   render() {
-    const { constants, credential, match, classes } = this.props
-    const idAndCode = `#${match.params.id}${ credential?.success ? ` ${credential.data.code}` : "" }`
+    const { constants, credential, match, classes, t } = this.props
+    const entityAndId = t("ENTITY_CREDENTIAL", { id: match.params.id, item: credential })
     const update = (
       <Update
         clue={credentialClue(this.props)}
@@ -105,15 +107,16 @@ export default class Credential extends Component {
       <Wrapper
         bottom={update}
         breadcrumbs={[
-          { title: "Users", url: "/users" },
-          { title: `User #${match.params.user}`, url: `/users/${match.params.user}` },
-          `Credential ${idAndCode}`,
+          { title: t("USERS"), url: "/users" },
+          { title: t("USER_#", { user: match.params.user }), url: `/users/${match.params.user}` },
+          entityAndId,
         ]}
       >
-        <h1 style={{ marginTop: 0 }}>Credential {idAndCode}</h1>
+        <h1 style={{ marginTop: 0 }}>{entityAndId}</h1>
         <Loader item={credential}>
           <Fragment>
             <Paper className={classes.block}>
+              <h5>{t("PROPERTIES")}</h5>
               <ModelForm
                 autoFocus={true}
                 values={this.state.credential}

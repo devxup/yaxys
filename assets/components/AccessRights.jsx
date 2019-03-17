@@ -14,6 +14,7 @@ import ModelTable from "./ModelTable.jsx"
 import ModelPicker from "./ModelPicker.jsx"
 import Created from "./Created.jsx"
 import Request from "./Request.jsx"
+import { withNamespaces } from "react-i18next"
 
 const CREATED_ACCESS_RIGHT_MARKER = "user-or-profile"
 const createdAccessRightSelector = YaxysClue.selectors.byClue(
@@ -42,6 +43,7 @@ const accessRightsSelector = YaxysClue.selectors.byClue(accessRightsClue)
   },
 }))
 @withConstants
+@withNamespaces()
 @connect(
   (state, props) => ({
     createdAccessRights: createdAccessRightSelector(state, props),
@@ -69,6 +71,16 @@ export default class AccessRights extends Component {
     loadAccessRights: PropTypes.func,
     createAccessRight: PropTypes.func,
     deleteAccessRight: PropTypes.func,
+    t: PropTypes.func,
+  }
+
+  static accessRightToURL(accessRight) {
+    const { accessPoint, door, zoneTo } = accessRight
+    if (accessPoint) { return `/access-points/${accessPoint.id || accessPoint}` }
+    if (door) { return `/doors/${door.id || door}` }
+    if (zoneTo) { return `/zones/${zoneTo.id || zoneTo}` }
+
+    return ""
   }
 
   constructor(props) {
@@ -117,15 +129,16 @@ export default class AccessRights extends Component {
   }
 
   accessRightToText = (accessRight) => {
-    const { mode } = this.props
+    const { mode, t } = this.props
 
     const possibleProperties = mode === "hardware"
       ? ["user", "userProfile"]
       : ["accessPoint", "door", "zoneTo"]
 
     const property = possibleProperties.find(candidate => !!accessRight[candidate])
+    // `Granted access to ${this._titleIdAndName(accessRight, property)}`
     return property
-      ? `Granted access to ${this._titleIdAndName(accessRight, property)}`
+      ? t("AccessRights_GRANTED", { accessRight, property })
       : `#${accessRight.id}`
   }
 
@@ -201,7 +214,7 @@ export default class AccessRights extends Component {
     if (this.state.deletedHash[accessRight.id]) {
       return
     }
-    if (!confirm(`Are you sure to delete the Access Right #${accessRight.id}`)) {
+    if (!confirm(this.props.t("AccessRights_CONFIRM_DELETE", { ar: accessRight.id }))) {
       return
     }
     this._deleteAccessRight(accessRight.id)
@@ -213,7 +226,7 @@ export default class AccessRights extends Component {
   }
 
   render() {
-    const { constants, mode, accessRights, createdAccessRights, classes } = this.props
+    const { constants, mode, accessRights, createdAccessRights, classes, t } = this.props
     const schema = constants.schemas.accessright
 
     return (
@@ -235,7 +248,7 @@ export default class AccessRights extends Component {
                     onClick={this.onAdd("user")}
                     className={classes.button}
                   >
-                    Add user
+                    {t("ADD_USER")}
                   </Button>
                   <Button
                     variant="text"
@@ -243,7 +256,7 @@ export default class AccessRights extends Component {
                     onClick={this.onAdd("userProfile")}
                     className={classes.button}
                   >
-                    Add user profile
+                    {t("ADD_USER_PROFILE")}
                   </Button>
                 </Fragment>
               ) : (
@@ -254,7 +267,7 @@ export default class AccessRights extends Component {
                     onClick={this.onAdd("accessPoint")}
                     className={classes.button}
                   >
-                    Add access point
+                    {t("ADD_AP")}
                   </Button>
                   <Button
                     variant="text"
@@ -262,7 +275,7 @@ export default class AccessRights extends Component {
                     onClick={this.onAdd("door")}
                     className={classes.button}
                   >
-                    Add door
+                    {t("ADD_DOOR")}
                   </Button>
                   <Button
                     variant="text"
@@ -270,7 +283,7 @@ export default class AccessRights extends Component {
                     onClick={this.onAdd("zoneTo")}
                     className={classes.button}
                   >
-                    Add zone
+                    {t("ADD_ZONE")}
                   </Button>
                 </Fragment>
               )
@@ -299,7 +312,7 @@ export default class AccessRights extends Component {
         )}
         <Request
           selector={this.state.deletedSelector}
-          message={"Deleting Access Right"}
+          message={this.props.t("AccessRights_DELETING")}
           attemptAt={ this.state.deleteAttemptAt }
           onSuccess={ this.onAccessRightDeleted }
         />

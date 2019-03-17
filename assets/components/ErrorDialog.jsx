@@ -12,6 +12,7 @@ import moment from "moment"
 
 import { withConstants, withImmutablePropsFixed } from "../services/Utils.js"
 import classNames from "classnames"
+import { withNamespaces } from "react-i18next"
 
 @withStyles(theme => ({
   cell: {
@@ -33,6 +34,7 @@ import classNames from "classnames"
 }))
 @withConstants
 @withImmutablePropsFixed("items")
+@withNamespaces()
 export default class ErrorDialog extends Component {
   static propTypes = {
     open: PropTypes.bool,
@@ -42,6 +44,7 @@ export default class ErrorDialog extends Component {
 
     // from HOCs
     constants: PropTypes.object,
+    t: PropTypes.func,
   }
 
   state = {
@@ -169,7 +172,7 @@ export default class ErrorDialog extends Component {
       open={ open }
       onClose={ onClose }
     >
-      <DialogTitle>{ title || "The error details" }</DialogTitle>
+      <DialogTitle>{ title || this.props.t("ErrorDialog_DETAILS") }</DialogTitle>
       <DialogContent>
         <MuiTable
           includeHeaders={false}
@@ -197,7 +200,7 @@ export default class ErrorDialog extends Component {
       </DialogContent>
       <DialogActions>
         <Button onClick={ onClose } color="primary">
-          { "Close" }
+          {this.props.t("CLOSE")}
         </Button>
       </DialogActions>
     </Dialog>)

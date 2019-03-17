@@ -15,6 +15,7 @@ import Wrapper from "../components/Wrapper.jsx"
 import Loader from "../components/Loader.jsx"
 import Update from "../components/Update.jsx"
 import ModelForm from "../components/ModelForm.jsx"
+import { withNamespaces } from "react-i18next"
 
 const operatorProfileClue = props => ({
   identity: "operatorprofile",
@@ -31,6 +32,7 @@ const operatorProfileSelector = YaxysClue.selectors.byClue(operatorProfileClue)
   },
 }))
 @withConstants
+@withNamespaces()
 @connect(
   (state, props) => ({
     operatorProfile: operatorProfileSelector(state, props),
@@ -94,8 +96,11 @@ export default class OperatorProfile extends Component {
   }
 
   render() {
-    const { operatorProfile, match, classes, constants } = this.props
-    const idAndName = `#${match.params.id}${ operatorProfile?.success ? ` ${operatorProfile.data.name}` : "" }`
+    const { operatorProfile, match, classes, constants, t } = this.props
+    const entityAndId = t("ENTITY_OPERATOR_PROFILE", {
+      id: match.params.id,
+      item: operatorProfile,
+    })
     const update = (
       <Update
         clue={operatorProfileClue(this.props)}
@@ -109,13 +114,13 @@ export default class OperatorProfile extends Component {
         bottom={update}
         breadcrumbs={
           [
-            { title: "Settings", url: "/settings" },
-            { title: "Operator profiles", url: "/settings/operator-profiles" },
-            `Operator profile ${idAndName}`,
+            { title: t("SETTINGS"), url: "/settings" },
+            { title: t("OPERATOR_PROFILES"), url: "/settings/operator-profiles" },
+            entityAndId,
           ]
         }
       >
-        <h1 style={{ marginTop: 0 }}>Operator profile {idAndName}</h1>
+        <h1 style={{ marginTop: 0 }}>{t("OPERATOR_PROFILE_#", { number: match.params.id })}</h1>
         <Loader item={operatorProfile}>
           <Fragment>
             <Paper className={classes.block}>
@@ -130,7 +135,7 @@ export default class OperatorProfile extends Component {
               />
             </Paper>
             <Paper className={classes.rights}>
-              <h5>The profile rights:</h5>
+              <h5>{t("OperatorProfile_RIGHTS")}</h5>
               <RightsEditor
                 type="profile"
                 values={(this.state.operatorProfile && this.state.operatorProfile.rights) || {}}

@@ -11,18 +11,18 @@ yaxys
     const commandsHash = {
       async init_db() {
         await ModelService.createTablesForAllModels()
-        yaxys.logger.info("done")
+        yaxys.logger.info(yaxys.i18n("cli.INIT_DB_SUCCESS"))
       },
       get_sql() {
         console.log(ModelService.getSQLForAllModels())
       },
       async create_operator() {
         if (!argv.email && !argv.login) {
-          yaxys.logger.error("Email or login is required!")
+          yaxys.logger.error(yaxys.i18n("cli.EMAIL_OR_LOGIN_REQUIRED"))
           return
         }
         if (!argv.pwd) {
-          yaxys.logger.error("Password is required!")
+          yaxys.logger.error(yaxys.i18n("cli.PASSWORD_REQUIRED"))
           return
         }
         await yaxys.db.insert(null, "operator", {
@@ -32,7 +32,7 @@ yaxys
           rights: {},
           isAdministrator: true,
         })
-        yaxys.logger.info("done")
+        yaxys.logger.info(yaxys.i18n("cli.CREATE_OPERATOR_SUCCESS"))
       },
       encrypt_password() {
         console.log(AuthService.encryptPassword(String(argv._[1])))
@@ -41,20 +41,22 @@ yaxys
 
     const command = argv._[0]
     if (!command || command === "help") {
-      return yaxys.logger.info(`Possible commands are: ${Object.keys(commandsHash).join(", ")}`)
+      yaxys.logger.info(`${yaxys.i18n("cli.POSSIBLE_COMMANDS")} ${Object.keys(commandsHash).join(", ")}`)
+      await yaxys.db.shutdown()
+      process.exit(0)
     }
 
     if (!commandsHash[command]) {
-      return yaxys.logger.error(
-        `Command ${command} not found. Run with --help option to see the list of available commands.`
-      )
+      yaxys.logger.error(yaxys.i18n("cli.COMMAND_NOT_FOUND", { command }))
+      await yaxys.db.shutdown()
+      process.exit(1)
     }
     await commandsHash[command]()
-    await global.yaxys.db.shutdown()
+    await yaxys.db.shutdown()
 
     process.exit(0)
   })
   .catch(err => {
-    yaxys.logger.error("An error occured!", err)
+    yaxys.logger.error(yaxys.i18n("cli.ERROR"), err)
     process.exit()
   })

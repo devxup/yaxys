@@ -1,0 +1,44 @@
+{
+  "cli": {
+    "INIT_DB_SUCCESS": "Database initialized",
+    "EMAIL_REQUIRED": "Email is required!",
+    "PASSWORD_REQUIRED": "Password is required!",
+    "CREATE_OPERATOR_SUCCESS": "Operator successfully created!",
+    "POSSIBLE_COMMANDS": "Possible commands are:",
+    "COMMAND_NOT_FOUND": "Command {{command}} not found. Run with --help option to see the list of available commands.",
+    "ERROR": "An error occured! "
+  },
+  "Adapter": {
+    "DATA_REQUIRED": "data is required",
+    "DATA_NOT_ARRAY": "data should not be an array",
+    "DATA_OBJECT_EXPECTED": "data expected to be an object",
+    "ID_NOT_FOUND": "Update failed – record with id {{id}} not found",
+    "ID_REQUIRED": "id is required",
+    "INCORRECT_DATA_TYPE": "Incorrect data type {{type}} of field {{field}} in {{identity}}",
+    "INVALID_CONNECTION": "Invalid connection type",
+    "SCHEMA_NOT_FOUND": "schema {{identity}} not found",
+    "VALIDATION_FAIL": "Property {{property}} validation fail: {{message}}"
+  },
+  "accessService": {
+    "SHOULD_HAVE_USER_OR_PROFILE": "AccessRight should have user or userProfile",
+    "SHOULD_NOT_HAVE_BOTH_USER_AND_PROFILE": "AccessRight should not have user and userProfile simultaneously",
+    "SHOULD_HAVE_AP_OR_ZONE_OR_DOOR": "AccessRight should have accessPoint, zoneTo or door property",
+    "SHOULD_NOT_HAVE_BOTH": "AccessRight should not have {{alreadyHas}} and {{key}} simultaneously"
+  },
+  "authService": {
+    "WRONG_CREDENTIALS": "No such operator or wrong password provided"
+  },
+  "policyService": {
+    "UNAUTHORIZED": "unauthorized",
+    "TEST": "Test exception",
+    "NO_RIGHTS": "You don't have rights to perform this action"
+  },
+  "restService": {
+    "ID_REQUIRED": "id is required",
+    "NOT_FOUND": "{{identity}} #{{number}} not found",
+    "UNKNOWN_METHOD": "Unknown API method {{method}} detected"
+  },
+  "zoneService": {
+    "TOO_MUCH_APS": "Integrity violation: amount of accessPoints should not be more than 2"
+  }
+}

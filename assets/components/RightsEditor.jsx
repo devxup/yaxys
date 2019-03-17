@@ -8,6 +8,7 @@ import { red, green, grey } from "@material-ui/core/colors"
 
 import { withConstants } from "../services/Utils"
 import Switcher from "./Switcher.jsx"
+import { withNamespaces } from "react-i18next"
 
 const styles = theme => ({
   switcherCommon: {
@@ -39,6 +40,7 @@ const styles = theme => ({
 
 export default
 @withConstants
+@withNamespaces()
 @withStyles(styles)
 class RightsEditor extends Component {
   static propTypes = {
@@ -46,6 +48,7 @@ class RightsEditor extends Component {
     values: PropTypes.object,
     constants: PropTypes.object,
     onChange: PropTypes.func,
+    t: PropTypes.func,
   }
 
   constructor(props) {
@@ -61,7 +64,7 @@ class RightsEditor extends Component {
   }
 
   renderRight(identity, right, rightTitle) {
-    const { classes, type } = this.props
+    const { classes, type, t } = this.props
     const rawValue =
       right === "*"
         ? this.state.values[identity] && this.state.values[identity].create
@@ -73,14 +76,14 @@ class RightsEditor extends Component {
       case "operator":
         choices = [
           {
-            label: `${rightTitle}${divider}denied`,
+            label: t("RightsEditor_DENIED", { rightTitle, divider }),
             value: false,
             classes: {
               root: classNames(classes.switcherCommon, classes.switcherDenied),
             },
           },
           {
-            label: `${rightTitle}${divider}allowed`,
+            label: t("RightsEditor_ALLOWED", { rightTitle, divider }),
             value: true,
             classes: {
               root: classNames(classes.switcherCommon, classes.switcherAllowed),
@@ -91,7 +94,7 @@ class RightsEditor extends Component {
       case "profile":
         choices = [
           {
-            label: `${rightTitle}${divider}allowed`,
+            label: t("RightsEditor_ALLOWED", { rightTitle, divider }),
             value: true,
             classes: {
               root: classNames(classes.switcherCommon, classes.switcherAllowed),
@@ -103,7 +106,7 @@ class RightsEditor extends Component {
     return (
       <Switcher
         emptyAllow={true}
-        emptyLabel={`${rightTitle}${divider}not modified`}
+        emptyLabel={t("RightsEditor_NOT_MODIFIED", { rightTitle, divider })}
         classes={{ root: classes.switcherCommon }}
         choices={choices}
         onChange={this.onChange(identity, right)}

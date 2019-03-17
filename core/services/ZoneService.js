@@ -3,6 +3,6 @@ module.exports = {
     const amount = await yaxys.db.count(trx, "accesspoint", {
       door: doorId,
     }, trx)
-    if (amount > 2) { throw new Error("Integrity violation: amount of accessPoints should not be more than 2") }
+    if (amount >= 2) { throw new Error("zoneService.TOO_MUCH_APS") }
   },
 }

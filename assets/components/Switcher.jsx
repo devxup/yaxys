@@ -2,7 +2,9 @@ import React, { Component } from "react"
 import PropTypes from "prop-types"
 import Button from "@material-ui/core/Button"
 import { isNil, findIndex } from "lodash"
+import { withNamespaces } from "react-i18next"
 
+@withNamespaces()
 export default class Switcher extends Component {
   static propTypes = {
     classes: PropTypes.object,
@@ -89,7 +91,7 @@ export default class Switcher extends Component {
         )}
         {...this.state.valueObject && this.state.valueObject.props}
       >
-        {(this.state.valueObject && this.state.valueObject.label) || "Unknown value"}
+        {(this.state.valueObject && this.state.valueObject.label) || this.props.t("Switcher_UNKNOWN_VALUE")}
       </Button>
     )
   }

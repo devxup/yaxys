@@ -12,6 +12,7 @@ import Created from "../components/Created.jsx"
 import ModelTableLoader from "../components/ModelTableLoader.jsx"
 import ModelDialog from "../components/ModelDialog.jsx"
 import Request from "../components/Request.jsx"
+import { withNamespaces } from "react-i18next"
 
 const CREATED_ACCESS_POINTS_MARKER = "accessPoints-page"
 const createdAccessPointsSelector = YaxysClue.selectors.byClue(
@@ -19,6 +20,7 @@ const createdAccessPointsSelector = YaxysClue.selectors.byClue(
   { marker: CREATED_ACCESS_POINTS_MARKER }
 )
 
+@withNamespaces()
 @withConstants
 @connect(
   (state, props) => ({
@@ -85,24 +87,24 @@ export default class AccessPoints extends Component {
   }
 
   render() {
-    const { constants } = this.props
+    const { constants, t } = this.props
     return (
-      <Wrapper breadcrumbs={["Access points"]}>
-        <h1 style={{ marginTop: 0 }}>Access points</h1>
+      <Wrapper breadcrumbs={[t("APS")]}>
+        <h1 style={{ marginTop: 0 }}>{t("APS")}</h1>
         <Button
           variant="text"
           color="secondary"
           onClick={this.onAdd}
-          title="Create access point"
+          title={t("AccessPoints_CREATE_AP")}
         >
-          Add access point
+          {t("AccessPoints_ADD_AP")}
         </Button>
         <Created
           items={this.props.createdAccessPoints}
           content={accessPoint =>
             accessPoint.name
               ? `#${accessPoint.id} ${accessPoint.name}`
-              : `Access point #${accessPoint.id}`
+              : t("AP_#", { ap: accessPoint.id })
           }
           url={accessPoint => `/access-points/${accessPoint.id}`}
           laterThan={ this.state.constructedAt }
@@ -120,15 +122,15 @@ export default class AccessPoints extends Component {
         </Paper>
         <br />
         <ModelDialog
-          title="Create new Access point"
+          title={t("AccessPoints_CREATE_AP")}
           open={this.state.addOpen}
           onClose={this.onAddClose}
           onReady={this.onAddReady}
           schema={constants.schemas.accesspoint}
           attributes={["name", "description"]}
-          btnReady="Create"
+          btnReady={t("CREATE")}
         >
-          Please provide name and description for the new access point.
+          {t("AccessPoints_CREATE_DESC")}
         </ModelDialog>
         <Request
           selector={this.state.deletedSelector}

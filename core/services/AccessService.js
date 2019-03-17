@@ -2,14 +2,14 @@ module.exports = {
 
   checkAccessRightIntegrity(accessRight) {
     if (!accessRight.user && !accessRight.userProfile) {
-      throw new Error("AccessRight should have user or userProfile")
+      throw new Error("accessService.SHOULD_HAVE_USER_OR_PROFILE")
     }
     if (accessRight.user && accessRight.userProfile) {
-      throw new Error("AccessRight should not have user and userProfile simultaneously")
+      throw new Error("accessService.SHOULD_NOT_HAVE_BOTH_USER_AND_PROFILE")
     }
 
     if (!accessRight.accessPoint && !accessRight.zoneTo && !accessRight.door) {
-      throw new Error("AccessRight should have accessPoint, zoneTo or door property")
+      throw new Error("accessService.SHOULD_HAVE_AP_OR_ZONE_OR_DOOR")
     }
 
     let alreadyHas = null;
@@ -17,7 +17,7 @@ module.exports = {
       const value = accessRight[key]
       if (value) {
         if (alreadyHas) {
-          throw new Error(`AccessRight should not have ${alreadyHas} and ${key} simultaneously`)
+          throw Object.assign(new Error("accessService.SHOULD_NOT_HAVE_BOTH"), { i18nData: { alreadyHas, key } })
         }
         alreadyHas = key
       }

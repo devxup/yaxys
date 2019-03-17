@@ -64,16 +64,16 @@ module.exports = class Adapter {
   _sanitize(identity, data) {
     const schema = this.schemas[identity]
     if (!schema) {
-      throw new Error(`schema ${identity} not found`)
+      throw new Error(yaxys.i18n("Adapter.SCHEMA_NOT_FOUND", { identity }))
     }
     if (!data) {
-      throw new Error("data is required")
+      throw new Error(yaxys.i18n("Adapter.DATA_REQUIRED"))
     }
     if (typeof data !== "object") {
-      throw new Error("data expected to be an object")
+      throw new Error(yaxys.i18n("Adapter.DATA_OBJECT_EXPECTED"))
     }
     if (Array.isArray(data)) {
-      throw new Error("data should not be an array")
+      throw new Error(yaxys.i18n("Adapter.DATA_NOT_ARRAY"))
     }
 
     return _.mapValues(data, (value, key) => {
@@ -134,7 +134,10 @@ module.exports = class Adapter {
 
     const validation = this._validate(identity, _.omitBy(fixedData, _.isNil))
     if (!validation.passed) {
-      throw new Error(`Property ${validation.errors[0].dataPath} validation fail: ${validation.errors[0].message}`)
+      throw new Error(yaxys.i18n("Adapter.VALIDATION_FAIL", {
+        property: validation.errors[0].dataPath,
+        message: validation.errors[0].message,
+      }))
     }
 
     await this.emitter.emit(`${identity}:create:before`, trx, fixedData)
@@ -169,18 +172,21 @@ module.exports = class Adapter {
    */
   async update(trx, identity, id, data) {
     if (!id) {
-      throw new Error("id is required")
+      throw new Error(yaxys.i18n("Adapter_ID_REQUIRED"))
     }
     const fixedData = this._sanitize(identity, data)
     const old = await this.findOne(trx, identity, { id })
 
     if (!old) {
-      throw new Error(`Update failed – record with id ${id} not found`)
+      throw new Error(yaxys.i18n("Adapter.ID_NOT_FOUND", { id }))
     }
 
     const validation = this._validate(identity, _.omitBy(Object.assign(old, fixedData), _.isNil))
     if (!validation.passed) {
-      throw new Error(`Property ${validation.errors[0].dataPath} validation fail: ${validation.errors[0].message}`)
+      throw new Error(yaxys.i18n("Adapter.VALIDATION_FAIL", {
+        property: validation.errors[0].dataPath,
+        message: validation.errors[0].message,
+      }))
     }
 
     await this.emitter.emit(`${identity}:update:before`, trx, old, fixedData)
@@ -206,7 +212,7 @@ module.exports = class Adapter {
    */
   async delete(trx, identity, id) {
     if (!id) {
-      throw new Error("id is required")
+      throw new Error(yaxys.i18n("Adapter_ID_REQUIRED"))
     }
 
     const old = await this.findOne(trx, identity, { id }, {})
@@ -379,7 +385,7 @@ module.exports = class Adapter {
         break
       }
       default:
-        throw new Error("Invalid connection type")
+        throw new Error(yaxys.i18n("Adapter.INVALID_CONNECTION"))
     }
   }
 
@@ -399,7 +405,11 @@ module.exports = class Adapter {
         const type = ["object", "array"].includes(property.type) ? "json" : property.type
 
         if (!POSTGRES_TYPES.includes(type)) {
-          throw new Error(`Incorrect data type ${property.type} of field ${key} in ${identity}`)
+          throw new Error(yaxys.i18n("Adapter.INCORRECT_DATA_TYPE", {
+            type: property.type,
+            field: key,
+            identity,
+          }))
         }
         const attribute = table[type](key)
         if (Array.isArray(schema.required) && schema.required.includes(key)) {

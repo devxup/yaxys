@@ -7,6 +7,7 @@ import classNames from "classnames"
 import { Button, TextField, CircularProgress } from "@material-ui/core"
 
 import YaxysClue, { queries } from "../services/YaxysClue"
+import { withNamespaces } from "react-i18next"
 
 const marker = "login-form"
 
@@ -16,18 +17,6 @@ const authClue = props => ({
 })
 
 const authSelector = YaxysClue.selectors.byClue(authClue, { marker })
-
-const FORM_SCHEMA = {
-  properties: {
-    loginOrEmail: {
-      title: "Login or e-mail",
-    },
-    password: {
-      title: "Password",
-      password: true,
-    },
-  },
-}
 
 @withStyles(theme => ({
   button: {
@@ -55,6 +44,7 @@ const FORM_SCHEMA = {
     color: theme.palette.error.dark,
   },
 }))
+@withNamespaces()
 @connect(
   (state, props) => ({
     auth: authSelector(state, props),
@@ -68,6 +58,7 @@ export default class LoginForm extends Component {
   static propTypes = {
     auth: PropTypes.object,
     authenticate: PropTypes.func.isRequired,
+    t: PropTypes.func,
   }
 
   constructor(props) {
@@ -100,7 +91,8 @@ export default class LoginForm extends Component {
     }
   }
 
-  renderProperty = (propertyKey, index) => {
+  renderProperty(FORM_SCHEMA, propertyKey, index) {
+    const { t } = this.props
     const property = FORM_SCHEMA.properties[propertyKey]
     if (!property) {
       return false
@@ -118,7 +110,7 @@ export default class LoginForm extends Component {
         label={property.title}
         margin={"normal"}
         error={error}
-        helperText={error ? "Should not be empty" : ""}
+        helperText={error ? t("LoginForm_NOT_EMPTY") : ""}
         value={this.state.form[propertyKey] || ""}
         onChange={this.onChange}
         onKeyPress={this.onKeyPress}
@@ -127,34 +119,46 @@ export default class LoginForm extends Component {
   }
 
   render() {
-    const { classes, auth } = this.props
+    const { classes, auth, t } = this.props
     const propertyKeys = Object.keys(FORM_SCHEMA.properties)
 
     const authJSON = auth?.toJSON?.() || auth
     const lastAttempt = this.state.hasAttempt && authJSON?.[authJSON?.length - 1]
 
+    const FORM_SCHEMA = {
+      properties: {
+        loginOrEmail: {
+          title: t("LOGIN_OR_EMAIL"),
+        },
+        password: {
+          title: t("PASSWORD"),
+          password: true,
+        },
+      },
+    }
+
     return (
       <Fragment>
-        {propertyKeys.map(this.renderProperty)}
+        {propertyKeys.map((property, index) => this.renderProperty(FORM_SCHEMA, property, index))}
         {lastAttempt?.pending ? (
           <Fragment>
             <CircularProgress className={classes.progress} size={30} />
             <span className={classNames(classes.message, classes.pending)}>
-              Checking credentials&hellip;
+              {t("LoginForm_CHECKING")}
             </span>
           </Fragment>
         ) : (
           <Fragment>
             <Button classes={{ root: classes.button }} variant="text" onClick={this.onLogin}>
-              Log in
+              {t("LOG_IN")}
             </Button>
             {lastAttempt?.error && (
               <span className={classNames(classes.message, classes.error)}>
                 {lastAttempt?.data?.message ||
                   lastAttempt?.data?.toString() ||
                   (lastAttempt?.meta?.responseMeta?.status === 403
-                    ? "Wrong credentials"
-                    : "An error occured")}
+                    ? t("LoginForm_WRONG_CREDS")
+                    : t("ERROR"))}
               </span>
             )}
           </Fragment>

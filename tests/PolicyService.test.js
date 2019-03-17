@@ -48,7 +48,7 @@ describe("PolicyService", () => {
         }
         await PolicyService.checkAndInjectOperator(mockCtx, mockNext)
         if (testCase.error) {
-          expect(mockThrow.mock.calls).toStrictEqual([[401, "unauthorized"]])
+          expect(mockThrow.mock.calls).toStrictEqual([[401, "policyService.UNAUTHORIZED"]])
           expect(mockCtx.operator).toBeNull()
         } else {
           expect(mockNext.mock.calls).toStrictEqual([[]])
@@ -127,7 +127,7 @@ describe("PolicyService", () => {
         await PolicyService.hasRight(testCase.modelKey, testCase.right)(mockCtx, mockNext)
         if (testCase.error) {
           expect(mockThrow.mock.calls).toStrictEqual([
-            [403, "You don't have rights to perform this action"],
+            [403, "policyService.NO_RIGHTS"],
           ])
           expect(mockNext.mock.calls).toStrictEqual([])
         } else {

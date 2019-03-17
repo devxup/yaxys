@@ -66,7 +66,7 @@ describe("RestService", () => {
           query: {},
         }),
         error: true,
-        result: [400, "id is required"],
+        result: [400, "restService.ID_REQUIRED"],
       },
       {
         title: "Zero id",
@@ -75,7 +75,7 @@ describe("RestService", () => {
           query: {},
         }),
         error: true,
-        result: [400, "id is required"],
+        result: [400, "restService.ID_REQUIRED"],
       },
       {
         title: "404",
@@ -87,7 +87,7 @@ describe("RestService", () => {
           findOne: () => null,
         },
         error: true,
-        result: [404, `${identity} #1 not found`],
+        result: [404, "restService.NOT_FOUND", { "identity": "m1", "number": 1 }],
       },
       {
         title: "Query with 1:m populate",
@@ -224,7 +224,7 @@ describe("RestService", () => {
           params: {},
         }),
         error: true,
-        result: [400, "id is required"],
+        result: [400, "restService.ID_REQUIRED"],
       },
     ],
     delete: [
@@ -244,7 +244,7 @@ describe("RestService", () => {
           params: {},
         }),
         error: true,
-        result: [400, "id is required"],
+        result: [400, "restService.ID_REQUIRED"],
       },
     ],
   }
@@ -284,6 +284,7 @@ describe("RestService", () => {
       beforeAll(async () => {
         PolicyServiceBuffer = global.PolicyService
         global.PolicyService = {
+          handleErrors: "handleErrors",
           checkAndInjectOperator: "checkAndInjectOperator",
           hasRight: (identity, method) => `hasRight(${identity}, ${method})`,
           removePasswordsFromResponse: (identity) => `removePasswordsFromResponse(${identity})`,
@@ -305,6 +306,7 @@ describe("RestService", () => {
           title: "Simple find",
           args: ["m1", "find"],
           expectedResult: [
+            "handleErrors",
             "checkAndInjectOperator",
             "hasRight(m1, read)",
             "find(m1)",
@@ -314,6 +316,7 @@ describe("RestService", () => {
           title: "Сreate",
           args: ["m1", "create"],
           expectedResult: [
+            "handleErrors",
             "checkAndInjectOperator",
             "hasRight(m1, create)",
             "sanitizeRequest(m1)",

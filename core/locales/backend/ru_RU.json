@@ -1,0 +1,17 @@
+{
+  "cli": {
+    "EMAIL_REQUIRED": "Необходимо ввести e-mail!",
+    "PASSWORD_REQUIRED": "Необходимо задать пароль!",
+    "CREATE_OPERATOR_SUCCESS": "Оператор успешно создан!",
+    "COMMAND_NOT_FOUND": "Команда {{command}} не найдена. Запуск с параметром --help выведет список допустимых команд."
+  },
+  "accessService": {
+    "SHOULD_NOT_HAVE_BOTH": "Невозможно присвоить одновременно {{alreadyHas}} и {{key}} для права доступа"
+  },
+  "authService": {
+    "WRONG_CREDENTIALS": "Неверный email или пароль"
+  },
+  "zoneService": {
+    "TOO_MUCH_APS": "Дверь не может иметь больше двух точек доступа!"
+  }
+}

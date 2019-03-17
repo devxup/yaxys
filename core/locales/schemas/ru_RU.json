@@ -1,0 +1,62 @@
+{
+  "accesspoint": {
+    "schemaTitle": "Точка доступа",
+    "title": "Название",
+    "description": "Описание",
+    "door": "Дверь",
+    "zoneTo": "В зону"
+  },
+  "accessright": {
+    "schemaTitle": "Право доступа",
+    "accessPoint": "Точка доступа",
+    "door": "Дверь",
+    "zoneTo": "Зона"
+  },
+  "credential": {
+    "schemaTitle": "Идентификатор",
+    "title": "Название",
+    "user": "Пользователь",
+    "code": "Код"
+  },
+  "door": {
+    "schemaTitle": "Дверь",
+    "title": "Название",
+    "description": "Описание",
+    "accessPoints": "Точки доступа",
+    "zones": "Зоны"
+  },
+  "operator": {
+    "schemaTitle": "Оператор",
+    "email": "E-mail",
+    "passwordHash": "Пароль",
+    "isAdministrator": "Является администратором",
+    "hasCustomRights": "Есть нестандартные права",
+    "profiles": "Профили операторов"
+  },
+  "operatorprofile": {
+    "schemaTitle": "Профиль оператора",
+    "title": "Название",
+    "description": "Описание",
+    "operators": "Операторы"
+  },
+  "user": {
+    "schemaTitle": "Пользователь",
+    "name": "Имя",
+    "profiles": "Профили пользователей",
+    "hasCustomRights": "Есть нестандартные права",
+    "credentials": "Идентификаторы"
+  },
+  "userprofile": {
+    "schemaTitle": "Профиль пользователя",
+    "title": "Название",
+    "description": "Описание",
+    "users": "Пользователи"
+  },
+  "zone": {
+    "schemaTitle": "Зона",
+    "title": "Название",
+    "description": "Описание",
+    "accessPoints": "Точки доступа",
+    "doors": "Двери"
+  }
+}

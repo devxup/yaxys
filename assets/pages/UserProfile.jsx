@@ -15,6 +15,7 @@ import Loader from "../components/Loader.jsx"
 import Update from "../components/Update.jsx"
 import ModelForm from "../components/ModelForm.jsx"
 import AccessRights from "../components/AccessRights.jsx"
+import { withNamespaces } from "react-i18next"
 
 const userProfileClue = props => ({
   identity: "userprofile",
@@ -31,6 +32,7 @@ const userProfileSelector = YaxysClue.selectors.byClue(userProfileClue)
   },
 }))
 @withConstants
+@withNamespaces()
 @connect(
   (state, props) => ({
     userProfile: userProfileSelector(state, props),
@@ -87,9 +89,8 @@ export default class UserProfile extends Component {
   }
 
   render() {
-    const { userProfile, match, classes, constants } = this.props
-    const idAndName = `#${match.params.id}${ userProfile?.success ? ` ${userProfile.data.name}` : "" }`
-
+    const { userProfile, match, classes, constants, t } = this.props
+    const entityAndId = t("ENTITY_USER_PROFILE", { id: match.params.id, item: userProfile })
     const update = (
       <Update
         clue={userProfileClue(this.props)}
@@ -103,12 +104,13 @@ export default class UserProfile extends Component {
         bottom={update}
         breadcrumbs={
           [
-            { title: "User profiles", url: "/user-profiles" },
-            `User profile ${idAndName}`,
+            { title: t("SETTINGS"), url: "/settings" },
+            { title: t("USER_PROFILES"), url: "/settings/user-profiles" },
+            entityAndId,
           ]
         }
       >
-        <h1 style={{ marginTop: 0 }}>User profile {idAndName}</h1>
+        <h1 style={{ marginTop: 0 }}>{entityAndId}</h1>
         <Loader item={userProfile}>
           <Fragment>
             <Paper className={classes.block}>
@@ -123,7 +125,7 @@ export default class UserProfile extends Component {
               />
             </Paper>
             <Paper className={classes.rights}>
-              <h5>The profile rights</h5>
+              <h5>{t("UserProfile_RIGHTS")}</h5>
               <AccessRights
                 mode={"user"}
                 userProperty={"userProfile"}

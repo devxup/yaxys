@@ -12,6 +12,7 @@ import Created from "../components/Created.jsx"
 import ModelTableLoader from "../components/ModelTableLoader.jsx"
 import ModelDialog from "../components/ModelDialog.jsx"
 import Request from "../components/Request.jsx"
+import { withNamespaces } from "react-i18next"
 
 const CREATED_PROFILES_MARKER = "profiles-page"
 const createdProfilesSelector = YaxysClue.selectors.byClue(
@@ -20,6 +21,7 @@ const createdProfilesSelector = YaxysClue.selectors.byClue(
 )
 
 @withConstants
+@withNamespaces()
 @connect(
   (state, props) => ({
     createdProfiles: createdProfilesSelector(state, props),
@@ -85,17 +87,17 @@ export default class OperatorProfiles extends Component {
   }
 
   render() {
-    const { constants } = this.props
+    const { constants, t } = this.props
     return (
-      <Wrapper breadcrumbs={[{ title: "Settings", url: "/settings" }, "Operator profiles"]}>
-        <h1 style={{ marginTop: 0 }}>Operator profiles</h1>
+      <Wrapper breadcrumbs={[{ title: t("SETTINGS"), url: "/settings" }, t("OPERATOR_PROFILES")]}>
+        <h1 style={{ marginTop: 0 }}>{t("OPERATOR_PROFILES")}</h1>
         <Button
           variant="text"
           color="secondary"
           onClick={this.onAdd}
           title="Create new profile"
         >
-          Add profile
+          {t("ADD_OPERATOR_PROFILE")}
         </Button>
         <Created
           items={this.props.createdProfiles}
@@ -115,15 +117,15 @@ export default class OperatorProfiles extends Component {
         </Paper>
         <br />
         <ModelDialog
-          title="Create new operator profile"
+          title={t("OperatorProfiles_CREATE_NEW")}
           open={this.state.addOpen}
           onClose={this.onAddClose}
           onReady={this.onAddReady}
           schema={constants.schemas.operatorprofile}
           attributes={["name"]}
-          btnReady="Create"
+          btnReady={t("CREATE")}
         >
-          Please provide name for the new operator profile.
+          {t("OperatorProfiles_CREATE_DESC")}
         </ModelDialog>
         <Request
           selector={this.state.deletedSelector}

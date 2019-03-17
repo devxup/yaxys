@@ -16,6 +16,7 @@ import Update from "../components/Update.jsx"
 import ModelForm from "../components/ModelForm.jsx"
 import Connection from "../components/Connection.jsx"
 import AccessRights from "../components/AccessRights.jsx"
+import { withNamespaces } from "react-i18next"
 
 const doorClue = props => ({
   identity: "door",
@@ -26,6 +27,7 @@ const doorSelector = YaxysClue.selectors.byClue(doorClue)
 
 @withStyles(theme => commonClasses(theme))
 @withConstants
+@withNamespaces()
 @connect(
   (state, props) => ({
     door: doorSelector(state, props),
@@ -84,16 +86,16 @@ export default class Door extends Component {
     this.forceUpdate()
   }
 
-  canAddAccessPoint(accessPoints) {
+  canAddAccessPoint = accessPoints => {
     if (accessPoints?.data?.length >= 2) {
-      alert("The door can't have more than 2 access points!")
+      alert(this.props.t("Door_TOO_MUCH_APS"))
       return false
     }
   }
 
   render() {
-    const { constants, door, match, classes } = this.props
-    const idAndName = `#${match.params.id}${ door?.success ? ` ${door.data.name}` : "" }`
+    const { constants, door, match, classes, t } = this.props
+    const entityAndId = t("ENTITY_DOOR", { id: match.params.id, item: door })
     const update = (
       <Update
         clue={doorClue(this.props)}
@@ -105,11 +107,15 @@ export default class Door extends Component {
     return (
       <Wrapper
         bottom={update}
-        breadcrumbs={[{ title: "Doors", url: "/doors" }, `Door ${idAndName}`]}
+        breadcrumbs={[
+          { title: t("DOORS"), url: "/doors" },
+          entityAndId,
+        ]}
       >
-        <h1 style={{ marginTop: 0 }}>Door {idAndName}</h1>
+        <h1 style={{ marginTop: 0 }}>{entityAndId}</h1>
         <Loader item={door}>
           <Paper className={classes.block}>
+            <h5>{t("PROPERTIES")}</h5>
             <ModelForm
               autoFocus={true}
               values={this.state.door}
@@ -122,7 +128,7 @@ export default class Door extends Component {
           </Paper>
         </Loader>
         <Paper className={classes.block}>
-          <h5>Access points</h5>
+          <h5>{t("AP")}</h5>
           <Connection
             relatedIdentity="accesspoint"
             relatedProperty="door"

@@ -11,6 +11,7 @@ import Button from "@material-ui/core/Button"
 import { isEqual, omit } from "lodash"
 import YaxysClue from "../services/YaxysClue"
 import ErrorDialog from "./ErrorDialog.jsx"
+import { withNamespaces } from "react-i18next"
 
 const styles = theme => ({
   button: {
@@ -58,6 +59,7 @@ const styles = theme => ({
 })
 
 @withStyles(styles)
+@withNamespaces()
 @connect(
   (state, props) => ({
     item: YaxysClue.selectors.byClue(() => props.clue)(state, props),
@@ -81,6 +83,7 @@ export default class Update extends Component {
     item: PropTypes.object,
     classes: PropTypes.object,
     readyAction: PropTypes.func,
+    t: PropTypes.func,
   }
 
   state = {
@@ -190,7 +193,7 @@ export default class Update extends Component {
   }
 
   renderContents() {
-    const { item, classes } = this.props
+    const { item, classes, t } = this.props
     const { status } = this.state
 
     const lastUpdateKey = Object.keys(item?.updates || {}).pop()
@@ -200,18 +203,18 @@ export default class Update extends Component {
       case "modified":
         return (
           <Button variant="text" className={classes.button} onClick={this.onSave}>
-            Save changes
+            {t("Update_SAVE_CHANGES")}
           </Button>
         )
       case "pending":
         return (
           <Fragment>
             <CircularProgress size={30} className={classes.progress} />
-            Saving changes&hellip;
+            {this.props.t("Update_SAVING_CHANGES")}
           </Fragment>
         )
       case "success":
-        return <div className={classes.message}>Changes have been saved</div>
+        return <div className={classes.message}>{this.props.t("Update_SAVED_CHANGES")}</div>
       case "error":
         return (
           <Fragment>
@@ -219,14 +222,14 @@ export default class Update extends Component {
               className={classNames(classes.button, classes.errorButton)}
               onClick={this.onSave}
             >
-              Retry
+              {this.props.t("RETRY")}
             </Button>
             <div className={classes.message}>
               {updateItem?.data?.message ||
                 updateItem?.data?.toString() ||
                 (updateItem?.meta?.responseMeta?.status === 403
-                  ? "Permission denied"
-                  : "An error occured")}
+                  ? this.props.t("PERM_DENIED")
+                  : this.props.t("ERROR"))}
             </div>
           </Fragment>
         )

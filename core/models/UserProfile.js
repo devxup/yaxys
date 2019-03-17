@@ -14,7 +14,7 @@ module.exports = {
         type: "string",
       },
       users: {
-        title: "users",
+        title: "Users",
         type: "array",
         virtual: true,
         connection: {

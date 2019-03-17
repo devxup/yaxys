@@ -19,6 +19,7 @@ import ModelForm from "../components/ModelForm.jsx"
 import ModelPicker from "../components/ModelPicker.jsx"
 import Created from "../components/Created.jsx"
 import ModelTable from "../components/ModelTable.jsx"
+import { withNamespaces } from "react-i18next"
 
 const operatorClue = props => ({
   identity: "operator",
@@ -48,6 +49,7 @@ const EDIBLE_PROPERTIES = ["id", "name", "login", "email", "isAdministrator", "r
   },
 }))
 @withConstants
+@withNamespaces()
 @connect(
   (state, props) => ({
     operator: operatorSelector(state, props),
@@ -175,7 +177,7 @@ export default class Operator extends Component {
     if (this.state.deletedHash[profile._binding_id]) {
       return
     }
-    if (!confirm(`Are you sure to detach profile #${profile.id} from the operator?`)) {
+    if (!confirm(this.props.t("Operator_DETACH", { profile : profile.id }))) {
       return
     }
     this._deleteProfile(profile._binding_id)
@@ -197,11 +199,8 @@ export default class Operator extends Component {
   }
 
   render() {
-    const { operator, match, classes, constants } = this.props
-    const idAndName = `#${match.params.id}${ 
-      operator?.success 
-        ? ` ${operator.data.name || operator.data.login || operator.data.email}` 
-        : "" }`
+    const { operator, match, classes, constants, t } = this.props
+    const entityAndId = t("ENTITY_OPERATOR", { id: match.params.id, item: operator })
     const update = (
       <Update
         clue={operatorClue(this.props)}
@@ -214,9 +213,12 @@ export default class Operator extends Component {
     return (
       <Wrapper
         bottom={update}
-        breadcrumbs={[{ title: "Operators", url: "/operators" }, `Operator ${idAndName}`]}
+        breadcrumbs={[
+          { title: t("OPERATORS"), url: "/operators" },
+          entityAndId,
+        ]}
       >
-        <h1 style={{ marginTop: 0 }}>Operator {idAndName}</h1>
+        <h1 style={{ marginTop: 0 }}>{entityAndId}</h1>
         <Loader item={operator}>
           <Fragment>
             <Paper className={classes.block}>
@@ -245,9 +247,9 @@ export default class Operator extends Component {
 
             {!this.state.operator.isAdministrator && (
               <Paper className={classes.profiles}>
-                <h5>The operator profiles</h5>
+                <h5>{t("Operator_PROFILES")}</h5>
                 {!operator?.data?.profiles?.length && (
-                  <p>Here you can manage profiles of the operator</p>
+                  <p>{t("Operator_PROFILES_DESC")}</p>
                 )}
                 <Button
                   variant="text"
@@ -255,16 +257,12 @@ export default class Operator extends Component {
                   onClick={this.onProfileOpen}
                   style={{ marginBottom: 10 }}
                 >
-                  Add profile
+                  {t("ADD_OPERATOR_PROFILE")}
                 </Button>
                 <Created
                   items={this.props.createdBindings}
                   content={binding =>
-                    binding.operatorProfile.name
-                      ? `Profile #${binding.operatorProfile.id} "${
-                          binding.operatorProfile.name
-                        }"`
-                      : `Profile #${binding.operatorProfile}`
+                    t("ENTITY_OPERATOR", { id: binding.operatorProfile.id, data: binding.operatorProfile })
                   }
                   url={binding => `/settings/operator-profiles/${binding.operatorProfile.id}`}
                   laterThan={ this.state.constructedAt }
@@ -283,7 +281,7 @@ export default class Operator extends Component {
               </Paper>
             )}
             <Paper className={classes.rights}>
-              <h5>Custom operator&#39;s rights</h5>
+              <h5>{t("Operator_CUSTOM_RIGHTS")}</h5>
               {
                 this.state.operator.isAdministrator
                   ? (
@@ -311,7 +309,7 @@ export default class Operator extends Component {
             />
             <Request
               selector={this.state.deletedSelector}
-              message={"Detaching profile"}
+              message={t("Operator_DETACHING")}
               attemptAt={ this.state.deleteAttemptAt }
               onSuccess={ this.onProfileDeleted }
             />

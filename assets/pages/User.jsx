@@ -20,6 +20,7 @@ import Created from "../components/Created.jsx"
 import ModelTable from "../components/ModelTable.jsx"
 import AccessRights from "../components/AccessRights.jsx"
 import Connection from "../components/Connection.jsx"
+import { withNamespaces } from "react-i18next"
 
 const userClue = props => ({
   identity: "user",
@@ -39,6 +40,7 @@ const EDIBLE_PROPERTIES = ["id", "name"]
 
 @withStyles(theme => commonClasses(theme))
 @withConstants
+@withNamespaces()
 @connect(
   (state, props) => ({
     user: userSelector(state, props),
@@ -78,11 +80,7 @@ export default class User extends Component {
 
   props2UserState(propsArg) {
     const props = propsArg || this.props
-    const user =
-      props.user && props.user.success ? pick(props.user.data, EDIBLE_PROPERTIES) : {}
-
-
-    return user
+    return props.user && props.user.success ? pick(props.user.data, EDIBLE_PROPERTIES) : {}
   }
 
   onFormChange = data => {
@@ -148,7 +146,7 @@ export default class User extends Component {
     if (this.state.deletedHash[profile._binding_id]) {
       return
     }
-    if (!confirm(`Are you sure to detach profile #${profile.id} from the user?`)) {
+    if (!confirm(this.props.t("User_DETACH", { profile: profile.id }))) {
       return
     }
     this._deleteProfile(profile._binding_id)
@@ -160,8 +158,8 @@ export default class User extends Component {
   }
 
   render() {
-    const { user, match, classes, constants } = this.props
-    const idAndName = `#${match.params.id}${ user?.success ? ` ${user.data.name}` : "" }`
+    const { user, match, classes, constants, t } = this.props
+    const entityAndId = t("ENTITY_USER", { id: match.params.id, item: user })
     const schema = constants.schemas.user
     const update = (
       <Update
@@ -175,9 +173,12 @@ export default class User extends Component {
     return (
       <Wrapper
         bottom={update}
-        breadcrumbs={[{ title: "Users", url: "/users" }, `User ${idAndName}`]}
+        breadcrumbs={[
+          { title: t("USERS"), url: "/users" },
+          entityAndId,
+        ]}
       >
-        <h1 style={{ marginTop: 0 }}>User {idAndName}</h1>
+        <h1 style={{ marginTop: 0 }}>{entityAndId}</h1>
         <Loader item={user}>
           <Paper className={classes.block}>
             <ModelForm
@@ -192,9 +193,9 @@ export default class User extends Component {
           </Paper>
         </Loader>
         <Paper className={classes.block}>
-          <h5>The user profiles</h5>
+          <h5>{t("USER_PROFILES")}</h5>
           {!user?.data?.profiles?.length && (
-            <p>Here you can manage profiles of the user</p>
+            <p>{t("User_MANAGE_PROFILES")}</p>
           )}
           <Button
             variant="text"
@@ -202,16 +203,12 @@ export default class User extends Component {
             onClick={this.onProfileOpen}
             style={{ marginBottom: 10 }}
           >
-            Add profile
+            {t("ADD_USER_PROFILE")}
           </Button>
           <Created
             items={this.props.createdBindings}
             content={binding =>
-              binding.userProfile.name
-                ? `Profile #${binding.userProfile.id} "${
-                    binding.userProfile.name
-                  }"`
-                : `Profile #${binding.userProfile}`
+              t("ENTITY_USER_PROFILE", { id: binding.userProfile.id, data: binding.userProfile })
             }
             url={binding => `/user-profiles/${binding.userProfile.id}`}
             laterThan={ this.state.constructedAt }
@@ -229,7 +226,7 @@ export default class User extends Component {
           )}
         </Paper>
         <Paper className={classes.block}>
-          <h5>Custom access rights of the user</h5>
+          <h5>{t("User_CUSTOM_RIGHTS")}</h5>
           <AccessRights
             mode={"user"}
             userProperty={"user"}
@@ -237,7 +234,7 @@ export default class User extends Component {
           />
         </Paper>
         <Paper className={classes.block}>
-          <h5>Credentials</h5>
+          <h5>{t("CREDENTIALS")}</h5>
           <Connection
             relatedIdentity="credential"
             relatedProperty="user"
@@ -255,7 +252,7 @@ export default class User extends Component {
         />
         <Request
           selector={this.state.deletedSelector}
-          message={"Detaching profile"}
+          message={t("User_DETACHING")}
           attemptAt={ this.state.deleteAttemptAt }
           onSuccess={ this.onProfileDeleted }
         />

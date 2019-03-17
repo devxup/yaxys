@@ -14,6 +14,7 @@ import Created from "../components/Created.jsx"
 import ModelDialog from "../components/ModelDialog.jsx"
 import ModelTableLoader from "../components/ModelTableLoader.jsx"
 import Request from "../components/Request.jsx"
+import { withNamespaces } from "react-i18next"
 
 const CREATED_USERS_MARKER = "users-page"
 const createdUsersSelector = YaxysClue.selectors.byClue(
@@ -22,6 +23,7 @@ const createdUsersSelector = YaxysClue.selectors.byClue(
 )
 
 @withConstants
+@withNamespaces()
 @connect(
   (state, props) => ({
     createdUsers: createdUsersSelector(state, props),
@@ -87,21 +89,21 @@ export default class Users extends Component {
   }
 
   render() {
-    const { constants } = this.props
+    const { constants, t } = this.props
     return (
-      <Wrapper breadcrumbs={["Users"]}>
-        <h1 style={{ marginTop: 0 }}>Users</h1>
+      <Wrapper breadcrumbs={[t("USERS")]}>
+        <h1 style={{ marginTop: 0 }}>{t("USERS")}</h1>
         <p>
-          Also, you can control users&#39; rights by{" "}
-          <Link to={"/user-profiles"}>managing their profiles</Link>
+          {t("Users_CONTROL_OPERATOR_RIGHTS")}
+          <Link to={"/user-profiles"}>{t("Users_CONTROL_OPERATOR_RIGHTS_LINK")}</Link>
         </p>
         <Button
           variant="text"
           color="secondary"
           onClick={this.onAdd}
-          title="Create user"
+          title={t("Users_CREATE")}
         >
-          Add user
+          {t("Users_ADD_USER")}
         </Button>
         <Created
           items={this.props.createdUsers}
@@ -122,15 +124,15 @@ export default class Users extends Component {
         </Paper>
         <br />
         <ModelDialog
-          title="Create new user"
+          title={t("Users_CREATE")}
           open={this.state.addOpen}
           onClose={this.onAddClose}
           onReady={this.onAddReady}
           schema={constants.schemas.user}
           attributes={["name"]}
-          btnReady="Create"
+          btnReady={t("CREATE")}
         >
-          Please provide name for the new user.
+          {t("Users_CREATE_DESC")}
         </ModelDialog>
         <Request
           selector={this.state.deletedSelector}

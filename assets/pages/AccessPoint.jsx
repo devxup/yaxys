@@ -15,6 +15,7 @@ import Loader from "../components/Loader.jsx"
 import Update from "../components/Update.jsx"
 import ModelForm from "../components/ModelForm.jsx"
 import AccessRights from "../components/AccessRights.jsx"
+import { withNamespaces } from "react-i18next"
 
 const accessPointClue = props => ({
   identity: "accesspoint",
@@ -30,6 +31,7 @@ const PROPS_2_WATCH = ["id", "name", "description", "door", "zoneTo"]
   ...commonClasses(theme),
 }))
 @withConstants
+@withNamespaces()
 @connect(
   (state, props) => ({
     accessPoint: accessPointSelector(state, props),
@@ -91,8 +93,10 @@ export default class AccessPoint extends Component {
   }
 
   render() {
-    const { constants, accessPoint, match, classes } = this.props
-    const idAndName = `#${match.params.id}${ accessPoint?.success ? ` ${accessPoint.data.name}` : "" }`
+    const { constants, accessPoint, match, classes, t } = this.props
+    // const idAndName = `#${match.params.id}${ accessPoint?.success ? ` ${accessPoint.data.name}` : "" }`
+    const entityAndId = t("AP_#", { ap: match.params.id, item: accessPoint })
+      // `#${match.params.id}${ accessPoint?.success ? ` ${accessPoint.data.name}` : "" }`
     const update = (
       <Update
         clue={accessPointClue(this.props)}
@@ -107,14 +111,15 @@ export default class AccessPoint extends Component {
       <Wrapper
         bottom={update}
         breadcrumbs={[
-          { title: "Access points", url: "/access-points" },
-          `Access point ${idAndName}`,
+          { title: t("AP"), url: "/access-points" },
+          entityAndId,
         ]}
       >
-        <h1 style={{ marginTop: 0 }}>Access point { idAndName }</h1>
+        <h1 style={{ marginTop: 0 }}>{ entityAndId }</h1>
         <Loader item={accessPoint}>
           <Fragment>
             <Paper className={classes.block}>
+              <h5>{t("PROPERTIES")}</h5>
               <ModelForm
                 autoFocus={true}
                 values={this.state.accessPoint}
@@ -126,7 +131,7 @@ export default class AccessPoint extends Component {
               />
             </Paper>
             <Paper className={classes.block}>
-              <h5>Door and Zone</h5>
+              <h5>{t("AccessPoint_DOOR_AND_ZONE")}</h5>
               <ModelForm
                 autoFocus={true}
                 values={this.state.accessPoint}
@@ -138,7 +143,7 @@ export default class AccessPoint extends Component {
               />
             </Paper>
             <Paper className={classes.block}>
-              <h5>Users and profiles having access to this Point:</h5>
+              <h5>{t("AccessPoint_USERS_AND_PROFILES")}</h5>
               <AccessRights
                 mode={"hardware"}
                 hardwareProperty={"accessPoint"}

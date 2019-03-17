@@ -11,21 +11,23 @@ import Wrapper from "../components/Wrapper.jsx"
 import LoginForm from "../components/LoginForm.jsx"
 
 import { meSelector } from "../services/Me"
+import { withNamespaces } from "react-i18next"
 
 @withStyles(commonClasses)
+@withNamespaces()
 @connect((state, props) => ({
   me: meSelector(state),
 }))
 export default class Login extends Component {
   render() {
-    const { classes, me } = this.props
+    const { classes, me, t } = this.props
     if (me) {
       return <Redirect to={"/me"} />
     }
 
     return (
-      <Wrapper breadcrumbs={["Login"]}>
-        <h1 className={classes.h1}>Login to Yaxys</h1>
+      <Wrapper breadcrumbs={[t("LOGIN")]}>
+        <h1 className={classes.h1}>{t("Login_TITLE")}</h1>
         <Grid container>
           <Grid item xs={12} sm={10} md={8} lg={6}>
             <Paper className={classes.block}>

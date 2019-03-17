@@ -8,6 +8,7 @@ import { withRouter } from "react-router"
 
 import LoginDialog from "./LoginDialog.jsx"
 import Breadcrumbs from "../components/Breadcrumbs.jsx"
+import LanguageSelector from "./LanguageSelector.jsx"
 
 import classNames from "classnames"
 import Drawer from "@material-ui/core/Drawer"
@@ -31,6 +32,7 @@ import SettingsIcon from "@material-ui/icons/Settings"
 import Avatar from "@material-ui/core/Avatar"
 
 import { meSelector } from "../services/Me"
+import { withNamespaces } from "react-i18next"
 
 const drawerWidth = 240
 const lists = {
@@ -204,6 +206,7 @@ const styles = theme => ({
 
 @withRouter
 @withStyles(styles)
+@withNamespaces()
 @connect((state, props) => ({
   me: meSelector(state),
 }))
@@ -214,6 +217,7 @@ export default class Wrapper extends Component {
     bottom: PropTypes.object,
     breadcrumbs: PropTypes.array,
     isBreadcrumbsRoot: PropTypes.bool,
+    t: PropTypes.func,
   }
 
   state = {
@@ -251,7 +255,7 @@ export default class Wrapper extends Component {
     }
     return (
       <div className={classes.authLogin} onClick={this.openLoginDialog}>
-        <span className={classes.authLoginSpan}>Log in</span>
+        <span className={classes.authLoginSpan}>{this.props.t("LOG_IN")}</span>
         <Avatar className={classes.avatar}>
           <PersonIcon />
         </Avatar>
@@ -326,6 +330,7 @@ export default class Wrapper extends Component {
                 isRoot={ this.props.isBreadcrumbsRoot }
                 items={ this.props.breadcrumbs }
               />
+            <LanguageSelector />
             {this.renderAuth()}
             <LoginDialog open={this.state.loginOpen} onClose={this.onCloseLoginDialog} />
           </Toolbar>
