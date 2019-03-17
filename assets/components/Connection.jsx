@@ -159,13 +159,14 @@ export default class Connection extends Component {
 	}
 
 	onDelete = model => {
-		const { constants, relatedIdentity, canDelete } = this.props
+		const { constants, relatedIdentity, canDelete, t } = this.props
 		const relatedSchema = constants.schemas[relatedIdentity?.toLowerCase()]
 		if (canDelete?.(model) === false) {
 			return
 		}
 
-		if (!confirm(this.props.t("Connection_CONFIRM", { title: relatedSchema.title }))) {
+		const subject = `${t("DEFINITE_ARTICLE")} ${t(relatedSchema.i18Key, { context: "ACCUSATIVE" })}`
+		if (!confirm(`${t("ARE_YOU_SURE_TO")} ${t("DETACH").toLowerCase()} ${subject}?`)) {
 			return
 		}
 		this.updateRelated(model, null)
@@ -182,6 +183,7 @@ export default class Connection extends Component {
 			url,
 			hideDeleteColumn,
 			classes,
+      t,
 		} = this.props
 		const relatedSchema = constants.schemas[relatedIdentity?.toLowerCase()]
 
@@ -193,7 +195,7 @@ export default class Connection extends Component {
 					onClick={this.onPickerOpen}
 					className={classes.button}
 				>
-					{this.props.t("ADD_EXISTING")}
+					{t("ADD_EXISTING")}
 				</Button>
 				<Button
 					variant="text"
@@ -201,7 +203,7 @@ export default class Connection extends Component {
 					onClick={this.onCreatorOpen}
 					className={classes.button}
 				>
-					{this.props.t("CREATE_NEW")}
+					{t("CREATE_NEW")}
 				</Button>
 				<ModelTable
 					schema={relatedSchema}
@@ -230,8 +232,8 @@ export default class Connection extends Component {
 				)}
 				<Request
 					selector={this.state.relatedUpdateSelector}
-					message={this.props.t("Connection_UPDATING", { title: relatedSchema.title || relatedIdentity })}
-					attemptAt={this.state.relatedUpdateAttemptAt}
+          message={ `${t("UPDATE_PROCESS")} ${t("DEFINITE_ARTICLE")} ${t(relatedSchema.i18Key, { context: "PLURAL" })}`}
+          attemptAt={this.state.relatedUpdateAttemptAt}
 					onSuccess={this.onRelatedUpdated}
 					onRepeat={this.onRelatedUpdateRepeat}
 				/>

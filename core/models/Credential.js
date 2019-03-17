@@ -14,6 +14,7 @@ const getCodePattern = (key = "decimal") => {
 module.exports = {
   schema: {
     title: "Credential",
+    i18Key: "CREDENTIAL",
     defaultProperties: ["id", "user", "code", "note"],
     properties: {
       id: {

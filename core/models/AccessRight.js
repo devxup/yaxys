@@ -1,6 +1,7 @@
 module.exports = {
   schema: {
     title: "Access Right",
+    i18Key: "AR",
     uniqueKeys: {
       integrity: ["user", "userProfile", "accessPoint", "door", "zoneTo"],
     },

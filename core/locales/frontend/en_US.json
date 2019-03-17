@@ -88,13 +88,21 @@
     "LOGOUT": "Logout"
   },
 
+  "ACCESS_RIGHTS_COMPONENT": {
+    "GRANTED_RIGHT": "Granted access to {{TARGET}}"
+  },
+
   "CREATE": "Create",
+  "CREATE_NEW": "Create new",
   "ADD": "Add",
+  "ADD_EXISTING": "Add existing",
   "ADD_PROCESS": "Adding",
   "DELETE": "Delete",
   "DELETE_PROCESS": "Deleting",
   "DETACH": "Detach",
   "DETACH_PROCESS": "Detaching",
+  "UPDATE": "Update",
+  "UPDATE_PROCESS": "Updating",
 
   "CANCEL": "Cancel",
   "DEFINITE_ARTICLE": "the",

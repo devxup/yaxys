@@ -68,6 +68,7 @@ export default class Users extends Component {
     }
     const entityInstance = t("ENTITY_INSTANCE", {
       entity: "$t(USER)",
+      case: "ACCUSATIVE",
       info: {
         id: item.id,
         data: item,

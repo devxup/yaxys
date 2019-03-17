@@ -68,6 +68,7 @@ export default class Operators extends Component {
     }
     const entityInstance = t("ENTITY_INSTANCE", {
       entity: "$t(OPERATOR)",
+      case: "ACCUSATIVE",
       info: {
         id: item.id,
         data: item,

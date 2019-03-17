@@ -67,6 +67,7 @@ export default class Zones extends Component {
     }
     const entityInstance = t("ENTITY_INSTANCE", {
       entity: "$t(ZONE)",
+      case: "ACCUSATIVE",
       info: {
         id: item.id,
         data: item,

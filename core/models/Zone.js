@@ -1,6 +1,7 @@
 module.exports = {
   schema: {
     title: "Zone",
+    i18Key: "ZONE",
     defaultProperties: ["id", "name", "description"],
     properties: {
       id: {

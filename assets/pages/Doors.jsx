@@ -67,6 +67,7 @@ export default class Doors extends Component {
     }
     const entityInstance = t("ENTITY_INSTANCE", {
       entity: "$t(DOOR)",
+      case: "ACCUSATIVE",
       info: {
         id: item.id,
         data: item,

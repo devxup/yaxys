@@ -25,15 +25,15 @@ const createdAccessRightSelector = YaxysClue.selectors.byClue(
 const accessRightsClue = props => ({
   identity: "accessright",
   query: queries.FIND,
-  where: props.mode === "user" ?
-    {
-      [props.userProperty]: props.userPropertyValue,
-    } : {
-      [props.hardwareProperty]: props.hardwarePropertyValue,
-    },
-  populate: props.mode === "user"
-    ? "accessPoint,door,zoneTo"
-    : "user,userProfile",
+  where:
+    props.mode === "user"
+      ? {
+          [props.userProperty]: props.userPropertyValue,
+        }
+      : {
+          [props.hardwareProperty]: props.hardwarePropertyValue,
+        },
+  populate: props.mode === "user" ? "accessPoint,door,zoneTo" : "user,userProfile",
 })
 const accessRightsSelector = YaxysClue.selectors.byClue(accessRightsClue)
 
@@ -76,9 +76,15 @@ export default class AccessRights extends Component {
 
   static accessRightToURL(accessRight) {
     const { accessPoint, door, zoneTo } = accessRight
-    if (accessPoint) { return `/access-points/${accessPoint.id || accessPoint}` }
-    if (door) { return `/doors/${door.id || door}` }
-    if (zoneTo) { return `/zones/${zoneTo.id || zoneTo}` }
+    if (accessPoint) {
+      return `/access-points/${accessPoint.id || accessPoint}`
+    }
+    if (door) {
+      return `/doors/${door.id || door}`
+    }
+    if (zoneTo) {
+      return `/zones/${zoneTo.id || zoneTo}`
+    }
 
     return ""
   }
@@ -102,19 +108,29 @@ export default class AccessRights extends Component {
     this.props.loadAccessRights(accessRightsClue(this.props), { force: true })
   }
 
-  accessRightToURL = (accessRight) => {
+  accessRightToURL = accessRight => {
     const { mode } = this.props
     const { accessPoint, door, zoneTo, user, userProfile } = accessRight
 
     switch (mode) {
       case "hardware":
-        if (user) { return `/users/${user.id || user}` }
-        if (userProfile) { return `/user-profiles/${userProfile.id || userProfile}` }
+        if (user) {
+          return `/users/${user.id || user}`
+        }
+        if (userProfile) {
+          return `/user-profiles/${userProfile.id || userProfile}`
+        }
         break
       case "user":
-        if (accessPoint) { return `/access-points/${accessPoint.id || accessPoint}` }
-        if (door) { return `/doors/${door.id || door}` }
-        if (zoneTo) { return `/zones/${zoneTo.id || zoneTo}` }
+        if (accessPoint) {
+          return `/access-points/${accessPoint.id || accessPoint}`
+        }
+        if (door) {
+          return `/doors/${door.id || door}`
+        }
+        if (zoneTo) {
+          return `/zones/${zoneTo.id || zoneTo}`
+        }
         break
     }
 
@@ -128,17 +144,18 @@ export default class AccessRights extends Component {
     return `${schema.title} #${accessRight[property].id} ${accessRight[property].name}`
   }
 
-  accessRightToText = (accessRight) => {
+  accessRightToText = accessRight => {
     const { mode, t } = this.props
 
-    const possibleProperties = mode === "hardware"
-      ? ["user", "userProfile"]
-      : ["accessPoint", "door", "zoneTo"]
+    const possibleProperties =
+      mode === "hardware" ? ["user", "userProfile"] : ["accessPoint", "door", "zoneTo"]
 
     const property = possibleProperties.find(candidate => !!accessRight[candidate])
-    // `Granted access to ${this._titleIdAndName(accessRight, property)}`
+
     return property
-      ? t("AccessRights_GRANTED", { accessRight, property })
+      ? t("ACCESS_RIGHTS_COMPONENT.GRANTED_RIGHT", {
+          target: this._titleIdAndName(accessRight, property),
+        })
       : `#${accessRight.id}`
   }
 
@@ -176,15 +193,11 @@ export default class AccessRights extends Component {
         identity: "accessright",
         data: {
           [this.state.pickerProperty]: item.id,
-          ...(
-            mode === "hardware"
-              ? { [hardwareProperty]: hardwarePropertyValue }
-              : { [userProperty]: userPropertyValue }
-          ),
+          ...(mode === "hardware"
+            ? { [hardwareProperty]: hardwarePropertyValue }
+            : { [userProperty]: userPropertyValue }),
         },
-        populate: mode === "hardware"
-          ? "user,userProfile"
-          : "accessPoint,door,zoneTo",
+        populate: mode === "hardware" ? "user,userProfile" : "accessPoint,door,zoneTo",
       },
       { marker: CREATED_ACCESS_RIGHT_MARKER }
     )
@@ -202,26 +215,35 @@ export default class AccessRights extends Component {
     })
 
     this.setState({
-      deletedSelector: YaxysClue.selectors.byClue(
-        props => ({ identity: "accessright", query: queries.DELETE, id })
-      ),
+      deletedSelector: YaxysClue.selectors.byClue(props => ({
+        identity: "accessright",
+        query: queries.DELETE,
+        id,
+      })),
       deletedAccessRightId: id,
       deleteAttemptAt: new Date().getTime(),
     })
   }
 
-  onDeleteAccessRight = (accessRight) => {
+  onDeleteAccessRight = accessRight => {
+    const { t } = this.props
     if (this.state.deletedHash[accessRight.id]) {
       return
     }
-    if (!confirm(this.props.t("AccessRights_CONFIRM_DELETE", { ar: accessRight.id }))) {
+    if (
+      !confirm(
+        `${t("ARE_YOU_SURE_TO")} ${t("DELETE").toLowerCase()} ${t("DEFINITE_ARTICLE")} ${t("AR", {
+          context: "ACCUSATIVE",
+        })}?`
+      )
+    ) {
       return
     }
     this._deleteAccessRight(accessRight.id)
   }
 
-  onAccessRightDeleted = (item) => {
-    this.state.deletedHash[item?.meta?.clue?.id] = true
+  onAccessRightDeleted = item => {
+    this.state.deletedHash[(item?.meta?.clue?.id)] = true
     this.forceUpdate()
   }
 
@@ -235,70 +257,65 @@ export default class AccessRights extends Component {
           items={createdAccessRights}
           content={this.accessRightToText}
           url={this.accessRightToURL}
-          laterThan={ this.state.constructedAt }
+          laterThan={this.state.constructedAt}
         />
         <Loader item={accessRights}>
-          {
-            mode === "hardware"
-              ? (
-                <Fragment>
-                  <Button
-                    variant="text"
-                    color="secondary"
-                    onClick={this.onAdd("user")}
-                    className={classes.button}
-                  >
-                    {t("ADD_USER")}
-                  </Button>
-                  <Button
-                    variant="text"
-                    color="secondary"
-                    onClick={this.onAdd("userProfile")}
-                    className={classes.button}
-                  >
-                    {t("ADD_USER_PROFILE")}
-                  </Button>
-                </Fragment>
-              ) : (
-                <Fragment>
-                  <Button
-                    variant="text"
-                    color="secondary"
-                    onClick={this.onAdd("accessPoint")}
-                    className={classes.button}
-                  >
-                    {t("ADD_AP")}
-                  </Button>
-                  <Button
-                    variant="text"
-                    color="secondary"
-                    onClick={this.onAdd("door")}
-                    className={classes.button}
-                  >
-                    {t("ADD_DOOR")}
-                  </Button>
-                  <Button
-                    variant="text"
-                    color="secondary"
-                    onClick={this.onAdd("zoneTo")}
-                    className={classes.button}
-                  >
-                    {t("ADD_ZONE")}
-                  </Button>
-                </Fragment>
-              )
-          }
+          {mode === "hardware" ? (
+            <Fragment>
+              <Button
+                variant="text"
+                color="secondary"
+                onClick={this.onAdd("user")}
+                className={classes.button}
+              >
+                {`${t("ADD")} ${t("USER", { context: "ACCUSATIVE" })}`}
+              </Button>
+              <Button
+                variant="text"
+                color="secondary"
+                onClick={this.onAdd("userProfile")}
+                className={classes.button}
+              >
+                {`${t("ADD")} ${t("USER_PROFILE", { context: "ACCUSATIVE" })}`}
+              </Button>
+            </Fragment>
+          ) : (
+            <Fragment>
+              <Button
+                variant="text"
+                color="secondary"
+                onClick={this.onAdd("accessPoint")}
+                className={classes.button}
+              >
+                {`${t("ADD")} ${t("AP", { context: "ACCUSATIVE" })}`}
+              </Button>
+              <Button
+                variant="text"
+                color="secondary"
+                onClick={this.onAdd("door")}
+                className={classes.button}
+              >
+                {`${t("ADD")} ${t("DOOR", { context: "ACCUSATIVE" })}`}
+              </Button>
+              <Button
+                variant="text"
+                color="secondary"
+                onClick={this.onAdd("zoneTo")}
+                className={classes.button}
+              >
+                {`${t("ADD")} ${t("ZONE", { context: "ACCUSATIVE" })}`}
+              </Button>
+            </Fragment>
+          )}
           <ModelTable
             schema={schema}
             data={accessRights?.data || []}
             columns={
-              mode === "hardware"
-                ? ["user", "userProfile"]
-                : ["accessPoint", "door", "zoneTo"]
+              mode === "hardware" ? ["user", "userProfile"] : ["accessPoint", "door", "zoneTo"]
             }
             url={this.accessRightToURL}
             onDelete={this.onDeleteAccessRight}
-            deletedHash={ this.state.deletedHash }
+            deletedHash={this.state.deletedHash}
             deletedKey="id"
           />
         </Loader>
@@ -312,9 +329,11 @@ export default class AccessRights extends Component {
         )}
         <Request
           selector={this.state.deletedSelector}
-          message={this.props.t("AccessRights_DELETING")}
-          attemptAt={ this.state.deleteAttemptAt }
-          onSuccess={ this.onAccessRightDeleted }
+          message={`${t("DELETE_PROCESS")} ${t("DEFINITE_ARTICLE")} ${t("AR", {
+            context: "GENITIVE",
+          })}`}
+          attemptAt={this.state.deleteAttemptAt}
+          onSuccess={this.onAccessRightDeleted}
         />
       </Fragment>
     )

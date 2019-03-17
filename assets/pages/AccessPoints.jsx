@@ -66,6 +66,7 @@ export default class AccessPoints extends Component {
     }
     const entityInstance = t("ENTITY_INSTANCE", {
       entity: "$t(AP)",
+      case: "ACCUSATIVE",
       info: {
         id: item.id,
         data: item,

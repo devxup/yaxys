@@ -97,7 +97,7 @@ export default class OperatorProfiles extends Component {
           onClick={this.onAdd}
           title="Create new profile"
         >
-          {t("ADD_OPERATOR_PROFILE")}
+          { `${t("CREATE")} ${t("OPERATOR_PROFILE", { "context": "ACCUSATIVE" })}`}
         </Button>
         <Created
           items={this.props.createdProfiles}

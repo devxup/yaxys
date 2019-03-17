@@ -1,6 +1,7 @@
 module.exports = {
   schema: {
     title: "Operator Profile",
+    i18Key: "OPERATOR_PROFILE",
     properties: {
       id: {
         type: "integer",
