@@ -41,7 +41,8 @@
     "name": "Name",
     "profiles": "User profiles",
     "hasCustomRights": "Has custom rights",
-    "credentials": "Credentials"
+    "credentials": "Credentials",
+    "credentialCode": "Credential code"
   },
   "userprofile": {
     "name": "Name",

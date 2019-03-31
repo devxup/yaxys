@@ -99,6 +99,7 @@ export default class Users extends Component {
 
   render() {
     const { constants, t } = this.props
+    const { settings, schemas } = constants
     return (
       <Wrapper breadcrumbs={[t("USER_PLURAL")]}>
         <h1 style={{ marginTop: 0 }}>{t("USER_PLURAL")}</h1>
@@ -123,7 +124,13 @@ export default class Users extends Component {
           <ModelTableLoader
             identity="user"
             url={user => `/users/${user.id}`}
-            columns={["id", "name", "hasCustomRights", "profiles"]}
+            columns={[
+              "id",
+              "name",
+              "hasCustomRights",
+              "profiles",
+              ...(settings.singleCredential ? ["credentialCode"] : []),
+            ]}
             additionalClueProperties={{ populate: "profiles" }}
             onDelete={this.onDeleteItem}
             deletedHash={ this.state.deletedHash }
@@ -136,7 +143,7 @@ export default class Users extends Component {
           open={this.state.addOpen}
           onClose={this.onAddClose}
           onReady={this.onAddReady}
-          schema={constants.schemas.user}
+          schema={schemas.user}
           attributes={["name"]}
           btnReady={t("CREATE")}
         >

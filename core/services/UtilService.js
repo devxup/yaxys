@@ -27,6 +27,18 @@ module.exports = {
       },
       {}
     )
+    if (settings.singleCredential) {
+      _.merge(
+        schemas.user.properties.credentialCode,
+        schemas.credential.properties.code,
+        {
+          title: schemas.user.properties.credentialCode.title,
+          hidden: false,
+          virtual: true,
+        },
+      )
+    }
+
     module.exports.constants.languages = yaxys.languages
     const localizedSchemas = {}
     for (let language in yaxys.schemaLocales) {

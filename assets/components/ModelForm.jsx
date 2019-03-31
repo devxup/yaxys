@@ -8,6 +8,7 @@ import ModelPicker from "./ModelPicker.jsx"
 import ModelCreator from "./ModelCreator.jsx"
 import { withNamespaces } from "react-i18next"
 import Ajv from "ajv"
+import { isEqual, cloneDeep } from "lodash"
 
 const ajv = new Ajv({ allErrors: true, format: "full" })
 
@@ -44,9 +45,15 @@ export default class ModelForm extends Component {
       this.notify()
       return
     }
-    if (prevProps.values !== this.props.values) {
+    if (!isEqual(prevProps.values, this.props.values)) {
       /* eslint-disable-next-line react/no-did-update-set-state */
       this.setState(this.getResetState())
+      if (this.props.forceValidation) {
+        setImmediate(() => {
+          this.validateAll()
+          this.forceUpdate()
+        })
+      }
     }
   }
 
@@ -130,10 +137,26 @@ export default class ModelForm extends Component {
     }
   }
 
+  _sanitizedValues(values) {
+    const { schema } = this.props
+
+    const result = cloneDeep(values)
+    for (const propertyKey of Object.keys(schema.properties)) {
+      const property = schema.properties[propertyKey]
+      if (property.connection && result[propertyKey]?.id) {
+        result[propertyKey] = result[propertyKey]?.id
+      }
+      if (result[propertyKey] === null) {
+        result[propertyKey] = undefined
+      }
+    }
+    return result
+  }
+
   validateAll() {
     const { attributes, schema } = this.props
 
-    this.state.valid = this.validator(this.state.values)
+    this.state.valid = this.validator(this._sanitizedValues(this.state.values))
 
     for (let attribute of attributes || schema.defaultProperties) {
       this.ensureAttributeMeta(attribute)

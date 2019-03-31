@@ -84,6 +84,9 @@ module.exports = {
         middleware.push(PolicyService.randomError)
       }
     }
+    if (options[method] && options[method].before) {
+      middleware.push.call(middleware, options[method].before)
+    }
     middleware.push(RestService[method](identity))
 
     return middleware

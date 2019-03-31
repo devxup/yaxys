@@ -36,7 +36,7 @@ const createdBindingsSelector = YaxysClue.selectors.byClue(
   { marker: CREATED_BINDINGS_MARKER }
 )
 
-const EDIBLE_PROPERTIES = ["id", "name"]
+const EDIBLE_PROPERTIES = ["id", "name", "credentialCode"]
 
 @withStyles(theme => commonClasses(theme))
 @withConstants
@@ -57,7 +57,6 @@ export default class User extends Component {
     super(props)
     this.state = {
       user: this.props2UserState(props),
-      forceValidation: false,
       profileOpen: false,
       deletedHash: {},
       deleteAttemptAt: null,
@@ -85,6 +84,7 @@ export default class User extends Component {
 
   onFormChange = data => {
     this.setState({
+      invalid: !data.valid,
       user: { ...this.state.user, ...data.values },
       modifiedAt: new Date().getTime(),
     })
@@ -162,6 +162,7 @@ export default class User extends Component {
 
   render() {
     const { user, match, classes, constants, t } = this.props
+    const { settings, schemas } = constants
     const entityInstance = t("ENTITY_INSTANCE", {
       entity: "$t(USER)",
       info: {
@@ -169,9 +170,10 @@ export default class User extends Component {
         item: user,
       },
     })
-    const schema = constants.schemas.user
+    const schema = schemas.user
     const update = (
       <Update
+        invalid={!!this.state.invalid}
         clue={userClue(this.props)}
         current={this.state.user}
         schema={schema}
@@ -194,10 +196,13 @@ export default class User extends Component {
               autoFocus={true}
               values={this.state.user}
               onChange={this.onFormChange}
-              forceValidation={this.state.forceValidation}
+              forceValidation={true}
               schema={schema}
               margin="dense"
-              attributes={["name"]}
+              attributes={[
+                "name",
+                ...(settings.singleCredential ? ["credentialCode"] : []),
+              ]}
             />
           </Paper>
         </Loader>
@@ -230,7 +235,7 @@ export default class User extends Component {
           />
           {!!user?.data?.profiles?.length && (
             <ModelTable
-              schema={constants.schemas.userprofile}
+              schema={schemas.userprofile}
               data={user?.data?.profiles}
               url={profile => `/user-profiles/${profile.id}`}
               onDelete={this.onDeleteProfile}
@@ -248,16 +253,20 @@ export default class User extends Component {
             userPropertyValue={ match.params.id }
           />
         </Paper>
-        <Paper className={classes.block}>
-          <h5>{t("CREDENTIAL_PLURAL")}</h5>
-          <Connection
-            relatedIdentity="credential"
-            relatedProperty="user"
-            parentId={match.params.id}
-            columns={["id", "code", "note"]}
-            url={credential => `/users/${match.params.id}/credentials/${credential.id}`}
-          />
-        </Paper>
+        {
+          !settings.singleCredential && (
+            <Paper className={classes.block}>
+              <h5>{t("CREDENTIAL_PLURAL")}</h5>
+              <Connection
+                relatedIdentity="credential"
+                relatedProperty="user"
+                parentId={match.params.id}
+                columns={["id", "code", "note"]}
+                url={credential => `/users/${match.params.id}/credentials/${credential.id}`}
+              />
+            </Paper>
+          )
+        }
         <ModelPicker
           open={this.state.profileOpen}
           identity="userprofile"

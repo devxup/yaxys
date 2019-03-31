@@ -1,3 +1,5 @@
+const config = require("config")
+
 module.exports = {
   schema: {
     title: "User",
@@ -37,11 +39,31 @@ module.exports = {
           relatedModelAttribute: "user",
         },
       },
+      credentialCode: {
+        type: "string",
+        virtual: true,
+        hidden: true,
+      },
     },
     required: ["name"],
   },
 
-  api: RestService.buildStandardAPI("user"),
+  api: RestService.buildStandardAPI(
+    "user",
+    config.get("settings.singleCredential")
+      ? {
+        update: {
+          before: UserService.singleCredentialUpdateMiddleware,
+        },
+        findOne: {
+          before: UserService.singleCredentialFindOneMiddleware,
+        },
+        find: {
+          before: UserService.singleCredentialFindMiddleware,
+        },
+      }
+      : {}
+  ),
 
   hooks: {
     "delete:after": async (trx, old) => {

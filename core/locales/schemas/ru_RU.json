@@ -41,7 +41,8 @@
     "name": "Имя",
     "profiles": "Профили пользователей",
     "hasCustomRights": "Есть нестандартные права",
-    "credentials": "Идентификаторы"
+    "credentials": "Идентификаторы",
+    "credentialCode": "Код карточки"
   },
   "userprofile": {
     "name": "Название",

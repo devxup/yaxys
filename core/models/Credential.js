@@ -38,6 +38,7 @@ module.exports = {
       note: {
         title: "Note",
         type: "string",
+        default: "",
       },
     },
     required: [],

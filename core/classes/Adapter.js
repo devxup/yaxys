@@ -7,6 +7,9 @@ const ajv = new Ajv({ format: "full" })
 const DEFAULT_OPTIONS = {
   limit: 100,
   select: "*",
+  sort: {
+    id: 1,
+  },
 }
 
 const POSTGRES_TYPES = [
@@ -78,6 +81,9 @@ module.exports = class Adapter {
 
     return _.mapValues(data, (value, key) => {
       const property = schema.properties[key]
+      if (property.virtual) {
+        return undefined
+      }
       switch (property && property.type) {
         case "object":
           return typeof value === "string" ? JSON.stringify(value) : value
@@ -242,6 +248,33 @@ module.exports = class Adapter {
   }
 
   /**
+   * Apply filter to the query
+   * @param {Object} initialQuery The initial query
+   * @param {String} identity The model's identity
+   * @param {Object} filter The filter to apply to initialQuery
+   * @returns {Object} The new query with applied filter
+   * @private
+   */
+  _applyFilter(initialQuery, identity, filter) {
+    const schema = this.schemas[identity.toLowerCase()]
+
+    let query = initialQuery
+    const simpleWhere = {}
+    _.each(filter, (value, key) => {
+      const property = schema.properties[key]
+      if (Array.isArray(value) && property.type !== "array") {
+        query = query.andWhere(key, "in", value)
+      } else {
+        // todo: different predicates < <= > >= etc
+        simpleWhere[key] = value
+      }
+    })
+    query = query.andWhere(simpleWhere)
+
+    return query
+  }
+
+  /**
    * Find models matching the criteria
    * @param {Object} trx The transaction context
    * @param {String} identity The model's identity
@@ -250,7 +283,7 @@ module.exports = class Adapter {
    * @returns {Promise<Array<Object>>} The array of found models
    */
   async find(trx, identity, filter, options = {}) {
-    let query = this.knex(identity).where(filter)
+    let query = this._applyFilter(this.knex(identity), identity, filter)
     _.each(Object.assign({}, this.options, options), (value, key) => {
       switch (key) {
         case "limit":

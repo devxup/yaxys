@@ -121,7 +121,7 @@
     "GRANTED_RIGHT": "Выдан доступ к: {{TARGET}}"
   },
   "ERROR_DIALOG": {
-    "TITLE": "ПОдробности ошибки",
+    "TITLE": "Подробности ошибки",
     "DISPLAY_RAW_DATA": "Показать сырые данные",
     "UNKNOWN_ENTITY": "неизвестная сущность",
     "UNIDENTIFIED_ENTITY": "неидентифицированная сущность",
@@ -185,7 +185,8 @@
   "UPDATE_COMPONENT": {
     "SAVE_CHANGES": "Сохранить изменения",
     "CHANGES_SAVED": "Изменения успешно сохранены",
-    "PENDING": "Сохранение изменений..."
+    "PENDING": "Сохранение изменений...",
+    "INVALID_DATA": "Исправьте ошибки ввода"
   },
 
   "RIGHT_FOR_OPERATOR_PROFILE_BINDING": "Назначать профили операторам",

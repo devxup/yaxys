@@ -75,7 +75,7 @@ export default class Update extends Component {
     schema: PropTypes.object,
     modifiedAt: PropTypes.number,
     watchProperties: PropTypes.arrayOf(PropTypes.string),
-
+    invalid: PropTypes.bool,
     onStatusChanged: PropTypes.func,
     onUpdated: PropTypes.func,
 
@@ -110,7 +110,7 @@ export default class Update extends Component {
     }
 
     // If user edited the data
-    if (prevProps.modifiedAt !== this.props.modifiedAt) {
+    if (prevProps.modifiedAt !== this.props.modifiedAt || prevProps.invalid !== this.props.invalid) {
       /* eslint-disable-next-line react/no-did-update-set-state */
       this.setState({
         requestId: null,
@@ -120,6 +120,9 @@ export default class Update extends Component {
   }
 
   _detectStatus(props, state) {
+    if (props.invalid) {
+      return "invalid"
+    }
     const item = this._getUpdateItem(props, state)
     if (!state.requestId || !item) {
       return this._isChanged(props) ? "modified" : "idle"
@@ -215,6 +218,8 @@ export default class Update extends Component {
         )
       case "success":
         return <div className={classes.message}>{t("UPDATE_COMPONENT.CHANGES_SAVED")}</div>
+      case "invalid":
+        return <div className={classes.message}>{t("UPDATE_COMPONENT.INVALID_DATA")}</div>
       case "error":
         return (
           <Fragment>
@@ -245,7 +250,7 @@ export default class Update extends Component {
     const rootClassName = classNames(classes.root, {
       [classes.rootModified]: status === "modified",
       [classes.rootPending]: status === "pending",
-      [classes.rootError]: status === "error",
+      [classes.rootError]: status === "error" || status === "invalid",
       [classes.rootSuccess]: status === "success",
     })
     return (

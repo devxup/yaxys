@@ -183,7 +183,8 @@
   "UPDATE_COMPONENT": {
     "SAVE_CHANGES": "Save changes",
     "CHANGES_SAVED": "Changes have been saved",
-    "PENDING": "Saving changes..."
+    "PENDING": "Saving changes...",
+    "INVALID_DATA": "Fix your input"
   },
 
   "RIGHT_FOR_OPERATOR_PROFILE_BINDING": "Assign profiles to operators",

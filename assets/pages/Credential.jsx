@@ -44,7 +44,6 @@ export default class Credential extends Component {
     super(props)
     this.state = {
       credential: this.props2CredentialState(props),
-      forceValidation: false,
     }
   }
 
@@ -73,6 +72,7 @@ export default class Credential extends Component {
 
   onFormChange = data => {
     this.setState({
+      invalid: !data.valid,
       credential: { ...this.state.credential, ...data.values },
       modifiedAt: new Date().getTime(),
     })
@@ -107,6 +107,7 @@ export default class Credential extends Component {
     })
     const update = (
       <Update
+        invalid={!!this.state.invalid}
         clue={credentialClue(this.props)}
         current={this.state.credential}
         schema={constants.schemas.credential}
@@ -131,7 +132,7 @@ export default class Credential extends Component {
                 autoFocus={true}
                 values={this.state.credential}
                 onChange={this.onFormChange}
-                forceValidation={this.state.forceValidation}
+                forceValidation={true}
                 schema={constants.schemas.credential}
                 margin="dense"
                 attributes={["code", "note", "user"]}

@@ -230,7 +230,6 @@ export default class Wrapper extends Component {
     loginOpen: false,
   }
 
-
   handleDrawerOpen = () => {
     localStorage.removeItem("isDrawerClosed")
     this.setState({ open: true })
