@@ -20,7 +20,9 @@ module.exports = {
           // explicitly set code, it defaults to 500. In both this cases we set code 400. If we use ctx.throw
           // with explicitly set code in lower-level middleware, we return translated message with initial code.
           err.status === undefined || err.status === 500 ? 400 : err.status,
-          ctx.t(err.message, ctx.i18nData || err.i18nData)
+          ctx.i18nData || err.i18nData
+            ? ctx.t(err.message, ctx.i18nData || err.i18nData)
+            : ctx.t(err.message)
         )
         : ctx.throw(500, err.message)
     }
