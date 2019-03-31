@@ -97,6 +97,7 @@ export default class AccessPoints extends Component {
 
   render() {
     const { constants, t } = this.props
+    const { settings, schemas } = constants
     return (
       <Wrapper breadcrumbs={[t("AP_PLURAL")]}>
         <h1 style={{ marginTop: 0 }}>{t("AP_PLURAL")}</h1>
@@ -125,7 +126,13 @@ export default class AccessPoints extends Component {
           <ModelTableLoader
             identity="accesspoint"
             url={accessPoint => `/access-points/${accessPoint.id}`}
-            columns={["id", "name", "description", "door", "zoneTo"]}
+            columns={[
+              "id",
+              "name",
+              "description",
+              ...(settings.hideDoors ? [] : ["door"]),
+              ...(settings.hideZones ? [] : ["zoneTo"]),
+            ]}
             additionalClueProperties={{ populate: "zoneTo,door" }}
             onDelete={this.onDeleteItem}
             deletedHash={ this.state.deletedHash }
@@ -138,7 +145,7 @@ export default class AccessPoints extends Component {
           open={this.state.addOpen}
           onClose={this.onAddClose}
           onReady={this.onAddReady}
-          schema={constants.schemas.accesspoint}
+          schema={schemas.accesspoint}
           attributes={["name", "description"]}
           btnReady={t("CREATE")}
         >

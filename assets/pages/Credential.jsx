@@ -93,7 +93,18 @@ export default class Credential extends Component {
 
   render() {
     const { constants, credential, match, classes, t } = this.props
-    const entityAndId = t("ENTITY_CREDENTIAL", { id: match.params.id, item: credential })
+    const entityInstance = t("ENTITY_INSTANCE", {
+      entity: "$t(CREDENTIAL)",
+      info: {
+        id: match.params.id,
+      },
+    })
+    const userInstance = t("ENTITY_INSTANCE", {
+      entity: "$t(USER)",
+      info: {
+        id: match.params.user,
+      },
+    })
     const update = (
       <Update
         clue={credentialClue(this.props)}
@@ -107,16 +118,15 @@ export default class Credential extends Component {
       <Wrapper
         bottom={update}
         breadcrumbs={[
-          { title: t("USERS"), url: "/users" },
-          { title: t("USER_#", { user: match.params.user }), url: `/users/${match.params.user}` },
-          entityAndId,
+          { title: t("USER_PLURAL"), url: "/users" },
+          { title: userInstance, url: `/users/${match.params.user}` },
+          entityInstance,
         ]}
       >
-        <h1 style={{ marginTop: 0 }}>{entityAndId}</h1>
+        <h1 style={{ marginTop: 0 }}>{entityInstance}</h1>
         <Loader item={credential}>
           <Fragment>
             <Paper className={classes.block}>
-              <h5>{t("PROPERTIES")}</h5>
               <ModelForm
                 autoFocus={true}
                 values={this.state.credential}

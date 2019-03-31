@@ -35,6 +35,7 @@ module.exports = {
           linkerMyAttribute: "door",
           linkerRelatedAttribute: "zoneTo",
         },
+        isHidden: settings => settings.hideZones,
       },
     },
   },

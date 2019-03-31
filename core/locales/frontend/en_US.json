@@ -44,6 +44,8 @@
   },
   "AP_PAGE": {
     "DOOR_AND_ZONE_HEADER": "Door and Zone",
+    "DOOR_HEADER": "$t(DOOR)",
+    "ZONE_HEADER": "$t(ZONE)",
     "USERS_AND_PROFILES_HEADER": "Users and profiles having access to this Point:"
   },
   "DOORS_PAGE": {

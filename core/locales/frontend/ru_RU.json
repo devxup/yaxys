@@ -60,6 +60,8 @@
   },
   "AP_PAGE": {
     "DOOR_AND_ZONE_HEADER": "Дверь и зона",
+    "DOOR_HEADER": "$t(DOOR)",
+    "ZONE_HEADER": "$t(ZONE)",
     "USERS_AND_PROFILES_HEADER": "Пользователи и профили, имеющие права на доступ к точке:"
   },
   "DOORS_PAGE": {

@@ -8,7 +8,9 @@
   "accessright": {
     "accessPoint": "Access point",
     "door": "Door",
-    "zoneTo": "Zone"
+    "zoneTo": "Zone",
+    "user": "User",
+    "userProfile": "User profile"
   },
   "credential": {
     "user": "User",

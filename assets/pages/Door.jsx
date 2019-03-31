@@ -89,6 +89,7 @@ export default class Door extends Component {
 
   render() {
     const { constants, door, match, classes, t } = this.props
+    const { settings, schemas } = constants
     const entityInstance = t("ENTITY_INSTANCE", {
       entity: "$t(DOOR)",
       info: {
@@ -100,7 +101,7 @@ export default class Door extends Component {
       <Update
         clue={doorClue(this.props)}
         current={this.state.door}
-        schema={constants.schemas.door}
+        schema={schemas.door}
         modifiedAt={this.state.modifiedAt}
       />
     )
@@ -120,7 +121,7 @@ export default class Door extends Component {
               values={this.state.door}
               onChange={this.onFormChange}
               forceValidation={this.state.forceValidation}
-              schema={constants.schemas.door}
+              schema={schemas.door}
               margin="dense"
               attributes={["name", "description"]}
             />
@@ -133,7 +134,12 @@ export default class Door extends Component {
             relatedProperty="door"
             parentId={match.params.id}
             additionalCluePropertiea={{ populate: "zoneTo" }}
-            columns={["id", "name", "description", "zoneTo"]}
+            columns={[
+              "id",
+              "name",
+              "description",
+              ...(settings.hideZones ? [] : ["zoneTo"]),
+            ]}
             canAddExisting={this.canAddAccessPoint}
             canCreateNew={this.canAddAccessPoint}
             url={accessPoint => `/access-points/${accessPoint.id}`}

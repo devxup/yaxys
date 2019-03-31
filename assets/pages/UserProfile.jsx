@@ -110,7 +110,7 @@ export default class UserProfile extends Component {
         bottom={update}
         breadcrumbs={
           [
-            { title: t("USER_PROFILES"), url: "/settings/user-profiles" },
+            { title: t("USER_PROFILE_PLURAL"), url: "/settings/user-profiles" },
             entityInstance,
           ]
         }

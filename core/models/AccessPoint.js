@@ -22,6 +22,7 @@ module.exports = {
           type: "m:1",
           relatedModel: "door",
         },
+        isHidden: settings => settings.hideDoors,
       },
       zoneTo: {
         title: "Zone to",
@@ -30,6 +31,7 @@ module.exports = {
           type: "m:1",
           relatedModel: "zone",
         },
+        isHidden: settings => settings.hideZones,
       },
     },
   },

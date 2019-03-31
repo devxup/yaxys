@@ -41,7 +41,7 @@ export default class ModelTableLoader extends Component {
       <ModelTableLoaderPage
         page={page}
         onChangePage={this.onChangePage}
-        limit={this.props.limit || this.props.constants.paginationLimit}
+        limit={this.props.limit || this.props.constants.settings.paginationLimit}
         {...omit(this.props, "limit", "staticContext")}
       />
     )

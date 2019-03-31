@@ -98,6 +98,7 @@ export default class Doors extends Component {
 
   render() {
     const { constants, t } = this.props
+    const { settings, schemas } = constants
     return (
       <Wrapper breadcrumbs={[t("DOOR_PLURAL")]}>
         <h1 style={{ marginTop: 0 }}>{t("DOOR_PLURAL")}</h1>
@@ -126,7 +127,13 @@ export default class Doors extends Component {
           <ModelTableLoader
             identity="door"
             url={door => `/doors/${door.id}`}
-            columns={["id", "name", "description", "accessPoints", "zones"]}
+            columns={[
+              "id",
+              "name",
+              "description",
+              "accessPoints",
+              ...(settings.hideZones ? [] : ["zones"]),
+            ]}
             additionalClueProperties={{ populate: "accessPoints,zones" }}
             onDelete={this.onDeleteItem}
             deletedHash={ this.state.deletedHash }
@@ -139,7 +146,7 @@ export default class Doors extends Component {
           open={this.state.addOpen}
           onClose={this.onAddClose}
           onReady={this.onAddReady}
-          schema={constants.schemas.door}
+          schema={schemas.door}
           attributes={["name", "description"]}
           btnReady={t("CREATE")}
         >

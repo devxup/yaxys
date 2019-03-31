@@ -33,6 +33,7 @@ import Avatar from "@material-ui/core/Avatar"
 
 import { meSelector } from "../services/Me"
 import { withNamespaces } from "react-i18next"
+import { withConstants } from "../services/Utils"
 
 const drawerWidth = 240
 const lists = {
@@ -58,11 +59,13 @@ const lists = {
       icon: MeetingRoomIcon,
       title: "DOOR_PLURAL",
       url: "/doors",
+      isHidden: settings => settings?.hideDoors,
     },
     {
       icon: PictureInPictureIcon,
       title: "ZONE_PLURAL",
       url: "/zones",
+      isHidden: settings => settings?.hideZones,
     },
   ],
   adminZone: [
@@ -207,6 +210,7 @@ const styles = theme => ({
 @withRouter
 @withStyles(styles)
 @withNamespaces()
+@withConstants
 @connect((state, props) => ({
   me: meSelector(state),
 }))
@@ -218,6 +222,7 @@ export default class Wrapper extends Component {
     breadcrumbs: PropTypes.array,
     isBreadcrumbsRoot: PropTypes.bool,
     t: PropTypes.func,
+    constants: PropTypes.object,
   }
 
   state = {
@@ -264,29 +269,32 @@ export default class Wrapper extends Component {
   }
 
   renderList(key) {
-    const { classes, location, t } = this.props
+    const { classes, location, t, constants } = this.props
     const url = location.pathname
     return (
       <List>
-        {lists[key].map((item, index) => (
-          <Link to={item.url} key={index}>
-            <ListItem
-              button
-              selected={
-                item.url === "/" ? url === item.url : url.indexOf(item.url.toLowerCase()) === 0
-              }
-              classes={{ root: classes.drawerItem, selected: classes.drawerItemSelected }}
-            >
-              <ListItemIcon classes={{ root: classes.drawerItemInheritColor }}>
-                {React.createElement(item.icon)}
-              </ListItemIcon>
-              <ListItemText
-                classes={{ primary: classes.drawerItemInheritColor }}
-                primary={t(item.title)}
-              />
-            </ListItem>
-          </Link>
-        ))}
+        {lists[key].map((item, index) => {
+          if (item.isHidden?.(constants.settings)) { return false }
+          return (
+            <Link to={item.url} key={index}>
+              <ListItem
+                button
+                selected={
+                  item.url === "/" ? url === item.url : url.indexOf(item.url.toLowerCase()) === 0
+                }
+                classes={{ root: classes.drawerItem, selected: classes.drawerItemSelected }}
+              >
+                <ListItemIcon classes={{ root: classes.drawerItemInheritColor }}>
+                  {React.createElement(item.icon)}
+                </ListItemIcon>
+                <ListItemText
+                  classes={{ primary: classes.drawerItemInheritColor }}
+                  primary={t(item.title)}
+                />
+              </ListItem>
+            </Link>
+          )
+        })}
       </List>
     )
   }

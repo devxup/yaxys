@@ -3,7 +3,7 @@ const config = require("config")
 module.exports = {
   constants: {
     timezone: config.get("timezone"),
-    paginationLimit: config.get("paginationLimit"),
+    settings: config.get("settings"),
     language: config.get("lng"),
   },
 
@@ -12,11 +12,16 @@ module.exports = {
    * - Build Utils.constants containing all model schemas and other constants for the client-side
    */
   init() {
+    const settings = config.get("settings") || {}
     const schemas = _.reduce(
       yaxys.models,
       (memo, model, key) => {
         if (model.schema) {
-          memo[key] = model.schema
+           const schemaClone = _.cloneDeep(model.schema)
+          _.each(model.schema.properties, (property, propertyKey) => {
+            property.hidden = property.isHidden && property.isHidden(settings)
+          })
+          memo[key] = schemaClone
         }
         return memo
       },

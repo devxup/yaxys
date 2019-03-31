@@ -249,7 +249,9 @@ export default class AccessRights extends Component {
 
   render() {
     const { constants, mode, accessRights, createdAccessRights, classes, t } = this.props
-    const schema = constants.schemas.accessright
+    const { settings, schemas } = constants
+
+    const schema = schemas.accessright
 
     return (
       <Fragment>
@@ -289,29 +291,43 @@ export default class AccessRights extends Component {
               >
                 {`${t("ADD")} ${t("AP", { context: "ACCUSATIVE" })}`}
               </Button>
-              <Button
-                variant="text"
-                color="secondary"
-                onClick={this.onAdd("door")}
-                className={classes.button}
-              >
-                {`${t("ADD")} ${t("DOOR", { context: "ACCUSATIVE" })}`}
-              </Button>
-              <Button
-                variant="text"
-                color="secondary"
-                onClick={this.onAdd("zoneTo")}
-                className={classes.button}
-              >
-                {`${t("ADD")} ${t("ZONE", { context: "ACCUSATIVE" })}`}
-              </Button>
+              {
+                !settings.hideDoors && (
+                  <Button
+                    variant="text"
+                    color="secondary"
+                    onClick={this.onAdd("door")}
+                    className={classes.button}
+                  >
+                    {`${t("ADD")} ${t("DOOR", { context: "ACCUSATIVE" })}`}
+                  </Button>
+                )
+              }
+              {
+                !settings.hideZones && (
+                  <Button
+                    variant="text"
+                    color="secondary"
+                    onClick={this.onAdd("zoneTo")}
+                    className={classes.button}
+                  >
+                    {`${t("ADD")} ${t("ZONE", { context: "ACCUSATIVE" })}`}
+                  </Button>
+                )
+              }
             </Fragment>
           )}
           <ModelTable
             schema={schema}
             data={accessRights?.data || []}
             columns={
-              mode === "hardware" ? ["user", "userProfile"] : ["accessPoint", "door", "zoneTo"]
+              mode === "hardware"
+                ? ["user", "userProfile"]
+                : [
+                  "accessPoint",
+                  ...(settings.hideDoors ? [] : ["door"]),
+                  ...(settings.hideZones ? [] : ["zoneTo"]),
+                ]
             }
             url={this.accessRightToURL}
             onDelete={this.onDeleteAccessRight}

@@ -20,7 +20,6 @@
     "secret": "some_unique_string",
     "lifetime": 86400
   },
-  "paginationLimit": 20,
   "debug": {
     "pause": false,
     "randomError": false
@@ -29,5 +28,11 @@
     "minLength": 8,
     "maxLength": 8,
     "pattern": "hexadecimal"
+  },
+  "settings": {
+    "paginationLimit": 20,
+    "hideDoors": false,
+    "hideZones": false,
+    "singleCredential": false
   }
 }

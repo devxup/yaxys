@@ -81,6 +81,7 @@ export default class AccessPoint extends Component {
 
   render() {
     const { constants, accessPoint, match, classes, t } = this.props
+    const { settings, schemas } = constants
     const entityInstance = t("ENTITY_INSTANCE", {
       entity: "$t(AP)",
       info: {
@@ -92,7 +93,7 @@ export default class AccessPoint extends Component {
       <Update
         clue={accessPointClue(this.props)}
         current={this.state.accessPoint}
-        schema={constants.schemas.accesspoint}
+        schema={schemas.accesspoint}
         modifiedAt={this.state.modifiedAt}
         watchProperties={PROPS_2_WATCH}
       />
@@ -115,23 +116,41 @@ export default class AccessPoint extends Component {
                 values={this.state.accessPoint}
                 onChange={this.onFormChange}
                 forceValidation={this.state.forceValidation}
-                schema={constants.schemas.accesspoint}
+                schema={schemas.accesspoint}
                 margin="dense"
                 attributes={["name", "description"]}
               />
             </Paper>
-            <Paper className={classes.block}>
-              <h5>{t("AP_PAGE.DOOR_AND_ZONE_HEADER")}</h5>
-              <ModelForm
-                autoFocus={true}
-                values={this.state.accessPoint}
-                onChange={this.onFormChange}
-                forceValidation={this.state.forceValidation}
-                schema={constants.schemas.accesspoint}
-                margin="dense"
-                attributes={["door", "zoneTo"]}
-              />
-            </Paper>
+            {
+              (!settings.hideDoors || !settings.hideZones) && (
+                <Paper className={classes.block}>
+                  <h5>
+                    {
+                      t(
+                        settings.hideDoors
+                          ? "AP_PAGE.ZONE_HEADER"
+                          : settings.hideZones
+                            ? "AP_PAGE.DOOR_HEADER"
+                            : "AP_PAGE.DOOR_AND_ZONE_HEADER"
+
+                      )
+                    }
+                  </h5>
+                  <ModelForm
+                    autoFocus={true}
+                    values={this.state.accessPoint}
+                    onChange={this.onFormChange}
+                    forceValidation={this.state.forceValidation}
+                    schema={schemas.accesspoint}
+                    margin="dense"
+                    attributes={[
+                      ...(settings.hideDoors ? [] : ["door"]),
+                      ...(settings.hideZones ? [] : ["zoneTo"]),
+                    ]}
+                  />
+                </Paper>
+              )
+            }
             <Paper className={classes.block}>
               <h5>{t("AP_PAGE.USERS_AND_PROFILES_HEADER")}</h5>
               <AccessRights

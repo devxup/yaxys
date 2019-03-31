@@ -8,11 +8,14 @@
   "accessright": {
     "accessPoint": "Точка доступа",
     "door": "Дверь",
-    "zoneTo": "Зона"
+    "zoneTo": "Зона",
+    "user": "Пользователь",
+    "userProfile": "Профиль пользователя"
   },
   "credential": {
     "user": "Пользователь",
-    "code": "Код"
+    "code": "Код",
+    "note": "Примечание"
   },
   "door": {
     "name": "Название",
