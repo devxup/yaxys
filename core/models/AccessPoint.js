@@ -2,6 +2,7 @@ module.exports = {
   schema: {
     title: "Access Point",
     i18Key: "AP",
+    timestamps: true,
     defaultProperties: ["id", "name", "description", "door", "zoneTo"],
     properties: {
       id: {

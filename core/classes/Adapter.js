@@ -12,6 +12,24 @@ const DEFAULT_OPTIONS = {
   },
 }
 
+const STD_PROPERTIES = {
+  id: {
+    type: "integer",
+  },
+  createdAt: {
+    type: "string",
+    format: "date-time",
+    hidden: true,
+    default: "NOW()",
+  },
+  updatedAt: {
+    type: "string",
+    format: "date-time",
+    hidden: true,
+    default: "NOW()",
+  },
+}
+
 const POSTGRES_TYPES = [
   "integer",
   "bigInteger",
@@ -27,9 +45,11 @@ const POSTGRES_TYPES = [
   "json",
   "jsonb",
   "uuid",
+  "timestamp",
 ]
 
 module.exports = class Adapter {
+
   constructor(config, options) {
     this.knex = knex({
       client: "pg",
@@ -80,7 +100,20 @@ module.exports = class Adapter {
     }
 
     return _.mapValues(data, (value, key) => {
-      const property = schema.properties[key]
+      let property = schema.properties[key]
+      if (!property) {
+        switch (key) {
+          case "id":
+            property = STD_PROPERTIES.id
+            break
+          case "createdAt":
+          case "updatedAt":
+            if (schema.timestamps) {
+              property = STD_PROPERTIES[key]
+            }
+            break
+        }
+      }
       if (property.virtual) {
         return undefined
       }
@@ -98,6 +131,11 @@ module.exports = class Adapter {
             return value.id
           }
           return typeof value === "string" ? Number(value) : value
+        case "string":
+          if (property.format === "date-time" && value instanceof Date) {
+            return value.toISOString()
+          }
+          return value
       }
       return value
     })
@@ -177,6 +215,7 @@ module.exports = class Adapter {
    * @returns {Promise<Object>} The inserted model containing all of the fields, includeing id
    */
   async update(trx, identity, id, data) {
+    const schema = this.schemas[identity.toLowerCase()]
     if (!id) {
       throw new Error(yaxys.t("Adapter_ID_REQUIRED"))
     }
@@ -184,12 +223,13 @@ module.exports = class Adapter {
     const old = await this.findOne(trx, identity, { id })
 
     if (!old) {
-      throw new Error(yaxys.t("adapter.ID_NOT_FOUND", { id }))
+      throw new Error(yaxys.t("Adapter.ID_NOT_FOUND", { id }))
     }
 
-    const validation = this._validate(identity, _.omitBy(Object.assign(old, fixedData), _.isNil))
+    const patchedData = this._sanitize(identity, _.omitBy(Object.assign(old, fixedData), _.isNil))
+    const validation = this._validate(identity, patchedData)
     if (!validation.passed) {
-      throw new Error(yaxys.t("adapter.VALIDATION_FAIL", {
+      throw new Error(yaxys.t("Adapter.VALIDATION_FAIL", {
         property: validation.errors[0].dataPath,
         message: validation.errors[0].message,
       }))
@@ -197,6 +237,9 @@ module.exports = class Adapter {
 
     await this.emitter.emit(`${identity}:update:before`, trx, old, fixedData)
 
+    if (schema.timestamps) {
+      fixedData.updatedAt = new Date().toISOString()
+    }
     const update = this.knex(identity)
       .where({ id })
       .update(fixedData)
@@ -418,7 +461,7 @@ module.exports = class Adapter {
         break
       }
       default:
-        throw new Error(yaxys.t("adapter.INVALID_CONNECTION"))
+        throw new Error(yaxys.t("Adapter.INVALID_CONNECTION"))
     }
   }
 
@@ -435,11 +478,15 @@ module.exports = class Adapter {
       _.forEach(schema.properties, (property, key) => {
         if (key === "id" || property.virtual) return
 
-        const type = ["object", "array"].includes(property.type) ? "json" : property.type
+        const type = ["object", "array"].includes(property.type)
+          ? "json"
+          : (property.type === "string" && property.format === "date-time")
+            ? "timestamp"
+            : property.type
 
         if (!POSTGRES_TYPES.includes(type)) {
-          throw new Error(yaxys.t("adapter.INCORRECT_DATA_TYPE", {
-            type: property.type,
+          throw new Error(yaxys.t("Adapter.INCORRECT_DATA_TYPE", {
+            type,
             field: key,
             identity,
           }))
@@ -449,7 +496,11 @@ module.exports = class Adapter {
           attribute.notNullable()
         }
         if (property.hasOwnProperty("default")) {
-          attribute.defaultTo(property.default)
+          attribute.defaultTo(
+            property.format === "date-time" && property.default === "NOW()"
+              ? this.knex.fn.now(3)
+              : property.default
+          )
         }
         if (property.unique) {
           table.unique(key)
@@ -487,3 +538,4 @@ module.exports = class Adapter {
     await this.knex.destroy()
   }
 }
+module.exports.STD_PROPERTIES = STD_PROPERTIES

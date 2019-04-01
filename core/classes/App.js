@@ -59,11 +59,11 @@ module.exports = class App extends Koa {
 				next: true,
 			})
 		)
-
 		const models = this._requireFolder("models")
 
 		// lower-casing models
 		this.models = _.mapKeys(models, (value, key) => key.toLowerCase())
+    this._fixModels()
 
 		this.apiRouter = new Router({ prefix: "/api/" })
 
@@ -132,6 +132,19 @@ module.exports = class App extends Koa {
 		Object.assign(global, modules)
 		return modules
 	}
+
+  /**
+   * Perform some required operations on this.models
+   * @private
+   */
+  _fixModels() {
+    _.forEach(this.models, (model, modelKey) => {
+      if (model.schema && model.schema.timestamps) {
+        model.schema.properties.createdAt = Adapter.STD_PROPERTIES.createdAt
+        model.schema.properties.updatedAt = Adapter.STD_PROPERTIES.updatedAt
+      }
+    })
+  }
 
 	/**
 	 * Perform all the required initializations

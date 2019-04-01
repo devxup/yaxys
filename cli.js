@@ -11,18 +11,18 @@ yaxys
     const commandsHash = {
       async init_db() {
         await ModelService.createTablesForAllModels()
-        yaxys.logger.info(yaxys.i18n("cli.INIT_DB_SUCCESS"))
+        yaxys.logger.info(yaxys.t("cli.INIT_DB_SUCCESS"))
       },
       get_sql() {
         console.log(ModelService.getSQLForAllModels())
       },
       async create_operator() {
         if (!argv.email && !argv.login) {
-          yaxys.logger.error(yaxys.i18n("cli.EMAIL_OR_LOGIN_REQUIRED"))
+          yaxys.logger.error(yaxys.t("cli.EMAIL_OR_LOGIN_REQUIRED"))
           return
         }
         if (!argv.pwd) {
-          yaxys.logger.error(yaxys.i18n("cli.PASSWORD_REQUIRED"))
+          yaxys.logger.error(yaxys.t("cli.PASSWORD_REQUIRED"))
           return
         }
         await yaxys.db.insert(null, "operator", {
@@ -32,7 +32,7 @@ yaxys
           rights: {},
           isAdministrator: true,
         })
-        yaxys.logger.info(yaxys.i18n("cli.CREATE_OPERATOR_SUCCESS"))
+        yaxys.logger.info(yaxys.t("cli.CREATE_OPERATOR_SUCCESS"))
       },
       encrypt_password() {
         console.log(AuthService.encryptPassword(String(argv._[1])))
@@ -41,13 +41,13 @@ yaxys
 
     const command = argv._[0]
     if (!command || command === "help") {
-      yaxys.logger.info(`${yaxys.i18n("cli.POSSIBLE_COMMANDS")} ${Object.keys(commandsHash).join(", ")}`)
+      yaxys.logger.info(`${yaxys.t("cli.POSSIBLE_COMMANDS")} ${Object.keys(commandsHash).join(", ")}`)
       await yaxys.db.shutdown()
       process.exit(0)
     }
 
     if (!commandsHash[command]) {
-      yaxys.logger.error(yaxys.i18n("cli.COMMAND_NOT_FOUND", { command }))
+      yaxys.logger.error(yaxys.t("cli.COMMAND_NOT_FOUND", { command }))
       await yaxys.db.shutdown()
       process.exit(1)
     }
@@ -57,6 +57,6 @@ yaxys
     process.exit(0)
   })
   .catch(err => {
-    yaxys.logger.error(yaxys.i18n("cli.ERROR"), err)
+    yaxys.logger.error(yaxys.t("cli.ERROR"), err)
     process.exit()
   })

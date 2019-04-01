@@ -15,6 +15,7 @@ module.exports = {
   schema: {
     title: "Credential",
     i18Key: "CREDENTIAL",
+    timestamps: true,
     defaultProperties: ["id", "user", "code", "note"],
     properties: {
       id: {

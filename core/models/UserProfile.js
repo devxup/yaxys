@@ -2,6 +2,7 @@ module.exports = {
   schema: {
     title: "User Profile",
     i18Key: "USER_PROFILE",
+    timestamps: true,
     properties: {
       id: {
         type: "integer",

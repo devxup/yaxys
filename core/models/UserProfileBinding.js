@@ -2,6 +2,7 @@ module.exports = {
   schema: {
     bindingRightTitle: "Assign profiles to users",
     bindingRightI18Key: "RIGHT_FOR_USER_PROFILE_BINDING",
+    timestamps: true,
     uniqueKeys: {
       userAndProfile: ["user", "userProfile"],
     },

@@ -4,6 +4,7 @@ module.exports = {
   schema: {
     title: "User",
     i18Key: "USER",
+    timestamps: true,
     defaultProperties: ["id", "name"],
     properties: {
       id: {

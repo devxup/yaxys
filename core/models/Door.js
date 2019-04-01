@@ -2,6 +2,7 @@ module.exports = {
   schema: {
     title: "Door",
     i18Key: "DOOR",
+    timestamps: true,
     defaultProperties: ["id", "name", "description"],
     properties: {
       id: {
