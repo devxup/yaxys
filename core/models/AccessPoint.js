@@ -3,6 +3,7 @@ module.exports = {
     title: "Access Point",
     i18Key: "AP",
     timestamps: true,
+    webhook: true,
     defaultProperties: ["id", "name", "description", "door", "zoneTo"],
     properties: {
       id: {

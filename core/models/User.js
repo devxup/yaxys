@@ -5,6 +5,7 @@ module.exports = {
     title: "User",
     i18Key: "USER",
     timestamps: true,
+    webhook: true,
     defaultProperties: ["id", "name"],
     properties: {
       id: {

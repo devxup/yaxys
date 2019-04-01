@@ -1,4 +1,10 @@
 # Yaxys – yet another access control system
+
+## Requirements
+
+* Node >= 10.0.0
+* PostgreSQL >= 9.6.0
+
 ## Installation
 1. Download the app
 1. Create PostgreSQL database instance
@@ -49,4 +55,52 @@ That is just a client-side feature. At server-side you still can have many crede
 So, if you create multiple credentials for one user, then set `singleCredential` to `true`, the data won't be lost.
 After returning `singleCredential` back to `false`, you'll see all of the old credentials.
 
+## Webhooks
 
+You can set up the webhook to notify other software every time the Access control system configuration has changed.
+The hook is performde every time when one of the following entites added, updated or deleted:
+* Access point
+* Door
+* Zone
+* Access right of user or user profile
+* User
+* Credential
+* User profile
+* User-profile binding (e.g. user attached to some profile so got some additional access rights)
+
+To set up the webhook, provide an object with options under the `webhook` of your config file.
+Here is an example:
+```
+  "webhook": {
+    "url": "https://your-domain.com/api/some_path?from=yaxys",
+    "method": "POST",
+    "additionalGetParameters": { "another_param": 1},
+    "responseBodySizeLimit": 1000
+  }
+```
+
+* `url` – the URL in any acceptable form. Can contain GET-parameters;
+* `method` – HTTP request method, one of the `GET`, `POST`, `PUT` or `DELETE`;
+* `additionalGetParameters` – another way to provide GET-parameters
+* `responseBodySizeLimit` – in case of wrong response (status code is not `2xx`), Yaxys will display response body in the terminal. By this option you can limit the size of this information.
+
+Additionally, yaxys will attach the following GET-parameters to the request URL:
+* `entity` – the name of the entity, which triggered webhook;
+* `id` – the `id` of that entity instance;
+* `verb` – one of `create`, `update`, or `delete`. Describes what exactly happened with the entity.
+
+## API
+
+All of the yaxys entities are available via standard RESTful API, e.g.:
+
+* `GET /api/accesspoint?zoneTo=1` – get all of the Access Points leading to Zone #1
+* `GET /api/accesspoint/23` – get the Access Point #23
+
+
+Additionally, for numeric and datetime fields, you can set predicate filters. Currently Yaxys supports only `>`, `<`, `<=`, `>=`, `<>` predicates.
+To use filter, you shopuld prefix filter value with the predicate and the colon `:` after it:
+
+
+* `GET /api/accesspoint?zoneTo=>:7` – get all of the Access Points having zoneTo #7 (predicate `>`);
+* `GET /api/accesspoint?updatedAt=<:some_iso_formatted_date` – get all of the Access Points updated earlier than provided date;
+* `GET /api/accesspoint?updatedAt=<=:some_iso_formatted_date` – get all of the Access Points updated exactly at provided date or earlier;

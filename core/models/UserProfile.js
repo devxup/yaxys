@@ -3,6 +3,7 @@ module.exports = {
     title: "User Profile",
     i18Key: "USER_PROFILE",
     timestamps: true,
+    webhook: true,
     properties: {
       id: {
         type: "integer",

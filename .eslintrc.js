@@ -33,6 +33,7 @@ module.exports = {
     UtilService: false,
     ZoneService: false,
     UserService: false,
+    SyncService: false,
 
     // client-side
     yaxysConstants: false

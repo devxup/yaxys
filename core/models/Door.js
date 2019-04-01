@@ -3,6 +3,7 @@ module.exports = {
     title: "Door",
     i18Key: "DOOR",
     timestamps: true,
+    webhook: true,
     defaultProperties: ["id", "name", "description"],
     properties: {
       id: {

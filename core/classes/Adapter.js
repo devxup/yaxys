@@ -48,6 +48,11 @@ const POSTGRES_TYPES = [
   "timestamp",
 ]
 
+const NUMERIC_JSON_SCHEMA_TYPES = new Set([
+  "integer",
+  "number",
+])
+
 module.exports = class Adapter {
 
   constructor(config, options) {
@@ -290,6 +295,18 @@ module.exports = class Adapter {
     return (await this.find(trx, identity, filter, Object.assign({ limit: 1 }, options)))[0]
   }
 
+  _sanitizeFilterValue(value, property) {
+    if (property) {
+      if (NUMERIC_JSON_SCHEMA_TYPES.has(property.type)) {
+        return Number(value)
+      }
+      if (property.format === "date-time") {
+        return new Date(value.replace(/\s([0-9]{0,2})$/, "+$1"))
+      }
+    }
+    return value
+  }
+
   /**
    * Apply filter to the query
    * @param {Object} initialQuery The initial query
@@ -307,10 +324,16 @@ module.exports = class Adapter {
       const property = schema.properties[key]
       if (Array.isArray(value) && property.type !== "array") {
         query = query.andWhere(key, "in", value)
-      } else {
-        // todo: different predicates < <= > >= etc
-        simpleWhere[key] = value
+        return
       }
+
+      const isComparable = property && (NUMERIC_JSON_SCHEMA_TYPES.has(property.type) || property.format === "date-time")
+      if (isComparable && /^[><=]{1,2}:/.test(value)) {
+        const [predicate, ...valueParts] = value.split(":")
+        query = query.andWhere(key, predicate, this._sanitizeFilterValue(valueParts.join(":"), property))
+        return
+      }
+      simpleWhere[key] = this._sanitizeFilterValue(value, property)
     })
     query = query.andWhere(simpleWhere)
 
@@ -365,7 +388,7 @@ module.exports = class Adapter {
    * @returns {Promise<number>} The number of models
    */
   async count(trx, identity, filter) {
-    const query = this.knex(identity).where(filter).count("*")
+    const query = this._applyFilter(this.knex(identity), identity, filter).count("*")
     const result = await (trx ? query.transacting(trx) : query)
     return result[0].count
   }

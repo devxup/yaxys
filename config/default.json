@@ -34,5 +34,11 @@
     "hideDoors": false,
     "hideZones": false,
     "singleCredential": false
+  },
+  "webhook": {
+    "url": null,
+    "method": "GET",
+    "additionalGetParameters": {},
+    "responseBodySizeLimit": 500
   }
 }

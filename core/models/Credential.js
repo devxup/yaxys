@@ -16,6 +16,7 @@ module.exports = {
     title: "Credential",
     i18Key: "CREDENTIAL",
     timestamps: true,
+    webhook: true,
     defaultProperties: ["id", "user", "code", "note"],
     properties: {
       id: {

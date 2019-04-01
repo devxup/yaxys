@@ -3,6 +3,7 @@ module.exports = {
     title: "Zone",
     i18Key: "ZONE",
     timestamps: true,
+    webhook: true,
     defaultProperties: ["id", "name", "description"],
     properties: {
       id: {

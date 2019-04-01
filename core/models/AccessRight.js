@@ -3,6 +3,7 @@ module.exports = {
     title: "Access Right",
     i18Key: "AR",
     timestamps: true,
+    webhook: true,
     uniqueKeys: {
       integrity: ["user", "userProfile", "accessPoint", "door", "zoneTo"],
     },

@@ -154,5 +154,6 @@ module.exports = class App extends Koa {
 	async init() {
 		await this.db.init(config.get("db"))
 		UtilService.init()
+		SyncService.init()
 	}
 }
