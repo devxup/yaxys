@@ -23,6 +23,7 @@ module.exports = {
     Adapter: false,
     App: false,
     PageRouter: false,
+    AccessSet: false,
 
     // Services
     AccessService: false,

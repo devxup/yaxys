@@ -35,7 +35,7 @@ module.exports = {
     if (operator && AuthService.checkPassword(password, operator.passwordHash)) {
       return operator
     }
-    throw new Error("AuthService.WRONG_CREDENTIALS")
+    throw new Error(yaxys.t("AuthService.WRONG_CREDENTIALS"))
   },
 
   /**

@@ -20,10 +20,18 @@
     "VALIDATION_FAIL": "Property {{property}} validation fail: {{message}}"
   },
   "AccessService": {
+    "AP_NOT_FOUND": "Access point not found",
+    "CREDENTIAL_NOT_FOUND": "Credential not found",
+    "USER_NOT_FOUND": "User not found",
+    "CREDENTIAL_INVALID": "Credential found is invalid",
     "SHOULD_HAVE_USER_OR_PROFILE": "AccessRight should have user or userProfile",
     "SHOULD_NOT_HAVE_BOTH_USER_AND_PROFILE": "AccessRight should not have user and userProfile simultaneously",
     "SHOULD_HAVE_AP_OR_ZONE_OR_DOOR": "AccessRight should have accessPoint, zoneTo or door property",
     "SHOULD_NOT_HAVE_BOTH": "AccessRight should not have {{alreadyHas}} and {{key}} simultaneously"
+  },
+  "AccessSet": {
+    "INVALID_ACCESS_RIGHT_FOUND": "Found invalid AccessRight #{{id}}"
+    "INVALID_MODE": "Invalid AccessSet mode #{{mode}}"
   },
   "AuthService": {
     "WRONG_CREDENTIALS": "No such operator or wrong password provided"

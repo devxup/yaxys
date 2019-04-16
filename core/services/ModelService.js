@@ -47,6 +47,28 @@ module.exports = {
   },
 
   /**
+   * Drop all the tables
+   */
+  async dropAllTables() {
+    for (let model in yaxys.models) {
+      if (yaxys.models[model].schema) {
+        await yaxys.db.dropTable(model.toLowerCase())
+      }
+    }
+  },
+
+  /**
+   * Clear all the tables
+   */
+  async clearAllTables() {
+    for (let model in yaxys.models) {
+      if (yaxys.models[model].schema) {
+        await yaxys.db.clearTable(model.toLowerCase())
+      }
+    }
+  },
+
+  /**
    * Patch the model instance by removing all the password fields from it
    * @param {Object} data model instance
    * @param {Object} schema model schema – to detect which fields are passwords

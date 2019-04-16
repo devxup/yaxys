@@ -80,6 +80,7 @@ describe("AuthService", () => {
           db: {
             findOne: () => testCase.dbResponse,
           },
+          t: text => text,
         }
         if (testCase.error) {
           await expect(AuthService.getOperatorByCredentials(...testCase.args)).rejects.toThrow(

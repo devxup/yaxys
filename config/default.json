@@ -40,5 +40,6 @@
     "method": "GET",
     "additionalGetParameters": {},
     "responseBodySizeLimit": 500
-  }
+  },
+  "test": false
 }

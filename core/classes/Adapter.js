@@ -1,6 +1,7 @@
 const knex = require("knex")
 const _ = require("lodash")
 const EventEmitter = require("promise-events")
+const config = require("config")
 const Ajv = require("ajv")
 const ajv = new Ajv({ format: "full" })
 
@@ -92,16 +93,16 @@ module.exports = class Adapter {
   _sanitize(identity, data) {
     const schema = this.schemas[identity]
     if (!schema) {
-      throw new Error(yaxys.t("adapter.SCHEMA_NOT_FOUND", { identity }))
+      throw new Error(yaxys.t("Adapter.SCHEMA_NOT_FOUND", { identity }))
     }
     if (!data) {
-      throw new Error(yaxys.t("adapter.DATA_REQUIRED"))
+      throw new Error(yaxys.t("Adapter.DATA_REQUIRED"))
     }
     if (typeof data !== "object") {
-      throw new Error(yaxys.t("adapter.DATA_OBJECT_EXPECTED"))
+      throw new Error(yaxys.t("Adapter.DATA_OBJECT_EXPECTED"))
     }
     if (Array.isArray(data)) {
-      throw new Error(yaxys.t("adapter.DATA_NOT_ARRAY"))
+      throw new Error(yaxys.t("Adapter.DATA_NOT_ARRAY"))
     }
 
     return _.mapValues(data, (value, key) => {
@@ -183,7 +184,7 @@ module.exports = class Adapter {
 
     const validation = this._validate(identity, _.omitBy(fixedData, _.isNil))
     if (!validation.passed) {
-      throw new Error(yaxys.t("adapter.VALIDATION_FAIL", {
+      throw new Error(yaxys.t("Adapter.VALIDATION_FAIL", {
         property: validation.errors[0].dataPath,
         message: validation.errors[0].message,
       }))
@@ -542,6 +543,28 @@ module.exports = class Adapter {
    */
   async createTable(identity, schema) {
     await this._newTable(identity, schema)//.then()
+  }
+
+  /**
+   * Drop the given table
+   * @param {String} identity The table identity
+   */
+  async dropTable(identity) {
+    if (!config.get("test")) {
+      throw new Error("Calling dropTable is forbidden when not in test mode")
+    }
+    return this.knex.schema.dropTable(identity)
+  }
+
+  /**
+   * Clear the given table
+   * @param {String} identity The table identity
+   */
+  async clearTable(identity) {
+    if (!config.get("test")) {
+      throw new Error("Calling clearTable is forbidden when not in test mode")
+    }
+    return this.knex.truncate(identity)
   }
 
   /**

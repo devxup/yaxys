@@ -104,3 +104,22 @@ To use filter, you shopuld prefix filter value with the predicate and the colon 
 * `GET /api/accesspoint?zoneTo=>:7` – get all of the Access Points having zoneTo #7 (predicate `>`);
 * `GET /api/accesspoint?updatedAt=<:some_iso_formatted_date` – get all of the Access Points updated earlier than provided date;
 * `GET /api/accesspoint?updatedAt=<=:some_iso_formatted_date` – get all of the Access Points updated exactly at provided date or earlier;
+
+### Access rights API
+
+Your software can programmatically get Access Rights information using two ways:
+
+1. `GET /api/accesspoint/{HERE_GOES_ACCESS_POINT_ID}/access - get all of the credentials which have access for given access point
+1. `GET /api/credential/{HERE_GOES_CREDENTIAL_CODE}/access - get all of the access points for which given credential has access
+
+In both cases, you'll get an array of such structures
+```
+{
+  "credentialCode": "12345678",
+  "credentialId": 1,
+  "accessPoint": 2,
+  "accessRight": 2
+}
+```
+
+The `accessRight` is the id of AccessRight entity in the yaxys db. It can be used to track why this specific access is granted.
