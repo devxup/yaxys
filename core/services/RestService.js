@@ -66,6 +66,7 @@ module.exports = {
   getMethodMiddleware(identity, method, options = {}) {
     const middleware = [
       PolicyService.handleErrors,
+      PolicyService.hmacAuth,
       PolicyService.checkAndInjectOperator,
       PolicyService.hasRight(identity, METHOD_TO_RIGHT_MAPPING[method] || method),
     ]

@@ -1,9 +1,39 @@
 const bcrypt = require("bcrypt")
 const config = require("config")
 const jwt = require("jsonwebtoken")
+const crypto = require("crypto")
 
 module.exports = {
   OPERATOR_ATTRIBUTES_FOR_JWT: ["id", "name", "login", "email", "rights", "isAdministrator"],
+
+  checkHmac(timestamp, signature, fullPath) {
+    const currentTimestamp = new Date().getTime()
+    if (isNaN(timestamp)) {
+      return false
+    }
+    const affordableLag = Number(config.get("hmac.affordableTimestampLag")) || 0
+    const lag = Math.abs(currentTimestamp - timestamp)
+
+    if (isNaN(lag) || lag > affordableLag) {
+      return false
+    }
+
+    const targetString = fullPath.replace(new RegExp(`&signature=${signature}$`), "")
+
+    const hmac = crypto.createHmac(config.get("hmac.algorithm"), config.get("hmac.secret"))
+    hmac.update(targetString)
+    const actualSignature = hmac.digest("hex")
+
+    return actualSignature === signature
+  },
+
+  extractHmacData (ctx) {
+    return {
+      fullPath: `${ctx.request.path}${ctx.request.search}`,
+      signature: ctx.query.signature,
+      timestamp: Number(ctx.query.timestamp),
+    }
+  },
 
   /**
    * Encrypt the password using bcrypt

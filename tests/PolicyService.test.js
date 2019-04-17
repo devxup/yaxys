@@ -56,8 +56,7 @@ describe("PolicyService", () => {
           expect(mockCtx.operator).toStrictEqual({
             id: testCase.operator.id,
             email: testCase.operator.email,
-            exp:
-              jwt.verify(testCase.token, config.get("jwt.secret")).iat + config.get("jwt.lifetime"),
+            exp: jwt.verify(testCase.token, config.get("jwt.secret")).iat + config.get("jwt.lifetime"),
           })
         }
       })

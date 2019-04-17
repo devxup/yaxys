@@ -20,6 +20,11 @@
     "secret": "some_unique_string",
     "lifetime": 86400
   },
+  "hmac": {
+    "algorithm": "sha256",
+    "secret": null,
+    "affordableTimestampLag": 500
+  },
   "debug": {
     "pause": false,
     "randomError": false

@@ -123,3 +123,53 @@ In both cases, you'll get an array of such structures
 ```
 
 The `accessRight` is the id of AccessRight entity in the yaxys db. It can be used to track why this specific access is granted.
+
+### API authentication
+
+All of the API, including standard RESTful requests to entities and Access rights API, are protected and unavailable for non-authenticated users.
+There are two ways of authentication:
+* Standard JWT way used by browser client application.
+* HMAC signature of requests – much more suitable for working with external API.
+
+> The second way should be preferred when working with Yaxys from external software, but you still can use
+JWT authentication – create fake operator, authenticate, get JWT token and send it in the cookie with every signle request.
+
+To authenticate via HMAC, you should provide two additional parameters with every request:
+* `timestamp` - your request timestamp value in milliseconds
+* `signature` - HMAC-signature of the request path (including all GET-parameters except `timestamp` and not including host). The `signature` should be the last GET-parameter of your request..
+
+First, Yaxys will ensure that your timestamp is affordable (using `hmac.affordableTimestampLag` config value in milliseconds).
+Then, it will calculate the request signature and compare with one provided in GET-parameter. If they are the same, the Yaxys
+will authenticate the request and grant the administrator rights to it.
+
+Of course, to generate correct signature, you should have the same secret at yaxys side (config `hmac.secret`) and at your software
+request side. Another configuration option is `hmac.algorithm`, which is `sha256` by default, but you can change it into any other
+appropriate value.
+
+To generate HMAC signature, Yaxys is using standard [Crypto module](https://nodejs.org/api/crypto.html#crypto_class_hmac) of the Node.js.
+
+Here's the example of how the signing procedure can look at your side:
+
+```
+const crypto = require("crypto")
+
+const getSignedRequestPath = (pathname) => {
+  const timestamp = new Date().getTime()
+  const pathnameToSign = `${pathname}?timestamp=${timestamp}`
+
+  const hmac = crypto.createHmac("sha256", "YOUR_SECRET")
+  hmac.update(pathnameToSign)
+  const signature = hmac.digest("hex")
+
+  return `${pathnameToSign}&signature=${signature}`
+}
+
+const url = `https://YAXYS_INSTANCE_DOMAIN/${getSignedRequestPath("/api/accesspoint/1/access")}`
+// todo: request url
+
+```
+
+
+
+
+

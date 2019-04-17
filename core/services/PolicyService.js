@@ -1,3 +1,5 @@
+const config = require("config")
+
 module.exports = {
   /**
    * Top-level error handler with functionality of translating errors
@@ -32,10 +34,14 @@ module.exports = {
    * Check the token from the "jwt" cookie, get the operator out of it,
    * then get the operator with found id from the db and inject it into the ctx
    * If the token is invalid, throw 401 error
+   * If the operator was injected before, do nothing
    * @param {Object} ctx Koa context
    * @param {Function} next Koa next function
    */
   checkAndInjectOperator: async (ctx, next) => {
+    if (ctx.operator) {
+      return next()
+    }
     try {
       const operatorFromToken = AuthService.checkAndDecodeToken(ctx.cookies.get("jwt"))
       ctx.operator = await yaxys.db.findOne(null, "operator", { id: operatorFromToken.id })
@@ -44,6 +50,41 @@ module.exports = {
       ctx.throw(401, "PolicyService.UNAUTHORIZED")
     }
     await next()
+  },
+
+  /**
+   * Checks HMAC api authentication
+   * Requires timestampMs and signature GET-parameters
+   * @param {Object} ctx Koa context
+   * @param {Function} next Koa next function
+   */
+  hmacAuth: async (ctx, next) => {
+    // if hmac is not allowed
+    if (!config.get("hmac.secret")) { return next() }
+
+    // if no signature and timestamp, request doesn't try to HMAC-authenticate
+    if (!ctx.query || !ctx.query.signature || !ctx.query.timestamp) { return next() }
+
+    const { timestamp, signature, fullPath } = AuthService.extractHmacData(ctx)
+
+    if (!AuthService.checkHmac(timestamp, signature, fullPath)) {
+      ctx.throw(401, "PolicyService.WRONG_SIGNATURE")
+    }
+
+    ctx.operator = {
+      id: 0,
+      fake: true,
+      isAdministrator: true,
+    }
+
+    return next()
+  },
+
+  hasOperator: async(ctx, next) => {
+    if (!ctx.operator) {
+      ctx.throw(401, "PolicyService.UNAUTHORIZED")
+    }
+    return next()
   },
 
   /**

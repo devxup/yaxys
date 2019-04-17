@@ -286,6 +286,7 @@ describe("RestService", () => {
         global.PolicyService = {
           handleErrors: "handleErrors",
           checkAndInjectOperator: "checkAndInjectOperator",
+          hmacAuth: "hmacAuth",
           hasRight: (identity, method) => `hasRight(${identity}, ${method})`,
           removePasswordsFromResponse: (identity) => `removePasswordsFromResponse(${identity})`,
           sanitizeRequest: (identity) => `sanitizeRequest(${identity})`,
@@ -307,6 +308,7 @@ describe("RestService", () => {
           args: ["m1", "find"],
           expectedResult: [
             "handleErrors",
+            "hmacAuth",
             "checkAndInjectOperator",
             "hasRight(m1, read)",
             "find(m1)",
@@ -317,6 +319,7 @@ describe("RestService", () => {
           args: ["m1", "create"],
           expectedResult: [
             "handleErrors",
+            "hmacAuth",
             "checkAndInjectOperator",
             "hasRight(m1, create)",
             "sanitizeRequest(m1)",

@@ -2,6 +2,7 @@ global.AuthService = require("../core/services/AuthService.js")
 global._ = require("lodash")
 const config = require("config")
 const jwt = require("jsonwebtoken")
+const crypto = require("crypto")
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
@@ -10,6 +11,69 @@ describe("AuthService", () => {
 
   beforeAll(() => {
     yaxysBuffer = global.yaxys
+  })
+
+  describe("checkHmac", () => {
+    const SECRET = "ABC"
+    let configGetBuffer
+    beforeAll(() => {
+      configGetBuffer = config.get
+
+      config.get = arg => {
+        switch(arg) {
+          case "hmac.affordableTimestampLag":
+            return 20
+          case "hmac.secret":
+            return "ABC"
+          default:
+            return configGetBuffer.apply(config, [arg])
+        }
+      }
+    })
+    afterAll(() => {
+      config.get = configGetBuffer
+    })
+    it("correct signature", () => {
+      const timestamp = new Date().getTime()
+      const path = `/abc?timestamp=${timestamp}&some_other`
+      const hmac = crypto.createHmac(config.get("hmac.algorithm"), SECRET)
+      hmac.update(path)
+      const signature = hmac.digest("hex")
+
+      expect(AuthService.checkHmac(
+        timestamp,
+        signature,
+        `/abc?timestamp=${timestamp}&some_other&signature=${signature}`
+      )).toStrictEqual(true)
+    })
+    it("wrong signature", () => {
+      const timestamp = new Date().getTime()
+      const path = `/abc?timestamp=${timestamp}&some_other`
+      const hmac = crypto.createHmac(config.get("hmac.algorithm"), SECRET)
+      hmac.update(path)
+      const signature = hmac.digest("hex")
+
+      expect(AuthService.checkHmac(
+        timestamp,
+        `${signature}_`,
+        `/abc?timestamp=${timestamp}&some_other&signature=${signature}`
+      )).toStrictEqual(false)
+    })
+    it("delayed call", async () => {
+      const timestamp = new Date().getTime()
+      const path = `/abc?timestamp=${timestamp}&some_other`
+      const hmac = crypto.createHmac(config.get("hmac.algorithm"), SECRET)
+      hmac.update(path)
+      const signature = hmac.digest("hex")
+
+      await new Promise(resolve => setTimeout(resolve, 25))
+
+      expect(AuthService.checkHmac(
+        timestamp,
+        `${signature}`,
+        `/abc?timestamp=${timestamp}&some_other&signature=${signature}`
+      )).toStrictEqual(false)
+    })
   })
 
   it("Password encrypt and check", () => {
