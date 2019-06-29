@@ -2,6 +2,8 @@ node_modules
 .idea
 config/local.json
 config/local-test.json
+public
+webpack-assets.json
 .DS_Store
 .env
 *.log

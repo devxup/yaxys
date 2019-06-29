@@ -2,6 +2,13 @@ const config = require("config")
 const Router = require("koa-router")
 const KoaStatic = require("koa-static")
 
+let mainCSS, bundleJS
+if (config.util.getEnv("NODE_ENV") === "production") {
+  const webpackAssets = require("../../webpack-assets.json")
+  mainCSS = `/${webpackAssets.main.css}`
+  bundleJS = `/${webpackAssets.main.js}`
+}
+
 module.exports = class PageRouter extends Router {
   constructor() {
     super()
@@ -50,14 +57,22 @@ module.exports = class PageRouter extends Router {
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,200,300,400,500,600,700,900">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
-
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Roboto:100,200,300,400,500,600,700,900" rel="stylesheet">
+    ${
+      config.util.getEnv("NODE_ENV") === "development" 
+        ? "" 
+        : `<link rel="stylesheet" href=${ mainCSS }>`
+    }
   </head>
   <body>
     <div id="root"></div>
   </body>
   <script src="/api/constants" type="text/javascript"></script>
-  <script src="/bundle.js"></script>
+  ${
+    config.util.getEnv("NODE_ENV") === "development"
+      ? "<script src=\"bundle.js\"></script>"
+      : `<script src=${bundleJS}></script>`
+  }
 </html>`
   }
 }

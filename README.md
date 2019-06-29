@@ -14,6 +14,13 @@
 1. Run `yarn create_operator --login somebody --pwd 1234`
 1. Run `yarn dev` and go to http://localhost:5000
 
+## Running in production mode
+
+In order to run Yaxys in production mode, run the following commands:
+
+1. `yarn build:prod`
+1. `yarn start:prod`
+
 ## Settings
 
 We store application settings in a _settings_ section in our configuration file `/config/default.json`.
