@@ -45,7 +45,7 @@
     "minimist": "^1.2.0",
     "moment-timezone": "^0.5.23",
     "mui-table": "^2.1.6",
-    "node-sass": "^4.9.3",
+    "node-sass": "^4.13.1",
     "pg": "^7.4.3",
     "promise-events": "^0.1.4",
     "prop-types": "^15.6.2",
